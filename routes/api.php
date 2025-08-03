@@ -19,10 +19,11 @@ Route::middleware('auth:customer')->group(function () {
     // Bookings
     Route::get('/bookings', [BookingController::class, 'index']);
     Route::post('/bookings', [BookingController::class, 'store']);
+    Route::get('/bookings/{id}', [BookingController::class, 'show']);
 
     // Transactions
     Route::get('/transactions', [TransactionController::class, 'index']);
-    Route::post('/transactions', [TransactionController::class, 'store']);
+    Route::get('/transactions/{id}', [TransactionController::class, 'show']);
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout']);
