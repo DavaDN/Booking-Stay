@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Room;
+use App\Models\Facilities;
 use Illuminate\Http\Request;
 
-class RoomController extends Controller
+class FacilitiesController extends Controller
 {
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $query = Room::with('roomType');
+        $query = Facilities::with('roomType');
 
         if ($search) {
-            $query->where('number', 'like', "%$search%")
+            $query->where('name', 'like', "%$search%")
                 ->orWhereHas('roomType', function ($q) use ($search) {
                     $q->where('name', 'like', "%$search%");
                 });
@@ -26,31 +26,31 @@ class RoomController extends Controller
     {
         $request->validate([
             'room_type_id' => 'required|exists:room_types,id',
-            'number' => 'required|string|max:50',
-            'status' => 'required|in:available,booked,maintenance'
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|string'
         ]);
 
-        $room = Room::create($request->all());
+        $facilities = Facilities::create($request->all());
 
-        return response()->json($room, 201);
+        return response()->json($facilities, 201);
     }
 
     public function show($id)
     {
-        return Room::with('roomType')->findOrFail($id);
+        return Facilities::with('roomType')->findOrFail($id);
     }
 
     public function update(Request $request, $id)
     {
-        $room = Room::findOrFail($id);
-        $room->update($request->all());
+        $facilities = Facilities::findOrFail($id);
+        $facilities->update($request->all());
 
-        return response()->json($room);
+        return response()->json($facilities);
     }
 
     public function destroy($id)
     {
-        Room::destroy($id);
-        return response()->json(['message' => 'Room deleted']);
+        Facilities::destroy($id);
+        return response()->json(['message' => 'Facilities room deleted']);
     }
 }

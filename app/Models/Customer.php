@@ -1,11 +1,10 @@
 <?php
 
-// app/Models/Customer.php
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class Customer extends Authenticatable
 {
@@ -15,10 +14,12 @@ class Customer extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
     ];
 
     protected $hidden = [
         'password',
+        'remember_token',
     ];
 
     public function bookings()

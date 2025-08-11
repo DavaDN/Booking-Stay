@@ -1,6 +1,5 @@
 <?php
 
-// app/Http/Controllers/RoomTypeController.php
 namespace App\Http\Controllers;
 
 use App\Models\RoomType;
@@ -10,38 +9,47 @@ class RoomTypeController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->search;
+        $search = $request->get('search');
+        $query = RoomType::query();
 
-        $roomTypes = RoomType::when($search, function ($q) use ($search) {
-            $q->where('name', 'like', '%' . $search . '%');
-        })->latest()->paginate(10);
+        if ($search) {
+            $query->where('name', 'like', "%$search%")
+                ->orWhere('description', 'like', "%$search%");
+        }
 
-        return view('room-types.index', compact('roomTypes', 'search'));
+        return $query->paginate(10);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'price' => 'required|numeric'
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'capacity' => 'required|integer',
+            'description' => 'nullable|string'
         ]);
-        RoomType::create($request->only('name', 'price', 'description'));
-        return back()->with('success', 'Tipe kamar berhasil ditambahkan.');
+
+        $roomType = RoomType::create($request->all());
+
+        return response()->json($roomType, 201);
     }
 
-    public function update(Request $request, RoomType $roomType)
+    public function show($id)
     {
-        $request->validate([
-            'name' => 'required',
-            'price' => 'required|numeric'
-        ]);
-        $roomType->update($request->only('name', 'price', 'description'));
-        return back()->with('success', 'Tipe kamar berhasil diperbarui.');
+        return RoomType::with('rooms', 'facilities')->findOrFail($id);
     }
 
-    public function destroy(RoomType $roomType)
+    public function update(Request $request, $id)
     {
-        $roomType->delete();
-        return back()->with('success', 'Tipe kamar berhasil dihapus.');
+        $roomType = RoomType::findOrFail($id);
+        $roomType->update($request->all());
+
+        return response()->json($roomType);
+    }
+
+    public function destroy($id)
+    {
+        RoomType::destroy($id);
+        return response()->json(['message' => 'Room type deleted']);
     }
 }

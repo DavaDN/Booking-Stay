@@ -1,45 +1,50 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FloorController;
-use App\Http\Controllers\RoomTypeController;
-use App\Http\Controllers\RoomController;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\{
+    LandingPageController,
+    AdminController,
+    ResepsionisController,
+    CustomerController,
+    RoomTypeController,
+    RoomController,
+    FacilitiesController,
+    FacilityHotelController,
+    BookingController,
+    TransactionController
+};
 
-// Welcome Page
-Route::get('/', function () {
-    return view('welcome');
+// Public landing page
+Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
+
+// Admin
+Route::prefix('admin')->middleware('auth:admin')->group(function () {
+    Route::resource('admins', AdminController::class);
+    Route::resource('resepsionis', ResepsionisController::class);
+    Route::resource('customers', CustomerController::class)->only(['index', 'destroy']);
+    Route::resource('room-types', RoomTypeController::class);
+    Route::resource('rooms', RoomController::class);
+    Route::resource('facilities', FacilitiesController::class);
+    Route::resource('facility-hotels', FacilityHotelController::class);
+    Route::resource('bookings', BookingController::class);
+    Route::resource('transactions', TransactionController::class);
+    Route::patch('bookings/{id}/status', [BookingController::class, 'updateStatus']);
+    Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus']);
 });
 
-// Login & Register (Breeze)
-Route::get('/login', [AuthenticatedSessionController::class, 'create'])
-    ->middleware('guest')->name('login');
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-    ->middleware('guest');
-
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->middleware('auth');
-
-Route::get('/register', [RegisteredUserController::class, 'create'])
-    ->middleware('guest')->name('register');
-Route::post('/register', [RegisteredUserController::class, 'store'])
-    ->middleware('guest');
-
-// Dashboard + Management
-Route::middleware(['auth'])->group(function () {
-    Route::get('/dashboard', fn() => view('dashboard'))->name('dashboard');
-
-    // Master Data
-    Route::resource('floors', FloorController::class)->only(['index', 'store', 'update', 'destroy']);
-    Route::resource('room-types', RoomTypeController::class)->only(['index', 'store', 'update', 'destroy']);
-    Route::resource('rooms', RoomController::class)->only(['index', 'store', 'update', 'destroy']);
-
-    // Booking & Transaction View
-    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
-    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+// Resepsionis
+Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () {
+    Route::resource('bookings', BookingController::class)->only(['index', 'show', 'update']);
+    Route::patch('bookings/{id}/status', [BookingController::class, 'updateStatus']);
+    Route::resource('transactions', TransactionController::class)->only(['index', 'show', 'update']);
+    Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus']);
 });
 
-require __DIR__ . '/auth.php';
+// Customer Web
+Route::prefix('customer')->middleware('auth:customer_web')->group(function () {
+    Route::get('profile', [CustomerController::class, 'profile']);
+    Route::put('profile', [CustomerController::class, 'updateProfile']);
+    Route::delete('profile', [CustomerController::class, 'deleteAccount']);
+    Route::resource('bookings', BookingController::class)->only(['index', 'show', 'store']);
+    Route::resource('transactions', TransactionController::class)->only(['index', 'show', 'store']);
+});
