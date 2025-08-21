@@ -47,7 +47,7 @@ class CustomerController extends Controller
 
         if (Auth::guard('customer_web')->attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended(route('customer.dashboard'));
+            return redirect()->intended(route('landing.index'));
         }
 
         return back()->withErrors(['email' => 'Credensial salah'])->withInput();
@@ -57,7 +57,7 @@ class CustomerController extends Controller
     public function dashboard()
     {
         $customer = Auth::guard('customer_web')->user();
-        return view('customer.dashboard', compact('customer'));
+        return view('landing.index', compact('customer'));
     }
 
     // logout
@@ -66,7 +66,7 @@ class CustomerController extends Controller
         Auth::guard('customer_web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('customer.login.form');
+        return redirect()->route('landing.index');
     }
 
     // tampilkan form profile edit

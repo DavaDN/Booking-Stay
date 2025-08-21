@@ -48,3 +48,19 @@ Route::prefix('customer')->middleware('auth:customer_web')->group(function () {
     Route::resource('bookings', BookingController::class)->only(['index', 'show', 'store']);
     Route::resource('transactions', TransactionController::class)->only(['index', 'show', 'store']);
 });
+
+
+//tambahan
+// // Customer Auth
+// Route::get('customer/login', [CustomerController::class, 'showLogin'])->name('customer.login.form');
+// Route::post('customer/login', [CustomerController::class, 'login'])->name('customer.login');
+// Route::get('customer/register', [CustomerController::class, 'showRegister'])->name('customer.register.form');
+// Route::post('customer/register', [CustomerController::class, 'register'])->name('customer.register');
+// Route::post('customer/logout', [CustomerController::class, 'logout'])->name('customer.logout');
+
+// Customer Auth
+Route::post('customer/login', [CustomerController::class, 'login'])->name('customer.login');
+Route::post('customer/register', [CustomerController::class, 'register'])->name('customer.register');
+Route::post('customer/logout', [CustomerController::class, 'logout'])->name('customer.logout');
+
+
