@@ -31,7 +31,7 @@ class CustomerController extends Controller
             'phone' => $request->phone ?? null,
         ]);
 
-        return redirect()->route('customer.login.form')->with('success', 'Registrasi berhasil, silakan login.');
+        return redirect()->route('landing.index')->with('success', 'Registrasi berhasil, silakan login.');
     }
 
     // tampilkan form login

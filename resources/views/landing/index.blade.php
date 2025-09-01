@@ -146,13 +146,13 @@
 <div id="hotelCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="{{ asset('images/OIP.jpeg') }}" class="d-block w-100" alt="Hotel 1">
+            <img src="{{ asset('images/kamarhotel2.jpg') }}" class="d-block w-100" alt="Hotel 1">
         </div>
         <div class="carousel-item">
-            <img src="{{ asset('images/OIP.jpeg') }}" class="d-block w-100" alt="Hotel 2">
+            <img src="{{ asset('images/kamarhotel2.jpg') }}" class="d-block w-100" alt="Hotel 2">
         </div>
         <div class="carousel-item">
-            <img src="{{ asset('images/OIP.jpeg') }}" class="d-block w-100" alt="Hotel 3">
+            <img src="{{ asset('images/kamarhotel2.jpg') }}" class="d-block w-100" alt="Hotel 3">
         </div>
     </div>
 </div>

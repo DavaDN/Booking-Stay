@@ -10,15 +10,22 @@ class RoomTypeController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $query = RoomType::query();
+        $query = RoomType::with('rooms'); 
 
         if ($search) {
             $query->where('name', 'like', "%$search%")
                 ->orWhere('description', 'like', "%$search%");
         }
 
-        return $query->paginate(10);
+        $roomTypes = $query->paginate(10);
+
+        // hitung total kamar dan kamar tersedia
+        $totalRooms = \App\Models\Room::count();
+        $availableRooms = \App\Models\Room::where('status', 'available')->count();
+
+        return view('admin.room-type', compact('roomTypes', 'totalRooms', 'availableRooms'));
     }
+
 
     public function store(Request $request)
     {

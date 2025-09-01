@@ -19,8 +19,11 @@ class RoomController extends Controller
                 });
         }
 
-        return $query->paginate(10);
+        $rooms = $query->paginate(12);
+
+        return view('admin.room', compact('rooms'));
     }
+
 
     public function store(Request $request)
     {
@@ -50,7 +53,9 @@ class RoomController extends Controller
 
     public function destroy($id)
     {
-        Room::destroy($id);
-        return response()->json(['message' => 'Room deleted']);
+        $room = Room::findOrFail($id);
+        $room->delete();
+
+        return redirect()->route('rooms.index')->with('success', 'Room berhasil dihapus');
     }
 }
