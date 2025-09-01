@@ -393,6 +393,11 @@
                 <a href="{{ route('resepsionis.index') }}" class="{{ request()->routeIs('resepsionis.*') ? 'active' : '' }}">
                     <i class="fas fa-user-tie"></i> <span>Resepsionis</span>
                 </a>
+                <a href="{{ route('facilities.index') }}" 
+   class="{{ request()->routeIs('facilities.*') ? 'active' : '' }}">
+    <i class="fas fa-cogs"></i> <span>Facilities</span>
+</a>
+
             </div>
 
 

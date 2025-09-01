@@ -4,53 +4,87 @@ namespace App\Http\Controllers;
 
 use App\Models\Facilities;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class FacilitiesController extends Controller
 {
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $query = Facilities::with('roomType');
+        $query = Facilities::query();
 
         if ($search) {
-            $query->where('name', 'like', "%$search%")
-                ->orWhereHas('roomType', function ($q) use ($search) {
-                    $q->where('name', 'like', "%$search%");
-                });
+            $query->where('name', 'like', "%$search%");
         }
 
-        return $query->paginate(10);
+        $facilities = $query->paginate(10);
+
+        return view('admin.facilities', compact('facilities'));
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $request->validate([
-            'room_type_id' => 'required|exists:room_types,id',
-            'name' => 'required|string|max:255',
-            'image' => 'nullable|string'
+            'name'  => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        $facilities = Facilities::create($request->all());
+        $data = [
+            'name' => $request->name,
+        ];
 
-        return response()->json($facilities, 201);
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('facilities', 'public');
+        }
+
+        $facility = Facilities::create($data);
+
+        if ($facility) {
+            return redirect()->route('facilities.index')->with('success', 'Facility berhasil ditambahkan.');
+        } else {
+            return back()->with('error', 'Gagal menambahkan facility.');
+        }
     }
+
 
     public function show($id)
     {
-        return Facilities::with('roomType')->findOrFail($id);
+        return Facilities::findOrFail($id);
     }
 
     public function update(Request $request, $id)
     {
-        $facilities = Facilities::findOrFail($id);
-        $facilities->update($request->all());
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
 
-        return response()->json($facilities);
+        $facilities = Facilities::findOrFail($id);
+        $data = $request->only('name');
+
+        if ($request->hasFile('image')) {
+            // hapus gambar lama jika ada
+            if ($facilities->image) {
+                Storage::disk('public')->delete($facilities->image);
+            }
+            $data['image'] = $request->file('image')->store('facilities', 'public');
+        }
+
+        $facilities->update($data);
+
+        return redirect()->route('facilities.index')->with('success', 'Facility updated successfully!');
     }
 
     public function destroy($id)
     {
-        Facilities::destroy($id);
-        return response()->json(['message' => 'Facilities room deleted']);
+        $facilities = Facilities::findOrFail($id);
+
+        if ($facilities->image) {
+            Storage::disk('public')->delete($facilities->image);
+        }
+
+        $facilities->delete();
+
+        return redirect()->route('facilities.index')->with('success', 'Facility deleted successfully!');
     }
 }
