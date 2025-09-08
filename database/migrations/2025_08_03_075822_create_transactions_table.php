@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->decimal('total', 15, 2);
             $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
             $table->timestamp('payment_date')->nullable();
+            $table->foreign('voucher_id')->references('id')->on('voucher')->onDelete('set null')->nullable();
             $table->timestamps();
         });
     }

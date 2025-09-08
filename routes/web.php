@@ -41,7 +41,7 @@ Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () 
 });
 
 // Customer Web
-Route::prefix('customer')->middleware('auth:customer_web')->group(function () {
+Route::prefix('customer')->middleware('auth:customer')->group(function () {
     Route::get('profile', [CustomerController::class, 'profile']);
     Route::put('profile', [CustomerController::class, 'updateProfile']);
     Route::delete('profile', [CustomerController::class, 'deleteAccount']);
