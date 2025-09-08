@@ -17,20 +17,48 @@
         background-color: #fff;
         margin: auto;
         padding: 20px;
-        border-radius: 10px;
+        border-radius: 8px;
         width: 400px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        position: relative;
     }
-    .modal-header { font-weight: bold; font-size: 16px; margin-bottom: 10px; }
-    .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
-    .btn-close {
-        background: #e74c3c; color: #fff; padding: 6px 12px;
-        border-radius: 6px; cursor: pointer;
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 15px;
     }
-    .btn-save {
-        background: #3498db; color: #fff; padding: 6px 12px;
-        border-radius: 6px; cursor: pointer;
+    .modal-header span {
+        cursor: pointer;
+        font-size: 22px;
     }
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .btn-secondary {
+        background: #bdc3c7;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #fff;
+    }
+    .btn-secondary:hover { background: #95a5a6; }
+    .btn-primary {
+        background: #3498db;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        color: #fff;
+    }
+    .btn-primary:hover { background: #2980b9; }
+
     /* --- Style kartu tetap --- */
     .page-header { margin-bottom: 10px; }
     .page-header h4 { font-weight: bold; font-size: 18px; }
@@ -40,6 +68,7 @@
         background: #3498db; color: #fff; border-radius: 8px;
         font-size: 13px; padding: 6px 14px; display: flex;
         align-items: center; gap: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        border: none; cursor: pointer;
     }
     .btn-add:hover { background: #2980b9; }
     .search-bar { display: flex; align-items: center; flex: 1; max-width: 300px; }
@@ -75,7 +104,7 @@
 
     <!-- Action Bar -->
     <div class="action-bar">
-        <button class="btn btn-add" id="btnOpenModal">
+        <button class="btn-add" id="btnOpenModal">
             <i class="fas fa-plus"></i> Tambah Kamar
         </button>
         <form method="GET" action="{{ route('rooms.index') }}" class="search-bar">
@@ -120,15 +149,18 @@
 <!-- Modal Tambah Kamar -->
 <div id="modalAddRoom" class="modal">
     <div class="modal-content">
-        <div class="modal-header">Tambah Kamar</div>
+        <div class="modal-header">
+            <span>Tambah Kamar</span>
+            <span onclick="closeAddModal()">&times;</span>
+        </div>
         <form id="formAddRoom">
             @csrf
             <div class="mb-3">
-                <label>Nomor Kamar</label>
+                <label class="form-label">Nomor Kamar</label>
                 <input type="text" name="number" class="form-control" required>
             </div>
             <div class="mb-3">
-                <label>Tipe Kamar</label>
+                <label class="form-label">Tipe Kamar</label>
                 <select name="room_type_id" class="form-control" required>
                     <option value="">-- Pilih Tipe --</option>
                     @foreach(App\Models\RoomType::all() as $type)
@@ -137,7 +169,7 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label>Status</label>
+                <label class="form-label">Status</label>
                 <select name="status" class="form-control" required>
                     <option value="available">Available</option>
                     <option value="booked">Booked</option>
@@ -145,8 +177,8 @@
                 </select>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-close" onclick="closeAddModal()">Batal</button>
-                <button type="submit" class="btn-save">Simpan</button>
+                <button type="button" class="btn-secondary" onclick="closeAddModal()">Batal</button>
+                <button type="submit" class="btn-primary">Simpan</button>
             </div>
         </form>
     </div>
@@ -155,17 +187,20 @@
 <!-- Modal Edit Kamar -->
 <div id="modalEditRoom" class="modal">
     <div class="modal-content">
-        <div class="modal-header">Edit Kamar</div>
+        <div class="modal-header">
+            <span>Edit Kamar</span>
+            <span onclick="closeEditModal()">&times;</span>
+        </div>
         <form id="formEditRoom">
             @csrf
             @method('PUT')
             <input type="hidden" name="id" id="editRoomId">
             <div class="mb-3">
-                <label>Nomor Kamar</label>
+                <label class="form-label">Nomor Kamar</label>
                 <input type="text" name="number" id="editNumber" class="form-control" required>
             </div>
             <div class="mb-3">
-                <label>Tipe Kamar</label>
+                <label class="form-label">Tipe Kamar</label>
                 <select name="room_type_id" id="editRoomType" class="form-control" required>
                     <option value="">-- Pilih Tipe --</option>
                     @foreach(App\Models\RoomType::all() as $type)
@@ -174,7 +209,7 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label>Status</label>
+                <label class="form-label">Status</label>
                 <select name="status" id="editStatus" class="form-control" required>
                     <option value="available">Available</option>
                     <option value="booked">Booked</option>
@@ -182,8 +217,8 @@
                 </select>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn-close" onclick="closeEditModal()">Batal</button>
-                <button type="submit" class="btn-save">Update</button>
+                <button type="button" class="btn-secondary" onclick="closeEditModal()">Batal</button>
+                <button type="submit" class="btn-primary">Update</button>
             </div>
         </form>
     </div>
@@ -219,11 +254,9 @@
     function closeEditModal(){ modalEdit.style.display = "none"; }
 
     async function openEditModal(id) {
-        // ambil data room via API
         let res = await fetch(`/admin/rooms/${id}`);
         let data = await res.json();
 
-        // isi form modal
         document.getElementById("editRoomId").value = data.id;
         document.getElementById("editNumber").value = data.number;
         document.getElementById("editRoomType").value = data.room_type_id;

@@ -9,9 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
-            --primary: #3498db;
-            --secondary: #e8f4ff;
-            --text: #2c3e50;
+            /* WARNA DISESUAIKAN DENGAN DESAINMU */
+            --primary: #2365A2;        /* biru utama */
+            --secondary: #D3E7FF;      /* biru muda (active/bg lembut) */
+            --text: #586A80;           /* warna teks & icon */
             --text-light: #7f8c8d;
             --border: #dce6f0;
             --success: #27ae60;
@@ -46,21 +47,16 @@
             border-right: 1px solid var(--border);
             padding: 0;
             z-index: 1000;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.04);
+            /* Enhanced shadow sesuai design */
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.08);
         }
 
         .logo-container {
-            padding: 10px 35px;
-            /* atas-bawah kecil, kiri-kanan lebih lebar */
+            padding: 20px 35px;
             border-bottom: 1px solid var(--border);
             text-align: center;
             background: linear-gradient(120deg, #3a4d56ff, #8fcef8ff);
-
-            /* opsional, biar agak rounded */
-            display: inline-block;
-            /* biar bentuknya pas persegi panjang */
         }
-
 
         .logo {
             max-width: 150px;
@@ -69,42 +65,88 @@
         }
 
         .sidebar-nav {
-            padding: 15px 10px;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .sidebar-nav a {
             display: flex;
             align-items: center;
-            padding: 10px 12px;
+            padding: 12px 15px;
             color: var(--text);
             text-decoration: none;
-            margin: 4px 0;
-            border-radius: 6px;
-            transition: all 0.2s;
-            font-size: 0.82rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            font-weight: 500;
+            position: relative;
         }
 
         .sidebar-nav a i {
-            margin-right: 10px;
+            margin-right: 12px;
             width: 20px;
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            color: var(--text);
         }
 
-        .sidebar-nav a:hover,
+        /* hover dibuat lembut pakai warna bg aktif */
+        .sidebar-nav a:hover {
+            background: var(--secondary);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .sidebar-nav a:hover i {
+            color: var(--primary);
+        }
+
+        /* ACTIVE mengikuti desain: bg D3E7FF, teks/icon 2365A2 */
         .sidebar-nav a.active {
+            background: var(--secondary);
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(35, 101, 162, 0.20);
+            font-weight: 600;
+        }
+
+        .sidebar-nav a.active i {
+            color: var(--primary);
+        }
+
+        /* Logout button styling sesuai design (biru outline -> fill saat hover) */
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+        }
+
+        .logout-btn .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 15px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 1px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+        }
+
+        .logout-btn .btn i {
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+        .logout-btn .btn:hover {
             background: var(--primary);
             color: #fff;
-        }
-
-        .logout-btn {
-            padding: 15px;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: #fff;
-            border-top: 1px solid var(--border);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(35, 101, 162, 0.30);
         }
 
         /* Main Content */
@@ -174,7 +216,7 @@
         }
 
         .user-profile {
-            background-color: #3498db;
+            background-color: #000000;
             width: 25px;
             height: 25px;
             border-radius: 50%;
@@ -267,7 +309,7 @@
         }
 
         .activity-badge {
-            background: #3498db;
+            background: #3498db; /* dibiarkan seperti kode aslinu */
             color: white;
             padding: 3px 8px;
             border-radius: 16px;
@@ -375,37 +417,41 @@
             </div>
 
             <div class="sidebar-nav">
+                <!-- Urutan menu sesuai design -->
                 <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="fas fa-home"></i> <span>Dashboard</span>
                 </a>
-                <a href="{{ route('rooms.index') }}" class="{{ request()->routeIs('rooms.*') ? 'active' : '' }}">
-                    <i class="fas fa-bed"></i> <span>Room</span>
+                
+                <a href="{{ route('facilities.index') }}" class="{{ request()->routeIs('facilities.*') ? 'active' : '' }}">
+                    <i class="fas fa-cogs"></i> <span>Facility Room</span>
                 </a>
+                
                 <a href="{{ route('room-types.index') }}" class="{{ request()->routeIs('room-types.*') ? 'active' : '' }}">
                     <i class="fas fa-door-open"></i> <span>Room Type</span>
                 </a>
+                
+                <a href="{{ route('rooms.index') }}" class="{{ request()->routeIs('rooms.*') ? 'active' : '' }}">
+                    <i class="fas fa-bed"></i> <span>Room</span>
+                </a>
+                
+                <a href="{{ route('resepsionis.index') }}" class="{{ request()->routeIs('resepsionis.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-tie"></i> <span>Receptionist</span>
+                </a>
+                
                 <a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.*') ? 'active' : '' }}">
                     <i class="fas fa-users"></i> <span>Customer</span>
                 </a>
+                
                 <a href="{{ route('transactions.index') }}" class="{{ request()->routeIs('transactions.*') ? 'active' : '' }}">
                     <i class="fas fa-file-alt"></i> <span>Report</span>
                 </a>
-                <a href="{{ route('resepsionis.index') }}" class="{{ request()->routeIs('resepsionis.*') ? 'active' : '' }}">
-                    <i class="fas fa-user-tie"></i> <span>Resepsionis</span>
-                </a>
-                <a href="{{ route('facilities.index') }}" 
-   class="{{ request()->routeIs('facilities.*') ? 'active' : '' }}">
-    <i class="fas fa-cogs"></i> <span>Facilities</span>
-</a>
-
             </div>
-
 
             <div class="logout-btn">
                 <form method="POST" action="{{ route('admin.logout') }}">
                     @csrf
                     <button type="submit" class="btn btn-danger w-100 btn-sm">
-                        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+                        <i class="fas fa-sign-out-alt"></i> <span>Sign Out</span>
                     </button>
                 </form>
             </div>

@@ -63,7 +63,7 @@ class FacilitiesController extends Controller
         $data = $request->only('name');
 
         if ($request->hasFile('image')) {
-            // hapus gambar lama jika ada
+        
             if ($facilities->image) {
                 Storage::disk('public')->delete($facilities->image);
             }
