@@ -10,14 +10,15 @@ return new class extends Migration {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('booking_id')->constrained('bookings')->onDelete('cascade');
+            $table->foreignId('voucher_id')->nullable(); // ✅ Tambahkan kolom voucher_id
             $table->string('payment_method');
             $table->decimal('total', 15, 2);
             $table->enum('status', ['pending', 'paid', 'failed'])->default('pending');
             $table->timestamp('payment_date')->nullable();
-            $table->foreign('voucher_id')->references('id')->on('voucher')->onDelete('set null')->nullable();
             $table->timestamps();
         });
     }
+
     public function down(): void
     {
         Schema::dropIfExists('transactions');

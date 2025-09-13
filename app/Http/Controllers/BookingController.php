@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Booking;
-use App\Models\RoomType;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
@@ -20,30 +18,13 @@ class BookingController extends Controller
                     $q->where('username', 'like', "%$search%");
                 });
         }
-
-        return $query->paginate(10);
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'room_type_id' => 'required|exists:room_types,id',
-            'check_in' => 'required|date|after_or_equal:today',
-            'check_out' => 'required|date|after:check_in',
-            'total_room' => 'required|integer|min:1'
+        $bookings = $query->orderBy('id', 'desc')->paginate(5)->appends($request->query());
+        return response()->json([
+            'success' => true,
+            'message' => 'List Bookings',
+            'data' => $bookings
         ]);
-
-        $booking = Booking::create([
-            'customer_id' => $request->user()->id,
-            'room_type_id' => $request->room_type_id,
-            'check_in' => $request->check_in,
-            'check_out' => $request->check_out,
-            'total_room' => $request->total_room,
-            'booking_code' => strtoupper(Str::random(8)),
-            'status' => 'pending'
-        ]);
-
-        return response()->json($booking, 201);
+        return view('admin.booking.index', compact('bookings'));
     }
 
     public function show($id)
@@ -60,12 +41,23 @@ class BookingController extends Controller
         $booking = Booking::findOrFail($id);
         $booking->update(['status' => $request->status]);
 
-        return response()->json($booking);
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking status updated',
+            'data' => $booking
+        ]);
+
+        return redirect()->route('bookings.index')->with('success', 'Booking status updated');
     }
 
     public function destroy($id)
     {
-        Booking::destroy($id);
-        return response()->json(['message' => 'Booking deleted']);
+        $booking = Booking::findOrFail($id);
+        $booking->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking deleted'
+        ]);
+        return redirect()->route('bookings.index')->with('success', 'Booking deleted');
     }
 }

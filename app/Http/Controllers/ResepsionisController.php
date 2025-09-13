@@ -10,15 +10,29 @@ class ResepsionisController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->get('search');
         $query = Resepsionis::query();
 
-        if ($search) {
-            $query->where('name', 'like', "%$search%")
-                  ->orWhere('email', 'like', "%$search%");
+        if ($request->filled('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        }
+        if ($request->has('sort')) {
+            $query->orderBy('name', $request->query('sort'));
         }
 
-        return $query->paginate(10);
+        $resepsionis = $query->paginate(10)->appends($request->query());
+
+        return response()->json([
+            'succes' => true,
+            'message' => 'List Resepsionis',
+            'data' => $resepsionis
+        ]);
+
+        return view('admin.resepsionis.index', compact('resepsionis'));
+    }
+
+    public function create()
+    {
+        return view('admin.resepsionis.create');
     }
 
     public function store(Request $request)
@@ -35,30 +49,55 @@ class ResepsionisController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json($resepsionis, 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun Resepsionis Berhasil Ditambahkan',
+            'data' => $resepsionis
+        ]);
+
+        return redirect()->route('resepsionis.index')->with('success', 'Akun resepsionis berhasil ditambahkan!');
     }
 
-    public function show($id)
+    public function edit($id)
     {
-        return Resepsionis::findOrFail($id);
+        $resepsionis = Resepsionis::findOrFail($id);
+        return view('admin.resepsionis.edit', compact('resepsionis'));
     }
 
     public function update(Request $request, $id)
     {
         $resepsionis = Resepsionis::findOrFail($id);
 
-        $resepsionis->update([
-            'name' => $request->name ?? $resepsionis->name,
-            'email' => $request->email ?? $resepsionis->email,
-            'password' => $request->password ? Hash::make($request->password) : $resepsionis->password,
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:resepsionis,email,' . $resepsionis->id,
+            'password' => 'nullable|min:6',
         ]);
 
-        return response()->json($resepsionis);
+        $resepsionis->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->filled('password') ? bcrypt($request->password) : $resepsionis->password,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun Resepsionis Berhasil Diperbarui',
+            'data' => $resepsionis
+        ]);
+
+        return redirect()->route('resepsionis.index')->with('success', 'Akun resepsionis berhasil diperbarui!');
     }
 
     public function destroy($id)
     {
-        Resepsionis::destroy($id);
-        return response()->json(['message' => 'Resepsionis deleted']);
+        $resepsionis = Resepsionis::findOrFail($id);
+        $resepsionis->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun Resepsionis Berhasil Dihapus'
+        ]);
+        return redirect()->route('resepsionis.index')->with('success', 'Akun resepsionis berhasil dihapus!');
     }
 }

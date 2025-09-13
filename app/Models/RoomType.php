@@ -23,6 +23,6 @@ class RoomType extends Model
 
     public function facilities()
     {
-        return $this->hasMany(Facilities::class);
+        return $this->belongsToMany(Facilities::class, 'facility_room_type', 'room_type_id', 'facility_id');
     }
 }

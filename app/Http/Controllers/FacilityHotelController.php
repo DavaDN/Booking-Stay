@@ -14,10 +14,18 @@ class FacilityHotelController extends Controller
 
         if ($search) {
             $query->where('name', 'like', "%$search%")
-                  ->orWhere('description', 'like', "%$search%");
+                ->orWhere('description', 'like', "%$search%");
         }
 
-        return $query->paginate(10);
+        $facility_hotel = $query->paginate(10)->appends($request->query());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'List Facility_$facility_hotel',
+            'data' => $facility_hotel
+        ]);
+
+        return view('admin.facility-hotel.index', compact('facility-hotels'));
     }
 
     public function store(Request $request)
@@ -28,9 +36,15 @@ class FacilityHotelController extends Controller
             'image' => 'nullable|string'
         ]);
 
-        $facility = FacilityHotel::create($request->all());
+        $facility_hotel = FacilityHotel::create($request->all());
 
-        return response()->json($facility, 201);
+        return response()->json([
+            'success' => true,
+            'message' => 'Facility hotel Berhasil Ditambahkan',
+            'data' => $facility_hotel
+        ]);
+
+        return redirect('admin.facility-hotel.index', compact('facility-hotels'));
     }
 
     public function show($id)
@@ -40,15 +54,28 @@ class FacilityHotelController extends Controller
 
     public function update(Request $request, $id)
     {
-        $facility = FacilityHotel::findOrFail($id);
-        $facility->update($request->all());
+        $facility_hotel = FacilityHotel::findOrFail($id);
+        $facility_hotel->update($request->all());
 
-        return response()->json($facility);
+        return response()->json([
+            'success' => true,
+            'message' => 'Facility hotel Berhasil Diperbarui',
+            'data' => $facility_hotel
+        ]);
+
+        return redirect('admin.facility-hotel.index', compact('facility-hotels'));
     }
 
     public function destroy($id)
     {
-        FacilityHotel::destroy($id);
-        return response()->json(['message' => 'Facility hotel deleted']);
+        $facility_hotel = FacilityHotel::findOrFail($id);
+        $facility_hotel->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Facility hotel Berhasil Dihapus'
+        ]);
+
+        return redirect()->route('facility-hotels.index')->with('success', 'Facility hotel berhasil dihapus!');
     }
 }

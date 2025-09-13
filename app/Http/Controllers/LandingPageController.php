@@ -11,13 +11,13 @@ class LandingPageController extends Controller
     public function index()
     {
         $roomTypes = RoomType::with('rooms')->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Landing Page Data',
+            'data' => $roomTypes
+        ]);
+
         return view('landing.index', compact('roomTypes'));
     }
 
-    // API landing page (untuk mobile)
-    public function apiRoomTypes()
-    {
-        $roomTypes = RoomType::with('rooms')->get();
-        return response()->json($roomTypes);
-    }
 }

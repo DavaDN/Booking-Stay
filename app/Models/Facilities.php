@@ -9,14 +9,17 @@ class Facilities extends Model
 {
     use HasFactory;
 
+    protected $table = 'facilities'; // pastikan tabel yg dipakai benar
+
     protected $fillable = [
-        'room_type_id',
         'name',
         'image',
     ];
 
+
     public function roomType()
     {
-        return $this->belongsTo(RoomType::class);
+        return $this->belongsToMany(RoomType::class, 'facility_room_type', 'facility_id', 'room_type_id');
+    
     }
 }

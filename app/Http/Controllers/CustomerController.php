@@ -2,113 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Customer;
 
 class CustomerController extends Controller
 {
-    // Tampilkan form register (opsional: view)
-    public function showRegister()
+    public function index(Request $request)
     {
-        return view('customer.register');
-    }
+        $query = Customer::query();
 
-    // proses register web
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:customers,email',
-            'password' => 'required|min:6|confirmed'
-        ]);
-
-        Customer::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone' => $request->phone ?? null,
-        ]);
-
-        return redirect()->route('customer.login.form')->with('success', 'Registrasi berhasil, silakan login.');
-    }
-
-    // tampilkan form login
-    public function showLogin()
-    {
-        return view('customer.login');
-    }
-
-    // proses login web (session)
-    public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::guard('customer_web')->attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('customer.dashboard'));
+        if ($request->filled('search')) {
+            $query->where('nama', 'like', '%' . $request->search . '%');
+        }
+        if ($request->has('sort')) {
+            $query->orderBy('name', $request->query('sort'));
         }
 
-        return back()->withErrors(['email' => 'Credensial salah'])->withInput();
-    }
+        $customer = $query->paginate(10)->appends($request->query());
 
-    // dashboard contoh
-    public function dashboard()
-    {
-        $customer = Auth::guard('customer_web')->user();
-        return view('customer.dashboard', compact('customer'));
-    }
-
-    // logout
-    public function logout(Request $request)
-    {
-        Auth::guard('customer_web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('customer.login.form');
-    }
-
-    // tampilkan form profile edit
-    public function showProfile()
-    {
-        $customer = Auth::guard('customer_web')->user();
-        return view('customer.profile', compact('customer'));
-    }
-
-    // update profile (web)
-    public function updateProfile(Request $request)
-    {
-        /** @var Customer $customer */
-        $customer = Auth::guard('customer_web')->user();
-
-        $request->validate([
-            'name' => 'required|string|max:255|unique:customers,name,' . $customer->id,
-            'email' => 'required|email|unique:customers,email,' . $customer->id,
-            'password' => 'nullable|min:6|confirmed'
+        return response()->json([
+            'success' => true,
+            'message' => 'List Customers',
+            'data' => $customer
         ]);
 
-        $data = $request->only(['name', 'email', 'phone']);
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        }
-
-        $customer->update($data);
-
-        return back()->with('success', 'Profil berhasil diperbarui.');
+        return view ('admin.customer.index', compact('customers'));
     }
 
-    // delete account (web)
-    public function deleteAccount(Request $request)
-    {
-        /** @var Customer $customer */
-        $customer = Auth::guard('customer_web')->user();
-        Auth::guard('customer_web')->logout();
+    public function destroy($id){
+        $customer = Customer::FindOrFail($id);
         $customer->delete();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('customer.register.form')->with('success', 'Akun dihapus.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Data Customer Berhasil Dihapus'
+        ]);
     }
 }

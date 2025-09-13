@@ -7,8 +7,8 @@ return [
     | Authentication Defaults
     |--------------------------------------------------------------------------
     |
-    | Default guard dan password reset bawaan Laravel.
-    | Diset ke 'web' untuk mencegah error di fitur bawaan.
+    | Guard default yang akan digunakan untuk autentikasi.
+    | Di sini kita set ke 'web' agar tetap kompatibel dengan fitur Laravel bawaan.
     |
     */
 
@@ -22,39 +22,35 @@ return [
     | Authentication Guards
     |--------------------------------------------------------------------------
     |
-    | - web           : Default session untuk admin
-    | - admin         : Session khusus admin
-    | - resepsionis   : Session khusus resepsionis
-    | - customer_web  : Session khusus customer via web
-    | - customer_api  : API token via Sanctum untuk customer (mobile)
+    | - web         : Guard default untuk admin
+    | - admin       : Guard khusus admin (opsional, mirip web)
+    | - resepsionis : Guard khusus resepsionis
+    | - customer    : Guard khusus customer via web
     |
     */
 
     'guards' => [
-        // Default web guard (admin)
+        // Default web guard, diarahkan ke admin
         'web' => [
             'driver' => 'session',
             'provider' => 'admin',
         ],
 
+        // Guard admin
         'admin' => [
             'driver' => 'session',
             'provider' => 'admin',
         ],
 
+        // Guard resepsionis
         'resepsionis' => [
             'driver' => 'session',
             'provider' => 'resepsionis',
         ],
 
-        'customer_web' => [
+        // Guard customer via web
+        'customer' => [
             'driver' => 'session',
-            'provider' => 'customers',
-        ],
-
-        // Guard API untuk customer mobile
-        'customer_api' => [
-            'driver' => 'sanctum',
             'provider' => 'customers',
         ],
     ],
@@ -64,7 +60,8 @@ return [
     | User Providers
     |--------------------------------------------------------------------------
     |
-    | Model yang digunakan untuk tiap tipe user.
+    | Provider menentukan dari mana data user diambil, di sini kita pakai Eloquent.
+    | Setiap role memiliki modelnya sendiri.
     |
     */
 
@@ -90,7 +87,7 @@ return [
     | Resetting Passwords
     |--------------------------------------------------------------------------
     |
-    | Reset password untuk tiap provider user.
+    | Reset password untuk masing-masing provider user.
     |
     */
 
@@ -122,7 +119,7 @@ return [
     | Password Confirmation Timeout
     |--------------------------------------------------------------------------
     |
-    | Timeout konfirmasi password (detik).
+    | Timeout untuk konfirmasi password dalam detik.
     |
     */
 
