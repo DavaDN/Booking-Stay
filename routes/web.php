@@ -158,3 +158,8 @@ Route::prefix('customer')->middleware('auth:customer')->group(function () {
     // Transactions
     Route::resource('transactions', TransactionController::class)->only(['index', 'show', 'store']);
 });
+
+// Customer Auth
+Route::post('customer/login', [CustomerController::class, 'login'])->name('customer.login');
+Route::post('customer/register', [CustomerController::class, 'register'])->name('customer.register');
+Route::post('customer/logout', [CustomerController::class, 'logout'])->name('customer.logout');

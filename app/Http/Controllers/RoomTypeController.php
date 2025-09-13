@@ -107,8 +107,12 @@ class RoomTypeController extends Controller
 
     public function destroy($id)
     {
-        RoomType::destroy($id);
-        return response()->json(['message' => 'Room type deleted']);
+        $roomType = RoomType::findOrFail($id);
+        $roomType->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Room type deleted'
+        ]);
 
         return redirect()->route('room-types.index')->with('success', 'Room type berhasil dihapus.');
     }
