@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Transaction;
 use App\Models\Booking;
 use Illuminate\Http\Request;
@@ -18,8 +19,15 @@ class TransactionController extends Controller
                 $q->where('booking_code', 'like', "%$search%");
             });
         }
+        $transaction = $query->paginate(5)->appends($request->query());
 
-        return $query->paginate(5);
+        return response()->json([
+            'success' => true,
+            'message' => 'List Transactions',
+            'data' => $transaction
+        ]);
+
+        return view('admin.transaction.index', compact('transaction'));
     }
 
     public function store(Request $request)

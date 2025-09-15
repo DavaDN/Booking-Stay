@@ -3,10 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Auth\AdminAuthController;
-use App\Http\Controllers\{
-    LandingPageController,
-    AdminController,
+use App\Http\Controllers\Admin\{
+    AdminAuthController,
     ResepsionisController,
     CustomerController,
     RoomTypeController,
@@ -14,7 +12,17 @@ use App\Http\Controllers\{
     FacilitiesController,
     FacilityHotelController,
     BookingController,
-    TransactionController
+    TransactionController};
+
+use App\Http\Controllers\Customer\{
+    CustomerAuthController,
+    ProfileController,
+    CustomerBookController,
+    CustomerTransactionController,
+    CustomerListRoomTypeController
+    };
+use App\Http\Controllers\{
+    LandingPageController,
 };
 
 Route::get('/csrf-token', function () {
@@ -90,9 +98,6 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
-
-    // Master Data
-    Route::resource('admins', AdminController::class);
 
     // Resepsionis hanya dikelola oleh admin
     Route::resource('resepsionis', ResepsionisController::class);
