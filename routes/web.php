@@ -69,6 +69,7 @@ Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 */
 Route::post('customer/login', [CustomerController::class, 'login'])->name('customer.login');
 Route::post('customer/register', [CustomerController::class, 'register'])->name('customer.register');
+Route::post('customer/verify-otp', [CustomerController::class, 'verifyOtp'])->name('customer.verify-otp');
 Route::post('customer/logout', [CustomerController::class, 'logout'])->name('customer.logout');
 
 /*

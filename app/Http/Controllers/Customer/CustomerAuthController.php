@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
-use Illuminate\Auth\Events\Validated;
 use Illuminate\Http\Request;
 
 class CustomerAuthController extends Controller
