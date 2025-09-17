@@ -24,6 +24,8 @@ use App\Http\Controllers\Customer\{
 use App\Http\Controllers\{
     LandingPageController,
 };
+use App\Models\Customer;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::get('/csrf-token', function () {
     return response()->json(['token' => csrf_token()]);
@@ -157,6 +159,8 @@ Route::prefix('customer')->middleware('auth:customer')->group(function () {
     Route::put('profile', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
     Route::delete('profile', [CustomerController::class, 'deleteAccount'])->name('customer.profile.delete');
 
+
+    Route::get('room-types',[CustomerListRoomTypeController::class, 'index'])->name('customer.list'); 
     // Bookings
     Route::resource('bookings', BookingController::class)->only(['index', 'show', 'store']);
 
@@ -164,7 +168,3 @@ Route::prefix('customer')->middleware('auth:customer')->group(function () {
     Route::resource('transactions', TransactionController::class)->only(['index', 'show', 'store']);
 });
 
-// Customer Auth
-Route::post('customer/login', [CustomerController::class, 'login'])->name('customer.login');
-Route::post('customer/register', [CustomerController::class, 'register'])->name('customer.register');
-Route::post('customer/logout', [CustomerController::class, 'logout'])->name('customer.logout');

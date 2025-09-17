@@ -182,7 +182,7 @@
         <div class="right-panel">
             <h2>Login 
                 Admin&Resepsionis</h2>
-            <form method="POST" action="{{ url('/admin/login') }}">
+            <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="form-group">
                     <input type="email" name="email" placeholder="Email" required>
@@ -196,7 +196,7 @@
                 <button type="submit" class="login-btn">Log in</button>
             </form>
             <div class="register-link">
-                <p>Belum Punya Akun? <a href="{{ route('admin.register') }}">Register</a></p>
+                <p>Belum Punya Akun? <a href="{{ route('register') }}">Register</a></p>
             </div>
         </div>
     </div>

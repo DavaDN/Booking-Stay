@@ -11,6 +11,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->foreignId('room_type_id')->constrained('room_types')->onDelete('cascade');
+            $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
+            $table->integer('guests');
             $table->date('check_in');
             $table->date('check_out');
             $table->integer('total_room');

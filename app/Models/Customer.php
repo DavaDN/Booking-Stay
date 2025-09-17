@@ -14,12 +14,19 @@ class Customer extends Authenticatable
         'name',
         'email',
         'password',
+        'otp_code',
+        'otp_expires_at',
         'phone',
     ];
 
     protected $hidden = [
         'password',
+        'otp_code',
         'remember_token',
+    ];
+
+    protected $casts = [
+        'otp_expires_at' => 'datetime',
     ];
 
     public function bookings()
