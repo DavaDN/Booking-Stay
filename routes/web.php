@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\{
     AdminAuthController,
     ResepsionisController,
@@ -12,7 +11,9 @@ use App\Http\Controllers\Admin\{
     FacilitiesController,
     FacilityHotelController,
     BookingController,
-    TransactionController};
+    TransactionController,
+    HotelController
+};
 
 use App\Http\Controllers\Customer\{
     CustomerAuthController,
@@ -20,12 +21,10 @@ use App\Http\Controllers\Customer\{
     CustomerBookController,
     CustomerTransactionController,
     CustomerListRoomTypeController
-    };
+};
 use App\Http\Controllers\{
     LandingPageController,
 };
-use App\Models\Customer;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 Route::get('/csrf-token', function () {
     return response()->json(['token' => csrf_token()]);
@@ -34,21 +33,44 @@ Route::get('/csrf-token', function () {
 Route::get('/whoami', function () {
     if (Auth::guard('admin')->check()) {
         return response()->json([
-            'guard' => 'admin',
-            'user' => Auth::guard('admin')->user()
+            'Success' => true,
+            'Message' => 'User is logged in',
+            'Data' => [
+                'guard' => 'admin',
+                'user' => Auth::guard('admin')->user()
+            ]
         ]);
     }
 
     if (Auth::guard('resepsionis')->check()) {
         return response()->json([
-            'guard' => 'resepsionis',
-            'user' => Auth::guard('resepsionis')->user()
+            'Success' => true,
+            'Message' => 'User is logged in',
+            'Data' => [
+                'guard' => 'resepsionis',
+                'user' => Auth::guard('resepsionis')->user()
+            ]
+        ]);
+    }
+
+    if (Auth::guard('customer')->check()) {
+        return response()->json([
+            'Success' => true,
+            'Message' => 'User is logged in',
+            'Data' => [
+                'guard' => 'customer',
+                'user' => Auth::guard('customer')->user()
+            ]
         ]);
     }
 
     return response()->json([
-        'guard' => null,
-        'message' => 'Belum login'
+        'Success' => false,
+        'Message' => 'Belum login',
+        'Data' => [
+            'guard' => null,
+        ]
+
     ]);
 });
 
@@ -67,10 +89,10 @@ Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 | Customer Auth (login/register/logout)
 |--------------------------------------------------------------------------
 */
-Route::post('customer/login', [CustomerController::class, 'login'])->name('customer.login');
-Route::post('customer/register', [CustomerController::class, 'register'])->name('customer.register');
-Route::post('customer/verify-otp', [CustomerController::class, 'verifyOtp'])->name('customer.verify-otp');
-Route::post('customer/logout', [CustomerController::class, 'logout'])->name('customer.logout');
+Route::post('customer/login', [CustomerAuthController::class, 'login'])->name('customer.login');
+Route::post('customer/register', [CustomerAuthController::class, 'register'])->name('customer.register');
+Route::post('customer/verify-otp', [CustomerAuthController::class, 'verifyOtp'])->name('customer.verify-otp');
+Route::post('customer/logout', [CustomerAuthController::class, 'logout'])->name('customer.logout');
 
 /*
 |--------------------------------------------------------------------------
@@ -107,6 +129,9 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
     // Customers
     Route::resource('customers', CustomerController::class)->only(['index', 'destroy']);
+
+    // Hotels
+    Route::resource('hotels', HotelController::class);
 
     // Rooms & Room Types
     Route::resource('room-types', RoomTypeController::class);
@@ -156,16 +181,21 @@ Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () 
 */
 Route::prefix('customer')->middleware('auth:customer')->group(function () {
     // Profile
-    Route::get('profile', [CustomerController::class, 'profile'])->name('customer.profile');
-    Route::put('profile', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
-    Route::delete('profile', [CustomerController::class, 'deleteAccount'])->name('customer.profile.delete');
+    Route::get('profile', [ProfileController::class, 'profile'])->name('customer.profile');
+    Route::put('profile', [ProfileController::class, 'updateProfile'])->name('customer.profile.update');
+    Route::delete('profile', [ProfileController::class, 'deleteAccount'])->name('customer.profile.delete');
 
+    // List Hotels
+    Route::get('hotels', [HotelController::class, 'index'])->name('customer.hotels.index');
+    Route::get('hotels/{hotel}', [HotelController::class, 'show'])->name('customer.hotels.show');
 
-    Route::get('room-types',[CustomerListRoomTypeController::class, 'index'])->name('customer.list'); 
+    // List Room Types
+    Route::get('room-types', [CustomerListRoomTypeController::class, 'index'])->name('customer.list');
+    Route::get('room-types/{roomType}', [CustomerListRoomTypeController::class, 'show'])->name('customer.list.show');
+    
     // Bookings
-    Route::resource('bookings', BookingController::class)->only(['index', 'show', 'store']);
+    Route::resource('bookings', CustomerBookController::class)->only(['index', 'show', 'store']);
 
     // Transactions
-    Route::resource('transactions', TransactionController::class)->only(['index', 'show', 'store']);
+    Route::resource('transactions', CustomerTransactionController::class)->only(['index', 'show', 'store']);
 });
-

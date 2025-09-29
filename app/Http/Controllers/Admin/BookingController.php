@@ -25,7 +25,7 @@ class BookingController extends Controller
             'message' => 'List Bookings',
             'data' => $bookings
         ]);
-        return view('admin.booking.index', compact('bookings'));
+        return view('admin.booking', compact('bookings'));
     }
 
     public function show($id)

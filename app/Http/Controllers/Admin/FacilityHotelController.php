@@ -26,7 +26,7 @@ class FacilityHotelController extends Controller
             'data' => $facility_hotel
         ]);
 
-        return view('admin.facility-hotel.index', compact('facility-hotels'));
+        return view('admin.facility-hotel', compact('facility-hotels'));
     }
 
     public function store(Request $request)
@@ -45,7 +45,7 @@ class FacilityHotelController extends Controller
             'data' => $facility_hotel
         ]);
 
-        return redirect('admin.facility-hotel.index', compact('facility-hotels'));
+        return redirect('facility-hotel.index', compact('facility-hotels'));
     }
 
     public function show($id)
@@ -64,7 +64,7 @@ class FacilityHotelController extends Controller
             'data' => $facility_hotel
         ]);
 
-        return redirect('admin.facility-hotel.index', compact('facility-hotels'));
+        return redirect('facility-hotel.index', compact('facility-hotels'));
     }
 
     public function destroy($id)

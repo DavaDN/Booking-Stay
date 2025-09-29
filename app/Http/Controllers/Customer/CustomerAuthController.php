@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Customer;
 
 use App\Models\Customer;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
@@ -11,13 +12,16 @@ use Illuminate\Http\Request;
 
 class CustomerAuthController extends Controller
 {
+    /**
+     * Registrasi Customer Baru
+     */
     public function register(Request $request)
     {
         $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|string|email|max:255|unique:customers',
             'password'    => 'required|string|min:6',
-            'phone'       => 'required|integer|max:20',
+            'phone'       => 'required|string|max:20',
         ]);
 
         $customer = Customer::create([
@@ -27,12 +31,13 @@ class CustomerAuthController extends Controller
             'phone'       => $request->phone,
         ]);
 
+        // Generate OTP
         $otp = rand(100000, 999999);
         $customer->otp = $otp;
         $customer->otp_expires_at = Carbon::now()->addMinutes(5);
         $customer->save();
 
-        // kirim OTP via email
+        // Kirim OTP via email
         Mail::raw("Jangan diberikan kepada siapapun! 
         Kode OTP Anda adalah: $otp", function ($msg) use ($customer) {
             $msg->to($customer->email)->subject('OTP Register BookingStay');
@@ -40,60 +45,80 @@ class CustomerAuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'OTP dikirim ke email'
+            'message' => 'OTP dikirim ke email untuk verifikasi'
         ]);
-
-        return redirect()->route('customer.verify-otp')->with('success', 'Registerasi Berhasil. Silahkan Verifikasi Otp');
     }
 
+    /**
+     * Verifikasi OTP Setelah Registrasi
+     */
     public function verifyOtp(Request $request)
     {
+        $request->validate([
+            'email' => 'required|email',
+            'otp'   => 'required|numeric',
+        ]);
+
         $customer = Customer::where('email', $request->email)->first();
+
         if (!$customer || $customer->otp != $request->otp || Carbon::now()->gt($customer->otp_expires_at)) {
             return response()->json([
-                'success' => true,
-                'message' => 'OTP tidak valid atau kadaluarsa'
+                'success' => false,
+                'message' => 'OTP tidak valid atau sudah kadaluarsa'
             ], 401);
         }
-        $token = $customer->createToken('auth_token')->plainTextToken;
+
+        // Reset OTP
         $customer->otp = null;
         $customer->otp_expires_at = null;
         $customer->save();
+
         return response()->json([
             'success' => true,
-            'message' => 'Verifikasi Otp Berhasil',
-            'data' => ['token' => $token]
+            'message' => 'Verifikasi OTP berhasil, silakan login'
         ]);
-
-        return redirect()->route('customer.list')->with('success', 'Verifikasi Otp Berhasil');
     }
 
+    /**
+     * Login Customer menggunakan session Laravel
+     */
     public function login(Request $request)
     {
-        $customer = Customer::where('email', $request->email)->first();
-        if (!$customer || !Hash::check($request->password, $customer->password)) {
-            return response()->json(['message' => 'Email atau password salah'], 401);
-        }
-        $token = $customer->createToken('auth_token')->plainTextToken;
-        $customer->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Login berhasil',
-            'data' => ['token' => $token]
+        $credentials = $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required'
         ]);
 
-        return redirect()->route('customer.list')->with('success', 'Login Berhasil');
+        // Gunakan guard customer
+        if (Auth::guard('customer')->attempt($credentials)) {
+            $request->session()->regenerate();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login berhasil',
+                'user'    => Auth::guard('customer')->user()
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Email atau password salah'
+        ], 401);
     }
 
+    /**
+     * Logout Customer
+     */
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        Auth::guard('customer')->logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return response()->json([
             'success' => true,
             'message' => 'Logout berhasil'
         ]);
-
-        return redirect()->route('customer.login')->with('Succes', 'Logout Berhasil');
     }
 }

@@ -39,4 +39,17 @@ class CustomerListRoomTypeController extends Controller
 
         return view('customer.list', compact('roomTypes', 'totalRooms', 'availableRooms', 'facilities'));
     }
+
+    public function show($id)
+    {
+        $roomType = RoomType::with(['rooms', 'facilities'])->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Detail Room Type',
+            'data' => $roomType
+        ]);
+
+        return view('customer.list-show', compact('roomType'));
+    }
 }
