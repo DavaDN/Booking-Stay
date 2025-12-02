@@ -47,6 +47,8 @@ class CustomerAuthController extends Controller
             'success' => true,
             'message' => 'OTP dikirim ke email untuk verifikasi'
         ]);
+
+        return redirect()->route('customer.auth.verify-otp')->with('success', 'Registrasi berhasil! Silakan cek email Anda untuk OTP verifikasi.');
     }
 
     /**
@@ -77,6 +79,7 @@ class CustomerAuthController extends Controller
             'success' => true,
             'message' => 'Verifikasi OTP berhasil, silakan login'
         ]);
+        return redirect()->route('customer.home')->with('success', 'Verifikasi OTP berhasil, silakan login.');
     }
 
     /**
@@ -98,12 +101,18 @@ class CustomerAuthController extends Controller
                 'message' => 'Login berhasil',
                 'user'    => Auth::guard('customer')->user()
             ]);
+
+            return redirect()->route('customer.home')->with('success', 'Login berhasil');
         }
 
         return response()->json([
             'success' => false,
             'message' => 'Email atau password salah'
         ], 401);
+
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ]);
     }
 
     /**
@@ -120,5 +129,6 @@ class CustomerAuthController extends Controller
             'success' => true,
             'message' => 'Logout berhasil'
         ]);
+        return redirect()->route('landing.index')->with('success', 'Logout berhasil');
     }
 }

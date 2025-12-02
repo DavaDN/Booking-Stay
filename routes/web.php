@@ -186,12 +186,12 @@ Route::prefix('customer')->middleware('auth:customer')->group(function () {
     Route::delete('profile', [ProfileController::class, 'deleteAccount'])->name('customer.profile.delete');
 
     // List Hotels
-    Route::get('hotels', [HotelController::class, 'index'])->name('customer.hotels.index');
-    Route::get('hotels/{hotel}', [HotelController::class, 'show'])->name('customer.hotels.show');
+    Route::get('home', [HotelController::class, 'index'])->name('customer.hotels.index');
+    Route::get('home/{id}', [HotelController::class, 'show'])->name('customer.hotels.show');
 
     // List Room Types
-    Route::get('room-types', [CustomerListRoomTypeController::class, 'index'])->name('customer.list');
-    Route::get('room-types/{roomType}', [CustomerListRoomTypeController::class, 'show'])->name('customer.list.show');
+    Route::get('list', [CustomerListRoomTypeController::class, 'index'])->name('customer.list');
+    Route::get('list/{id}', [CustomerListRoomTypeController::class, 'show'])->name('customer.list.show');
     
     // Bookings
     Route::resource('bookings', CustomerBookController::class)->only(['index', 'show', 'store']);

@@ -32,7 +32,7 @@ class CustomerListHotelController extends Controller
             ]
         ]);
 
-        return view('customer.list', compact('hotels', 'facilityhotel'));
+        return view('customer.home', compact('hotels', 'facilityhotel'));
     }
 
     public function show($id)
@@ -44,6 +44,6 @@ class CustomerListHotelController extends Controller
             'data' => $hotel
         ]);
 
-        return view('customer.list-show', compact('hotel'));
+        return view('customer.hotels-show', compact('hotel'));
     }
 }
