@@ -5,12 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Voucher extends Model
+class Discount extends Model
 {
     use HasFactory;
-    protected $table = 'voucher';
 
-    protected $fillable = ['code', 'discount', 'expired_at'];
+    protected $fillable = ['name', 'percentage', 'max_amount', 'min_purchase'];
 
     protected $casts = ['expired_at' => 'datetime',];
 }

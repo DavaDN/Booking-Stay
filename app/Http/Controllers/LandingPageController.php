@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\RoomType;
+use App\Models\Hotel;
 use Illuminate\Http\Request;
 
 class LandingPageController extends Controller
@@ -10,14 +10,14 @@ class LandingPageController extends Controller
     // Web landing page
     public function index()
     {
-        $roomTypes = RoomType::with('rooms')->get();
+        $hotels = Hotel::with('rooms')->get();
         return response()->json([
             'success' => true,
             'message' => 'Landing Page Data',
-            'data' => $roomTypes
+            'data' => $hotels
         ]);
 
-        return view('landing.index', compact('roomTypes'));
+        return view('landing.index', compact('hotels'));
     }
 
 }
