@@ -27,7 +27,7 @@ class CustomerController extends Controller
             'data' => $customer
         ]);
 
-        return view ('admin.customer.index', compact('customers'));
+        return view ('admin.customer', compact('customers'));
     }
 
     public function destroy($id){
@@ -38,5 +38,7 @@ class CustomerController extends Controller
             'success' => true,
             'message' => 'Data Customer Berhasil Dihapus'
         ]);
+
+        return redirect()->route('customers.index')->with('success', 'Data customer berhasil dihapus!');
     }
 }

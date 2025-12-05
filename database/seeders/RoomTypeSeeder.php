@@ -14,6 +14,7 @@ class RoomTypeSeeder extends Seeder
             'price' => 500000,
             'capacity' => 2,
             'description' => 'Kamar luas dengan fasilitas lengkap untuk dua orang.'
+            
         ]);
 
         RoomType::create([

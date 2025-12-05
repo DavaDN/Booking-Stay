@@ -25,4 +25,9 @@ class RoomType extends Model
     {
         return $this->belongsToMany(Facilities::class, 'facility_room_type', 'room_type_id', 'facility_id');
     }
+
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class);
+    }
 }
