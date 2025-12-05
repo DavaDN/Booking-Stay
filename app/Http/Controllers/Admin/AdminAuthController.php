@@ -88,11 +88,6 @@ class AdminAuthController extends Controller
 
         Auth::guard('admin')->login($admin);
 
-        return response()->json([
-            'succes' => true,
-            'message' => 'Registrasi Berhasil',
-            'Data' => $admin
-        ]);
 
         return redirect('/admin/dashboard')->with('success', 'Registrasi berhasil!');
     }

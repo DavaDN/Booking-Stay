@@ -181,7 +181,7 @@
         </div>
         <div class="right-panel">
             <h2>Register</h2>
-            <form method="POST" action="{{ url('/admin/register') }}">
+            <form method="POST" action="{{ route('register') }}">
                 @csrf
                 <div class="form-group">
                     <input type="text" name="name" placeholder="Nama" required>
@@ -204,7 +204,7 @@
                 <button type="submit" class="register-btn">Register</button>
             </form>
             <div class="login-link">
-                <p>Sudah punya akun? <a href="{{ route('admin.login') }}">Login</a></p>
+                <p>Sudah punya akun? <a href="{{ route('login') }}">Login</a></p>
             </div>
         </div>
     </div>

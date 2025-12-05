@@ -448,7 +448,7 @@
             </div>
 
             <div class="logout-btn">
-                <form method="POST" action="{{ route('admin.logout') }}">
+                <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="btn btn-danger w-100 btn-sm">
                         <i class="fas fa-sign-out-alt"></i> <span>Sign Out</span>
