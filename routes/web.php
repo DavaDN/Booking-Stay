@@ -20,7 +20,13 @@ use App\Http\Controllers\Customer\{
     ProfileController,
     CustomerBookController,
     CustomerTransactionController,
-    CustomerListRoomTypeController
+    CustomerListRoomTypeController,
+    CustomerListHotelController,
+    
+
+};
+use App\Http\Controllers\Resepsionis\{
+    DashboardController
 };
 use App\Http\Controllers\{
     LandingPageController,
@@ -89,10 +95,15 @@ Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 | Customer Auth (login/register/logout)
 |--------------------------------------------------------------------------
 */
-Route::post('customer/login', [CustomerAuthController::class, 'login'])->name('customer.login');
-Route::post('customer/register', [CustomerAuthController::class, 'register'])->name('customer.register');
-Route::post('customer/verify-otp', [CustomerAuthController::class, 'verifyOtp'])->name('customer.verify-otp');
-Route::post('customer/logout', [CustomerAuthController::class, 'logout'])->name('customer.logout');
+Route::get('customer/login', [\App\Http\Controllers\CustomerAuthController::class, 'showLoginForm'])->name('customer.login.form');
+Route::get('customer/register', [\App\Http\Controllers\CustomerAuthController::class, 'showRegisterForm'])->name('customer.register.form');
+
+
+
+Route::post('customer/login', [\App\Http\Controllers\CustomerAuthController::class, 'login'])->name('customer.login');
+Route::post('customer/register', [\App\Http\Controllers\CustomerAuthController::class, 'register'])->name('customer.register');
+Route::post('customer/verify-otp', [\App\Http\Controllers\CustomerAuthController::class, 'verifyOtp'])->name('customer.verify-otp');
+Route::post('customer/logout', [\App\Http\Controllers\CustomerAuthController::class, 'logout'])->name('customer.logout');
 
 /*
 |--------------------------------------------------------------------------
@@ -161,9 +172,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 */
 Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () {
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('resepsionis.dashboard');
-    })->name('resepsionis.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('resepsionis.dashboard');
 
     // Booking (index, show, update)
     Route::resource('bookings', BookingController::class)->only(['index', 'show', 'update']);
@@ -186,16 +195,16 @@ Route::prefix('customer')->middleware('auth:customer')->group(function () {
     Route::delete('profile', [ProfileController::class, 'deleteAccount'])->name('customer.profile.delete');
 
     // List Hotels
-    Route::get('home', [HotelController::class, 'index'])->name('customer.hotels.index');
-    Route::get('home/{id}', [HotelController::class, 'show'])->name('customer.hotels.show');
+    Route::get('home', [CustomerListHotelController::class, 'index'])->name('customer.hotels.index');
+    Route::get('home/{id}', [CustomerListHotelController::class, 'show'])->name('customer.hotels.show');
 
     // List Room Types
     Route::get('list', [CustomerListRoomTypeController::class, 'index'])->name('customer.list');
     Route::get('list/{id}', [CustomerListRoomTypeController::class, 'show'])->name('customer.list.show');
     
     // Bookings
-    Route::resource('bookings', CustomerBookController::class)->only(['index', 'show', 'store']);
+    Route::resource('bookings', CustomerBookController::class)->only(['index', 'show', 'create', 'store']);
 
     // Transactions
-    Route::resource('transactions', CustomerTransactionController::class)->only(['index', 'show', 'store']);
+    Route::resource('transactions', CustomerTransactionController::class)->only(['index', 'show', 'create', 'store']);
 });

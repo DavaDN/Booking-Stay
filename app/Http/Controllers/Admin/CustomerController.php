@@ -21,11 +21,6 @@ class CustomerController extends Controller
 
         $customer = $query->paginate(10)->appends($request->query());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List Customers',
-            'data' => $customer
-        ]);
 
         return view ('admin.customer', compact('customers'));
     }
@@ -33,11 +28,6 @@ class CustomerController extends Controller
     public function destroy($id){
         $customer = Customer::FindOrFail($id);
         $customer->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data Customer Berhasil Dihapus'
-        ]);
 
         return redirect()->route('customers.index')->with('success', 'Data customer berhasil dihapus!');
     }

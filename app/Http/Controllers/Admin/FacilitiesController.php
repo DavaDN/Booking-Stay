@@ -24,12 +24,6 @@ class FacilitiesController extends Controller
 
         $facilities = $query->paginate(10)->appends($request->query());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List Facilities',
-            'data' => $facilities
-        ]);
-
         return view('admin.facilities', compact('facilities'));
     }
 
@@ -49,12 +43,6 @@ class FacilitiesController extends Controller
         }
 
         $facility = Facilities::create($request->all());
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Facility berhasil ditambahkan.',
-            'data' => $facility
-        ]);
 
         return $facility
             ? redirect()->route('facilities.index')->with('success', 'Facility berhasil ditambahkan.')
@@ -92,12 +80,6 @@ class FacilitiesController extends Controller
 
         $facility->update($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Facility berhasil diperbarui.',
-            'data' => $facility
-        ]);
-
         return redirect()->route('facilities.index')->with('success', 'Facility berhasil diperbarui.');
     }
 
@@ -114,11 +96,6 @@ class FacilitiesController extends Controller
         }
 
         $facility->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Facility berhasil dihapus.'
-        ]);
 
         return redirect()->route('facilities.index')->with('success', 'Facility berhasil dihapus.');
     }

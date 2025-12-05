@@ -27,15 +27,6 @@ class CustomerListRoomTypeController extends Controller
 
         $facilities = Facilities::all();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List Room Types',
-            'data' => [
-                'Room_Type' => $roomTypes,
-                'total_rooms' => $totalRooms,
-                'available_rooms' => $availableRooms,
-            ]
-        ]);
 
         return view('customer.list', compact('roomTypes', 'totalRooms', 'availableRooms', 'facilities'));
     }
@@ -44,11 +35,6 @@ class CustomerListRoomTypeController extends Controller
     {
         $roomType = RoomType::with(['rooms', 'facilities'])->findOrFail($id);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Detail Room Type',
-            'data' => $roomType
-        ]);
 
         return view('customer.list-show', compact('roomType'));
     }

@@ -21,11 +21,6 @@ class TransactionController extends Controller
         }
         $transaction = $query->paginate(5)->appends($request->query());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List Transactions',
-            'data' => $transaction
-        ]);
 
         return view('admin.transaction.index', compact('transaction'));
     }

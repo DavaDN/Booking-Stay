@@ -20,11 +20,6 @@ class HotelController extends Controller
 
         $hotel = $query->paginate(10)->appends($request->query());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List Hotel',
-            'data' => $hotel
-        ]);
 
         return view('admin.hotel', compact('hotel'));
     }
@@ -49,11 +44,6 @@ class HotelController extends Controller
             $hotel->facilities()->sync($request->facilities);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Hotel berhasil ditambahkan.',
-            'data' => $hotel
-        ]);
 
         return $hotel
             ? redirect()->route('hotels.index')->with('success', 'Hotel berhasil ditambahkan.')
@@ -88,12 +78,6 @@ class HotelController extends Controller
             $hotel->facilities()->sync($request->facilities);
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Hotel berhasil diperbarui.',
-            'data' => $hotel
-        ]);
-
         return $hotel
             ? redirect()->route('hotels.index')->with('success', 'Hotel berhasil diperbarui.')
             : redirect()->back()->with('error', 'Gagal memperbarui hotel. Silakan coba lagi.');
@@ -103,11 +87,6 @@ class HotelController extends Controller
     {
         $hotel = Hotel::findOrFail($id);
         $hotel->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Hotel berhasil dihapus.'
-        ]);
 
         return redirect()->route('hotels.index')->with('success', 'Hotel berhasil dihapus.');
     }

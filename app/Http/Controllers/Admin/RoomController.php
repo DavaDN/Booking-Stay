@@ -22,11 +22,6 @@ class RoomController extends Controller
 
         $rooms = $query->paginate(10)->appends($request->query());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List Rooms',
-            'data' => $rooms
-        ]);
 
         return view('admin.room', compact('rooms'));
     }
@@ -42,11 +37,6 @@ class RoomController extends Controller
 
         $room = Room::create($request->all());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Room berhasil ditambahkan',
-            'data' => $room
-        ]);
 
         return redirect()->route('rooms.index')->with('success', 'Room berhasil ditambahkan');
     }
@@ -61,11 +51,6 @@ class RoomController extends Controller
         $room = Room::findOrFail($id);
         $room->update($request->all());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Room berhasil diperbarui',
-            'data' => $room
-        ]);
 
         return redirect()->route('rooms.index')->with('success', 'Room berhasil diperbarui');
     }
@@ -74,11 +59,6 @@ class RoomController extends Controller
     {
         $room = Room::findOrFail($id);
         $room->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Room berhasil dihapus'
-        ]);
 
         return redirect()->route('rooms.index')->with('success', 'Room berhasil dihapus');
     }

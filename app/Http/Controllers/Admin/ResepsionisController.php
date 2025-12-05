@@ -22,12 +22,6 @@ class ResepsionisController extends Controller
 
         $resepsionis = $query->paginate(10)->appends($request->query());
 
-        return response()->json([
-            'succes' => true,
-            'message' => 'List Resepsionis',
-            'data' => $resepsionis
-        ]);
-
         return view('admin.resepsionis.index', compact('resepsionis'));
     }
 
@@ -50,11 +44,6 @@ class ResepsionisController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Akun Resepsionis Berhasil Ditambahkan',
-            'data' => $resepsionis
-        ]);
 
         return redirect()->route('resepsionis.index')->with('success', 'Akun resepsionis berhasil ditambahkan!');
     }
@@ -81,11 +70,6 @@ class ResepsionisController extends Controller
             'password' => $request->filled('password') ? bcrypt($request->password) : $resepsionis->password,
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Akun Resepsionis Berhasil Diperbarui',
-            'data' => $resepsionis
-        ]);
 
         return redirect()->route('resepsionis.index')->with('success', 'Akun resepsionis berhasil diperbarui!');
     }
@@ -95,10 +79,6 @@ class ResepsionisController extends Controller
         $resepsionis = Resepsionis::findOrFail($id);
         $resepsionis->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Akun Resepsionis Berhasil Dihapus'
-        ]);
         return redirect()->route('resepsionis.index')->with('success', 'Akun resepsionis berhasil dihapus!');
     }
 }

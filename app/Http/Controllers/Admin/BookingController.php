@@ -20,11 +20,7 @@ class BookingController extends Controller
                 });
         }
         $bookings = $query->orderBy('id', 'desc')->paginate(5)->appends($request->query());
-        return response()->json([
-            'success' => true,
-            'message' => 'List Bookings',
-            'data' => $bookings
-        ]);
+
         return view('admin.booking', compact('bookings'));
     }
 
@@ -42,11 +38,6 @@ class BookingController extends Controller
         $booking = Booking::findOrFail($id);
         $booking->update(['status' => $request->status]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking status updated',
-            'data' => $booking
-        ]);
 
         return redirect()->route('bookings.index')->with('success', 'Booking status updated');
     }
@@ -55,10 +46,7 @@ class BookingController extends Controller
     {
         $booking = Booking::findOrFail($id);
         $booking->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking deleted'
-        ]);
+        
         return redirect()->route('bookings.index')->with('success', 'Booking deleted');
     }
 }

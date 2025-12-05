@@ -27,16 +27,6 @@ class RoomTypeController extends Controller
 
         $facilities = Facilities::all();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List Room Types',
-            'data' => [
-                'Room_Type' => $roomTypes,
-                'total_rooms' => $totalRooms,
-                'available_rooms' => $availableRooms,
-            ]
-        ]);
-
         return view('admin.room-type', compact('roomTypes', 'totalRooms', 'availableRooms', 'facilities'));
     }
 
@@ -64,11 +54,6 @@ class RoomTypeController extends Controller
         $roomType = RoomType::create($request->only(['name', 'price', 'capacity', 'description']));
         $roomType->facilities()->attach($request->facility_ids);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Room type created',
-            'data' => $roomType->load('facilities')
-        ]);
 
         return redirect()->route('room-types.index')->with('success', 'Room type berhasil ditambahkan.');
     }
@@ -97,11 +82,6 @@ class RoomTypeController extends Controller
         if ($request->has('facility_ids')) {
             $roomType->facilities()->sync($request->facility_ids);
         }
-        return response()->json([
-            'success' => true,
-            'message' => 'Room type updated',
-            'data' => $roomType->load('facilities')
-        ]);
         return redirect()->route('room-types.index')->with('success', 'Room type berhasil diperbarui.');
     }
 
@@ -110,10 +90,6 @@ class RoomTypeController extends Controller
     {
         $roomType = RoomType::findOrFail($id);
         $roomType->delete();
-        return response()->json([
-            'success' => true,
-            'message' => 'Room type deleted'
-        ]);
 
         return redirect()->route('room-types.index')->with('success', 'Room type berhasil dihapus.');
     }

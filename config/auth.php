@@ -49,7 +49,7 @@ return [
         ],
 
         // Guard customer via web
-        'customer' => [
+        'customer_web' => [
             'driver' => 'session',
             'provider' => 'customers',
         ],

@@ -23,27 +23,15 @@ class CustomerListHotelController extends Controller
 
         $facilityhotel = FacilityHotel::all();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List Room Types',
-            'data' => [
-                'Hotels' => $hotels,
-                'Facility_Hotel' => $facilityhotel,
-            ]
-        ]);
 
         return view('customer.home', compact('hotels', 'facilityhotel'));
     }
 
     public function show($id)
     {
-        $hotel = Hotel::with('facility')->findOrFail($id);
-        return response()->json([
-            'success' => true,
-            'message' => 'Detail Hotel',
-            'data' => $hotel
-        ]);
+        $hotel = Hotel::with(['rooms', 'facilities'])->findOrFail($id);
+        $facilityhotel = FacilityHotel::all();
 
-        return view('customer.hotels-show', compact('hotel'));
+        return view('customer.hotels-show', compact('hotel', 'facilityhotel'));
     }
 }
