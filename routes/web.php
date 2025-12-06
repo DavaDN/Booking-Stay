@@ -95,15 +95,15 @@ Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 | Customer Auth (login/register/logout)
 |--------------------------------------------------------------------------
 */
-Route::get('customer/login', [\App\Http\Controllers\CustomerAuthController::class, 'showLoginForm'])->name('customer.login.form');
-Route::get('customer/register', [\App\Http\Controllers\CustomerAuthController::class, 'showRegisterForm'])->name('customer.register.form');
+Route::get('customer/login', [CustomerAuthController::class, 'showLoginForm'])->name('customer.login.form');
+Route::get('customer/register', [CustomerAuthController::class, 'showRegisterForm'])->name('customer.register.form');
 
 
 
-Route::post('customer/login', [\App\Http\Controllers\CustomerAuthController::class, 'login'])->name('customer.login');
-Route::post('customer/register', [\App\Http\Controllers\CustomerAuthController::class, 'register'])->name('customer.register');
-Route::post('customer/verify-otp', [\App\Http\Controllers\CustomerAuthController::class, 'verifyOtp'])->name('customer.verify-otp');
-Route::post('customer/logout', [\App\Http\Controllers\CustomerAuthController::class, 'logout'])->name('customer.logout');
+Route::post('customer/login', [CustomerAuthController::class, 'login'])->name('customer.login');
+Route::post('customer/register', [CustomerAuthController::class, 'register'])->name('customer.register');
+Route::post('customer/verify-otp', [CustomerAuthController::class, 'verifyOtp'])->name('customer.verify-otp');
+Route::post('customer/logout', [CustomerAuthController::class, 'logout'])->name('customer.logout');
 
 /*
 |--------------------------------------------------------------------------

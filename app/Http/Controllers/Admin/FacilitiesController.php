@@ -9,94 +9,66 @@ use Illuminate\Support\Facades\Storage;
 
 class FacilitiesController extends Controller
 {
-    /**
-     * Menampilkan daftar fasilitas dengan fitur pencarian & pagination
-     */
-    public function index(Request $request)
+    public function index()
     {
-        $search = $request->get('search');
-
-        $query = Facilities::query();
-
-        if ($search) {
-            $query->where('name', 'like', "%{$search}%");
-        }
-
-        $facilities = $query->paginate(10)->appends($request->query());
-
+        $facilities = Facilities::all();
         return view('admin.facilities', compact('facilities'));
     }
 
-    /**
-     * Menyimpan fasilitas baru
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'name' => 'required|string|max:100',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // Jika ada file gambar, simpan ke storage
+        $data = $request->only('name');
+
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('facilities', 'public');
         }
 
-        $facility = Facilities::create($request->all());
+        Facilities::create($data);
 
-        return $facility
-            ? redirect()->route('facilities.index')->with('success', 'Facility berhasil ditambahkan.')
-            : back()->with('error', 'Gagal menambahkan facility.');
+        return redirect()->route('admin.facilities')->with('success', 'Fasilitas berhasil ditambahkan!');
     }
 
-    /**
-     * Menampilkan detail fasilitas
-     */
-    public function show($id)
-    {
-        return Facilities::findOrFail($id);
-    }
-
-    /**
-     * Update fasilitas
-     */
     public function update(Request $request, $id)
     {
+        $facilities = Facilities::findOrFail($id);
+
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'name' => 'required|string|max:100',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $facility = Facilities::findOrFail($id);
-        $data = ['name' => $request->name];
+        $data = $request->only('name');
 
-        // Jika ada file baru, hapus file lama dan upload yang baru
         if ($request->hasFile('image')) {
-            if ($facility->image) {
-                Storage::disk('public')->delete($facility->image);
+            // Hapus gambar lama
+            if ($facilities->image && Storage::disk('public')->exists($facilities->image)) {
+                Storage::disk('public')->delete($facilities->image);
             }
+
+            // Simpan gambar baru
             $data['image'] = $request->file('image')->store('facilities', 'public');
         }
 
-        $facility->update($data);
+        $facilities->update($data);
 
-        return redirect()->route('facilities.index')->with('success', 'Facility berhasil diperbarui.');
+        return redirect()->route('admin.facilities')->with('success', 'Fasilitas berhasil diperbarui!');
     }
 
-    /**
-     * Hapus fasilitas
-     */
     public function destroy($id)
     {
         $facility = Facilities::findOrFail($id);
 
-        // Hapus gambar jika ada
-        if ($facility->image) {
+        if ($facility->image && Storage::disk('public')->exists($facility->image)) {
             Storage::disk('public')->delete($facility->image);
         }
 
         $facility->delete();
 
-        return redirect()->route('facilities.index')->with('success', 'Facility berhasil dihapus.');
+        return redirect()->route('admin.facilities')->with('success', 'Fasilitas berhasil dihapus!');
     }
 }

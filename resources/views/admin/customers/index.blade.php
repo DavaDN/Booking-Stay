@@ -99,7 +99,7 @@
 </div>
 
 <div class="table-container">
-    @if ($customer->count() > 0)
+    @if ($customers->count() > 0)
         <table class="table">
             <thead>
                 <tr>
@@ -112,13 +112,13 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($customer as $item)
+                @foreach ($customers as $item)
                     <tr>
                         <td>#{{ $item->id }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->email }}</td>
                         <td>{{ $item->phone ?? '-' }}</td>
-                        <td>{{ $item->created_at->format('d/m/Y') }}</td>
+                        <td>{{ $item->created_at ? $item->created_at->format('d/m/Y') : '-' }}</td>
                         <td>
                             <form action="{{ route('customers.destroy', $item->id) }}" method="POST" style="display: inline;">
                                 @csrf
@@ -134,7 +134,7 @@
         </table>
 
         <div class="d-flex justify-content-end">
-            {{ $customer->links() }}
+            {{ $customers->links() }}
         </div>
     @else
         <div class="no-data">

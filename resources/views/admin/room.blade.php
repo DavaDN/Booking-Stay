@@ -128,7 +128,7 @@
                         </span>
                     </div>
                     <p class="text-muted mb-1">
-                        Lantai {{ substr($room->number, 0, 1) }} • {{ $room->roomType->name ?? '-' }}
+                        Lantai {{ $room->floor }} • {{ $room->roomType->name ?? '-' }}
                     </p>
                     <div class="room-footer">
                         <button class="btn-edit" onclick="openEditModal('{{ $room->id }}')">
@@ -159,6 +159,12 @@
                 <label class="form-label">Nomor Kamar</label>
                 <input type="text" name="number" class="form-control" required>
             </div>
+
+            <div class="mb-3">
+                <label class="form-label">Lantai</label>
+                <input type="number" name="floor" class="form-control" required min="1">
+            </div>
+
             <div class="mb-3">
                 <label class="form-label">Tipe Kamar</label>
                 <select name="room_type_id" class="form-control" required>
@@ -168,6 +174,7 @@
                     @endforeach
                 </select>
             </div>
+
             <div class="mb-3">
                 <label class="form-label">Status</label>
                 <select name="status" class="form-control" required>
@@ -176,6 +183,7 @@
                     <option value="maintenance">Maintenance</option>
                 </select>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="closeAddModal()">Batal</button>
                 <button type="submit" class="btn-primary">Simpan</button>
@@ -195,10 +203,17 @@
             @csrf
             @method('PUT')
             <input type="hidden" name="id" id="editRoomId">
+
             <div class="mb-3">
                 <label class="form-label">Nomor Kamar</label>
                 <input type="text" name="number" id="editNumber" class="form-control" required>
             </div>
+
+            <div class="mb-3">
+                <label class="form-label">Lantai</label>
+                <input type="number" name="floor" id="editFloor" class="form-control" required min="1">
+            </div>
+
             <div class="mb-3">
                 <label class="form-label">Tipe Kamar</label>
                 <select name="room_type_id" id="editRoomType" class="form-control" required>
@@ -208,6 +223,7 @@
                     @endforeach
                 </select>
             </div>
+
             <div class="mb-3">
                 <label class="form-label">Status</label>
                 <select name="status" id="editStatus" class="form-control" required>
@@ -216,6 +232,7 @@
                     <option value="maintenance">Maintenance</option>
                 </select>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn-secondary" onclick="closeEditModal()">Batal</button>
                 <button type="submit" class="btn-primary">Update</button>
@@ -259,6 +276,7 @@
 
         document.getElementById("editRoomId").value = data.id;
         document.getElementById("editNumber").value = data.number;
+        document.getElementById("editFloor").value = data.floor;
         document.getElementById("editRoomType").value = data.room_type_id;
         document.getElementById("editStatus").value = data.status;
 

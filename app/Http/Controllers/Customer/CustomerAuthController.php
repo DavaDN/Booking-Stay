@@ -1,114 +1,143 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Customer;
 
+use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class CustomerAuthController extends Controller
 {
-    // Tampilkan form register (opsional: view)
-    public function showRegister()
+    /**
+     * Tampilkan Halaman Verify OTP (GET)
+     */
+    public function showVerifyOtpForm()
     {
-        return view('customer.register');
+        return view('customer.auth.verify-otp');
     }
 
-    // proses register web
+    /**
+     * Registrasi Customer Baru
+     */
     public function register(Request $request)
     {
-        $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:customers,email',
-            'password' => 'required|min:6|confirmed'
+        // Validasi Manual agar bisa trigger modal register jika error
+        $validator = Validator::make($request->all(), [
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|string|email|max:255|unique:customers',
+            'password'    => 'required|string|min:6|confirmed',
+            'phone'       => 'required|string|max:20',
         ]);
 
-        Customer::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone' => $request->phone ?? null,
+        // Jika gagal, redirect balik ke landing page dan buka modal register
+        if ($validator->fails()) {
+            return redirect()->route('landing.index')
+                        ->withErrors($validator)
+                        ->withInput()
+                        ->with('show_register', true); 
+        }
+
+        // Simpan Data Customer
+        $customer = Customer::create([
+            'name'        => $request->name,
+            'email'       => $request->email,
+            'password'    => Hash::make($request->password),
+            'phone'       => $request->phone,
         ]);
 
-        return redirect()->route('landing.index')->with('success', 'Registrasi berhasil, silakan login.');
+        // Generate OTP
+        $otp = rand(100000, 999999);
+        $customer->otp = $otp;
+        $customer->otp_expires_at = Carbon::now()->addMinutes(5);
+        $customer->save();
+
+        // Simpan email di session agar form OTP otomatis terisi
+        session(['otp_email' => $customer->email]);
+
+        // Disini seharusnya kirim Email OTP (Mail::to(...))
+        
+        // Redirect ke Halaman Verifikasi OTP
+        return redirect()->route('customer.verify-otp.form')
+                         ->with('success', 'Registrasi berhasil! Kode OTP (Simulasi): ' . $otp);
     }
 
-    // tampilkan form login
-    public function showLogin()
+    /**
+     * Verifikasi OTP
+     */
+    public function verifyOtp(Request $request)
     {
-        return view('customer.login');
+        $request->validate([
+            'email' => 'required|email',
+            'otp'   => 'required|numeric',
+        ]);
+
+        $customer = Customer::where('email', $request->email)->first();
+
+        // Cek validitas OTP
+        if (!$customer || $customer->otp != $request->otp || Carbon::now()->gt($customer->otp_expires_at)) {
+             return back()->withErrors(['otp' => 'Kode OTP salah atau sudah kadaluarsa.'])->withInput();
+        }
+
+        // Reset OTP setelah berhasil
+        $customer->otp = null;
+        $customer->otp_expires_at = null;
+        $customer->save();
+        
+        // PENTING: Login otomatis user tersebut menggunakan guard 'customer'
+        Auth::guard('customer')->login($customer);
+
+        // Redirect langsung ke Dashboard (Home Customer)
+        return redirect()->route('customer.hotels.index')->with('success', 'Verifikasi berhasil! Selamat datang.');
     }
 
-    // proses login web (session)
+    /**
+     * Login Customer
+     */
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::guard('customer_web')->attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('landing.index'));
-        }
-
-        return back()->withErrors(['email' => 'Credensial salah'])->withInput();
-    }
-
-    // dashboard contoh
-    public function dashboard()
-    {
-        $customer = Auth::guard('customer_web')->user();
-        return view('landing.index', compact('customer'));
-    }
-
-    // logout
-    public function logout(Request $request)
-    {
-        Auth::guard('customer_web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('landing.index');
-    }
-
-    // tampilkan form profile edit
-    public function showProfile()
-    {
-        $customer = Auth::guard('customer_web')->user();
-        return view('customer.profile', compact('customer'));
-    }
-
-    // update profile (web)
-    public function updateProfile(Request $request)
-    {
-        /** @var Customer $customer */
-        $customer = Auth::guard('customer_web')->user();
-
-        $request->validate([
-            'name' => 'required|string|max:255|unique:customers,name,' . $customer->id,
-            'email' => 'required|email|unique:customers,email,' . $customer->id,
-            'password' => 'nullable|min:6|confirmed'
+        $validator = Validator::make($request->all(), [
+            'email'    => 'required|email',
+            'password' => 'required'
         ]);
 
-        $data = $request->only(['name', 'email', 'phone']);
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+        // Jika validasi input gagal
+        if ($validator->fails()) {
+            return redirect()->route('landing.index')
+                        ->withErrors($validator)
+                        ->withInput()
+                        ->with('show_login', true); // Sinyal buka modal login
         }
 
-        $customer->update($data);
+        $credentials = $request->only('email', 'password');
 
-        return back()->with('success', 'Profil berhasil diperbarui.');
+        // Coba login dengan guard 'customer'
+        if (Auth::guard('customer')->attempt($credentials)) {
+            $request->session()->regenerate();
+            
+            // Redirect langsung ke Dashboard
+            return redirect()->intended(route('customer.hotels.index'));
+        }
+
+        // Jika password salah, kembali ke landing page dan buka modal login
+        return redirect()->route('landing.index')
+                    ->withErrors(['email' => 'Email atau password salah.'])
+                    ->withInput()
+                    ->with('show_login', true);
     }
 
-    // delete account (web)
-    public function deleteAccount(Request $request)
+    /**
+     * Logout Customer
+     */
+    public function logout(Request $request)
     {
-        /** @var Customer $customer */
-        $customer = Auth::guard('customer_web')->user();
-        Auth::guard('customer_web')->logout();
-        $customer->delete();
-
+        Auth::guard('customer')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        return redirect()->route('customer.register.form')->with('success', 'Akun dihapus.');
+        
+        return redirect()->route('landing.index');
     }
 }

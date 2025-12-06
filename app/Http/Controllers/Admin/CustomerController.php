@@ -19,10 +19,10 @@ class CustomerController extends Controller
             $query->orderBy('name', $request->query('sort'));
         }
 
-        $customer = $query->paginate(10)->appends($request->query());
+        $customers = $query->paginate(10)->appends($request->query());
 
 
-        return view ('admin.customer', compact('customers'));
+        return view ('admin.customers.index', compact('customers'));
     }
 
     public function destroy($id){
