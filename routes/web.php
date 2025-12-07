@@ -24,15 +24,13 @@ use App\Http\Controllers\Customer\{
     CustomerTransactionController,
     CustomerListRoomTypeController,
     CustomerListHotelController,
-    
-
 };
+
 use App\Http\Controllers\Resepsionis\{
     DashboardController
 };
-use App\Http\Controllers\{
-    LandingPageController,
-};
+
+use App\Http\Controllers\LandingPageController;
 
 Route::get('/csrf-token', function () {
     return response()->json(['token' => csrf_token()]);
@@ -78,28 +76,26 @@ Route::get('/whoami', function () {
         'Data' => [
             'guard' => null,
         ]
-
     ]);
 });
 
-
-
 /*
 |--------------------------------------------------------------------------
-| Public Landing Page
+| Landing Page (Public)
 |--------------------------------------------------------------------------
 */
-
 Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 
 /*
 |--------------------------------------------------------------------------
-| Customer Auth (login/register/logout)
+| Customer Authentication
 |--------------------------------------------------------------------------
 */
 Route::get('customer/login', [CustomerAuthController::class, 'showLoginForm'])->name('customer.login.form');
 Route::get('customer/register', [CustomerAuthController::class, 'showRegisterForm'])->name('customer.register.form');
-Route::get('customer/verify-otp', [CustomerAuthController::class, 'showVerifyOtpForm'])->name('customer.verify-otp.form');
+
+Route::get('customer/verify-otp', [CustomerAuthController::class, 'showVerifyOtpForm'])
+     ->name('customer.verify-otp.form');
 
 Route::post('customer/login', [CustomerAuthController::class, 'login'])->name('customer.login');
 Route::post('customer/register', [CustomerAuthController::class, 'register'])->name('customer.register');
@@ -108,58 +104,46 @@ Route::post('customer/logout', [CustomerAuthController::class, 'logout'])->name(
 
 /*
 |--------------------------------------------------------------------------
-| Auth Login untuk Admin & Resepsionis
-|--------------------------------------------------------------------------
-| - Admin dan Resepsionis login di halaman yang sama
-| - Register hanya untuk Admin
-| - Logout berbeda sesuai guard
+| Admin & Resepsionis Auth
 |--------------------------------------------------------------------------
 */
 Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AdminAuthController::class, 'login']);
 
-// Register hanya untuk Admin
 Route::get('/register', [AdminAuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AdminAuthController::class, 'register']);
 
-// Logout untuk admin dan resepsionis
 Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| Admin Area (Hanya Admin yang login)
+| Admin Area
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->middleware('auth:admin')->group(function () {
-    // Dashboard
+
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
-    // Resepsionis hanya dikelola oleh admin
     Route::resource('resepsionis', ResepsionisController::class);
 
-    // Customers
     Route::resource('customers', CustomerController::class)->only(['index', 'destroy']);
 
-    // Hotels
     Route::resource('hotels', HotelController::class);
 
-    // Rooms & Room Types
     Route::resource('room-types', RoomTypeController::class);
     Route::resource('rooms', RoomController::class);
 
-    // Facilities
     Route::resource('facilities', FacilitiesController::class);
     Route::resource('facility-hotels', FacilityHotelController::class);
 
-    // Bookings
     Route::resource('bookings', BookingController::class);
-    Route::patch('bookings/{id}/status', [BookingController::class, 'updateStatus'])->name('admin.bookings.updateStatus');
+    Route::patch('bookings/{id}/status', [BookingController::class, 'updateStatus'])
+         ->name('admin.bookings.updateStatus');
 
-    // Transactions
     Route::resource('transactions', TransactionController::class);
-    Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus'])->name('admin.transactions.updateStatus');
+    Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus'])
+         ->name('admin.transactions.updateStatus');
 
-    // Report
     Route::get('report', [ReportController::class, 'index'])->name('admin.report');
 });
 
@@ -167,22 +151,18 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 |--------------------------------------------------------------------------
 | Resepsionis Area
 |--------------------------------------------------------------------------
-| - Login menggunakan halaman yang sama dengan admin
-| - Tidak bisa register, akun dibuat oleh admin
-| - Tidak punya akses ke menu admin
-|--------------------------------------------------------------------------
 */
 Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () {
-    // Dashboard
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('resepsionis.dashboard');
 
-    // Booking (index, show, update)
     Route::resource('bookings', BookingController::class)->only(['index', 'show', 'update']);
-    Route::patch('bookings/{id}/status', [BookingController::class, 'updateStatus'])->name('resepsionis.bookings.updateStatus');
+    Route::patch('bookings/{id}/status', [BookingController::class, 'updateStatus'])
+         ->name('resepsionis.bookings.updateStatus');
 
-    // Transaction (index, show, update)
     Route::resource('transactions', TransactionController::class)->only(['index', 'show', 'update']);
-    Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus'])->name('resepsionis.transactions.updateStatus');
+    Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus'])
+         ->name('resepsionis.transactions.updateStatus');
 });
 
 /*
@@ -191,22 +171,18 @@ Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () 
 |--------------------------------------------------------------------------
 */
 Route::prefix('customer')->middleware('auth:customer')->group(function () {
-    // Profile
+
     Route::get('profile', [ProfileController::class, 'profile'])->name('customer.profile');
     Route::put('profile', [ProfileController::class, 'updateProfile'])->name('customer.profile.update');
     Route::delete('profile', [ProfileController::class, 'deleteAccount'])->name('customer.profile.delete');
 
-    // List Hotels
     Route::get('home', [CustomerListHotelController::class, 'index'])->name('customer.hotels.index');
     Route::get('home/{id}', [CustomerListHotelController::class, 'show'])->name('customer.hotels.show');
 
-    // List Room Types
     Route::get('list', [CustomerListRoomTypeController::class, 'index'])->name('customer.list');
     Route::get('list/{id}', [CustomerListRoomTypeController::class, 'show'])->name('customer.list.show');
-    
-    // Bookings
+
     Route::resource('bookings', CustomerBookController::class)->only(['index', 'show', 'create', 'store']);
 
-    // Transactions
     Route::resource('transactions', CustomerTransactionController::class)->only(['index', 'show', 'create', 'store']);
 });
