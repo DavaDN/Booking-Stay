@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,24 +13,28 @@
             background-color: #f9fafc;
             font-size: 0.9rem;
         }
+
         .sidebar {
             width: 220px;
             background: #fff;
             height: 100vh;
-            box-shadow: 2px 0 12px rgba(0,0,0,0.08);
+            box-shadow: 2px 0 12px rgba(0, 0, 0, 0.08);
             position: fixed;
             padding-top: 20px;
             transition: all 0.3s ease;
         }
+
         .sidebar .logo img {
             width: 120px;
             margin: 0 auto;
             display: block;
             transition: transform 0.3s ease;
         }
+
         .sidebar .logo img:hover {
             transform: scale(1.05);
         }
+
         .sidebar .nav-link {
             color: #444;
             font-weight: 500;
@@ -39,24 +44,29 @@
             margin: 4px 12px;
             transition: all 0.2s ease;
         }
+
         .sidebar .nav-link i {
             margin-right: 8px;
         }
+
         .sidebar .nav-link:hover {
             background: #f0f6ff;
             color: #0d6efd;
             transform: translateX(4px);
         }
+
         .sidebar .nav-link.active {
             background: #eaf2ff;
             color: #0d6efd;
             font-weight: 600;
         }
+
         .sidebar .logout {
             position: absolute;
             bottom: 20px;
             width: 100%;
         }
+
         .sidebar .logout a {
             padding: 10px 18px;
             display: block;
@@ -66,10 +76,12 @@
             color: #dc3545;
             transition: all 0.2s ease;
         }
+
         .sidebar .logout a:hover {
             background: #ffe5e5;
             transform: translateX(4px);
         }
+
         .content {
             margin-left: 220px;
             padding: 20px;
@@ -77,6 +89,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- Sidebar -->
@@ -113,10 +126,38 @@
         </div>
     </div>
 
+    <!-- Header -->
+    <div class="header d-flex justify-content-between align-items-center p-3"
+        style="background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-left: 220px;">
+
+        <div class="page-title">
+            <h4 class="m-0">Hotel Management System</h4>
+        </div>
+
+        <div class="header-actions d-flex align-items-center">
+
+            <div class="notification-icon position-relative me-3" style="font-size: 20px;">
+                <i class="bi bi-bell"></i>
+                <span class="notification-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style="font-size: 10px;">
+                    3
+                </span>
+            </div>
+
+            <div class="user-profile" style="font-size: 24px;">
+                <a href="{{ route('resepsionis.profile') }}" style="color: #0d6efd;">
+                    <i class="bi bi-person-circle"></i>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
     <!-- Content -->
     <div class="content">
         @yield('content')
     </div>
 
 </body>
+
 </html>

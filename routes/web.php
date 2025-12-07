@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Admin\{
+    ProfileAdminController,
     AdminAuthController,
     ResepsionisController,
     CustomerController,
@@ -27,6 +28,7 @@ use App\Http\Controllers\Customer\{
 };
 
 use App\Http\Controllers\Resepsionis\{
+    ProfileResepsionisController,
     DashboardController
 };
 
@@ -95,7 +97,7 @@ Route::get('customer/login', [CustomerAuthController::class, 'showLoginForm'])->
 Route::get('customer/register', [CustomerAuthController::class, 'showRegisterForm'])->name('customer.register.form');
 
 Route::get('customer/verify-otp', [CustomerAuthController::class, 'showVerifyOtpForm'])
-     ->name('customer.verify-otp.form');
+    ->name('customer.verify-otp.form');
 
 Route::post('customer/login', [CustomerAuthController::class, 'login'])->name('customer.login');
 Route::post('customer/register', [CustomerAuthController::class, 'register'])->name('customer.register');
@@ -138,13 +140,23 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
     Route::resource('bookings', BookingController::class);
     Route::patch('bookings/{id}/status', [BookingController::class, 'updateStatus'])
-         ->name('admin.bookings.updateStatus');
+        ->name('admin.bookings.updateStatus');
 
     Route::resource('transactions', TransactionController::class);
     Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus'])
-         ->name('admin.transactions.updateStatus');
+        ->name('admin.transactions.updateStatus');
 
     Route::get('report', [ReportController::class, 'index'])->name('admin.report');
+
+    //profile
+    Route::middleware(['auth'])->prefix('admin')->group(function () {
+        Route::get('profile', [ProfileAdminController::class, 'index'])
+            ->name('admin.profile');
+        Route::get('profile/edit', [ProfileAdminController::class, 'edit'])
+            ->name('admin.profile.edit');
+        Route::post('profile/update', [ProfileAdminController::class, 'update'])
+            ->name('admin.profile.update');
+    });
 });
 
 /*
@@ -158,11 +170,20 @@ Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () 
 
     Route::resource('bookings', BookingController::class)->only(['index', 'show', 'update']);
     Route::patch('bookings/{id}/status', [BookingController::class, 'updateStatus'])
-         ->name('resepsionis.bookings.updateStatus');
+        ->name('resepsionis.bookings.updateStatus');
 
     Route::resource('transactions', TransactionController::class)->only(['index', 'show', 'update']);
     Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus'])
-         ->name('resepsionis.transactions.updateStatus');
+        ->name('resepsionis.transactions.updateStatus');
+
+    Route::middleware(['auth'])->prefix('resepsionis')->group(function () {
+        Route::get('profile', [ProfileResepsionisController::class, 'index'])
+            ->name('resepsionis.profile');
+        Route::get('profile/edit', [ProfileResepsionisController::class, 'edit'])
+            ->name('resepsionis.profile.edit');
+        Route::post('profile/update', [ProfileResepsionisController::class, 'update'])
+            ->name('resepsionis.profile.update');
+    });
 });
 
 /*

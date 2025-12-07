@@ -10,9 +10,12 @@
     <style>
         :root {
             /* WARNA DISESUAIKAN DENGAN DESAINMU */
-            --primary: #2365A2;        /* biru utama */
-            --secondary: #D3E7FF;      /* biru muda (active/bg lembut) */
-            --text: #586A80;           /* warna teks & icon */
+            --primary: #2365A2;
+            /* biru utama */
+            --secondary: #D3E7FF;
+            /* biru muda (active/bg lembut) */
+            --text: #586A80;
+            /* warna teks & icon */
             --text-light: #7f8c8d;
             --border: #dce6f0;
             --success: #27ae60;
@@ -309,7 +312,8 @@
         }
 
         .activity-badge {
-            background: #3498db; /* dibiarkan seperti kode aslinu */
+            background: #3498db;
+            /* dibiarkan seperti kode aslinu */
             color: white;
             padding: 3px 8px;
             border-radius: 16px;
@@ -421,27 +425,27 @@
                 <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="fas fa-home"></i> <span>Dashboard</span>
                 </a>
-                
+
                 <a href="{{ route('facilities.index') }}" class="{{ request()->routeIs('facilities.*') ? 'active' : '' }}">
                     <i class="fas fa-cogs"></i> <span>Facility Room</span>
                 </a>
-                
+
                 <a href="{{ route('room-types.index') }}" class="{{ request()->routeIs('room-types.*') ? 'active' : '' }}">
                     <i class="fas fa-door-open"></i> <span>Room Type</span>
                 </a>
-                
+
                 <a href="{{ route('rooms.index') }}" class="{{ request()->routeIs('rooms.*') ? 'active' : '' }}">
                     <i class="fas fa-bed"></i> <span>Room</span>
                 </a>
-                
+
                 <a href="{{ route('resepsionis.index') }}" class="{{ request()->routeIs('resepsionis.*') ? 'active' : '' }}">
                     <i class="fas fa-user-tie"></i> <span>Receptionist</span>
                 </a>
-                
+
                 <a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.*') ? 'active' : '' }}">
                     <i class="fas fa-users"></i> <span>Customer</span>
                 </a>
-                
+
                 <a href="{{ route('transactions.index') }}" class="{{ request()->routeIs('transactions.*') ? 'active' : '' }}">
                     <i class="fas fa-file-alt"></i> <span>Report</span>
                 </a>
@@ -471,7 +475,9 @@
                         <span class="notification-badge">3</span>
                     </div>
                     <div class="user-profile">
-                        <i class="fas fa-user"></i>
+                        <a href="{{ route('admin.profile') }}" style="color: inherit;">
+                            <i class="fas fa-user"></i>
+                        </a>
                     </div>
                 </div>
             </div>
