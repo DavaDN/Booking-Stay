@@ -35,7 +35,7 @@
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
                     <h2 class="card-title font-weight-bold" style="color: #2365A2; margin-bottom: 1rem;">{{ $hotel->name }}</h2>
-                    
+
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <p class="text-muted mb-2">
@@ -97,7 +97,7 @@
                         <h5 class="card-title font-weight-bold" style="color: #2365A2; margin-bottom: 1rem;">
                             <i class="fas fa-bed"></i> Tipe Kamar Tersedia
                         </h5>
-                        
+
                         @php
                             $roomTypes = $hotel->rooms->groupBy('room_type_id');
                         @endphp
@@ -108,11 +108,11 @@
                                     $roomType = $rooms->first()->roomType;
                                     $availableCount = $rooms->where('status', 'available')->count();
                                 @endphp
-                                
+
                                 <div class="col-md-6 mb-3">
                                     <div class="border rounded p-3" style="background-color: #f8f9fa;">
                                         <h6 class="font-weight-bold" style="color: #2365A2;">{{ $roomType->name }}</h6>
-                                        
+
                                         <div class="small mb-2">
                                             <p class="mb-1">
                                                 <strong>Harga:</strong> Rp {{ number_format($roomType->price, 0, ',', '.') }}/malam
@@ -185,7 +185,7 @@
 
                     <hr>
 
-                    <a href="{{ route('customer.bookings.create') }}" class="btn btn-primary w-100">
+                    <a href="{{ route('bookings.create') }}" class="btn btn-primary w-100">
                         <i class="fas fa-calendar"></i> Pesan Kamar
                     </a>
 

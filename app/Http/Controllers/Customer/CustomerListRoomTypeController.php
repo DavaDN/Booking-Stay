@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Models\RoomType;
 use App\Models\Room;
 use App\Models\Facilities;
+use App\Models\Hotel;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -13,29 +14,81 @@ class CustomerListRoomTypeController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
-        $query = RoomType::with(['rooms', 'facilities']);
+        $city = $request->get('city');
+        $minPrice = $request->get('min_price');
+        $maxPrice = $request->get('max_price');
+        $hotelId = $request->get('hotel_id');
 
+        $query = RoomType::with(['rooms', 'facilities', 'hotel']);
+
+        // Filter by search
         if ($search) {
-            $query->where('name', 'like', "%$search%")
-                ->orWhere('description', 'like', "%$search%");
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
         }
 
-        $roomTypes = $query->paginate(10)->appends($request->query());
+        // Filter by city (through hotel relationship)
+        if ($city) {
+            $query->whereHas('hotel', function($q) use ($city) {
+                $q->where('city', 'like', "%{$city}%");
+            });
+        }
+
+        // Filter by hotel
+        if ($hotelId) {
+            $query->where('hotel_id', $hotelId);
+        }
+
+        // Filter by price range
+        if ($minPrice) {
+            $query->where('price', '>=', $minPrice);
+        }
+
+        if ($maxPrice) {
+            $query->where('price', '<=', $maxPrice);
+        }
+
+        $query->orderBy('created_at', 'desc');
+
+        $roomTypes = $query->paginate(12)->appends($request->query());
+
+        // Get all hotels for filter dropdown
+        $hotels = Hotel::orderBy('name')->get();
+
+        // Get available cities
+        $cities = Hotel::select('city')->distinct()->orderBy('city')->pluck('city');
 
         $totalRooms = Room::count();
-        $availableRooms = Room::where('status', 'available')->count();
+        $availableRooms = Room::where('status', 'tersedia')->count();
 
         $facilities = Facilities::all();
 
+        // Calculate available rooms for each room type
+        foreach ($roomTypes as $roomType) {
+            $roomType->available_rooms = $roomType->rooms()
+                ->where('status', 'tersedia')
+                ->count();
 
-        return view('customer.list', compact('roomTypes', 'totalRooms', 'availableRooms', 'facilities'));
+            $roomType->total_rooms = $roomType->rooms()->count();
+        }
+
+        return view('customer.list', compact('roomTypes', 'hotels', 'cities', 'totalRooms', 'availableRooms', 'facilities'));
     }
 
     public function show($id)
     {
-        $roomType = RoomType::with(['rooms', 'facilities'])->findOrFail($id);
+        $roomType = RoomType::with(['rooms', 'facilities', 'hotel.facilities'])
+            ->findOrFail($id);
 
+        $availableRooms = $roomType->rooms()
+            ->where('status', 'tersedia')
+            ->get();
 
-        return view('customer.list-show', compact('roomType'));
+        $roomType->available_rooms = $availableRooms->count();
+        $roomType->total_rooms = $roomType->rooms()->count();
+
+        return view('customer.list-show', compact('roomType', 'availableRooms'));
     }
 }

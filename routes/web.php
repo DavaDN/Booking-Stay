@@ -182,7 +182,13 @@ Route::prefix('customer')->middleware('auth:customer')->group(function () {
     Route::get('list', [CustomerListRoomTypeController::class, 'index'])->name('customer.list');
     Route::get('list/{id}', [CustomerListRoomTypeController::class, 'show'])->name('customer.list.show');
 
-    Route::resource('bookings', CustomerBookController::class)->only(['index', 'show', 'create', 'store']);
+    Route::get('bookings', [CustomerBookController::class, 'index'])->name('customer.bookings.index');
+    Route::get('bookings/create', [CustomerBookController::class, 'create'])->name('customer.bookings.create');
+    Route::post('bookings', [CustomerBookController::class, 'store'])->name('customer.bookings.store');
+    Route::get('bookings/{id}', [CustomerBookController::class, 'show'])->name('customer.bookings.show');
 
     Route::resource('transactions', CustomerTransactionController::class)->only(['index', 'show', 'create', 'store']);
+
+
+
 });

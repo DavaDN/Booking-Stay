@@ -97,12 +97,13 @@
     <div class="row">
         @forelse($roomTypes as $roomType)
             <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
-                <div class="card h-100 border-0 shadow-sm room-card">
+                <div class="card h-100 border-0 shadow-sm room-card" style="transition: all 0.3s ease;">
                     <!-- Room Image -->
                     <div style="height: 200px; overflow: hidden; position: relative;">
                         @if($roomType->image && file_exists(storage_path('app/public/' . $roomType->image)))
                             <img src="{{ asset('storage/' . $roomType->image) }}"
                                  alt="{{ $roomType->name }}"
+                                 class="card-img-top"
                                  style="width: 100%; height: 100%; object-fit: cover;">
                         @else
                             <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #D3E7FF, #2365A2); display: flex; align-items: center; justify-content: center;">
@@ -117,7 +118,7 @@
                             </span>
                         @else
                             <span class="badge badge-danger position-absolute" style="top: 10px; right: 10px;">
-                                Penuh
+                                Tidak tersedia
                             </span>
                         @endif
                     </div>
@@ -150,7 +151,7 @@
                         <!-- Facilities -->
                         @if($roomType->facilities && $roomType->facilities->count() > 0)
                         <div class="mb-3">
-                            <div class="d-flex flex-wrap" style="gap: 0.25rem;">
+                            <div class="d-flex flex-wrap gap-1">
                                 @foreach($roomType->facilities->take(2) as $facility)
                                     <span class="badge badge-light border small">
                                         {{ $facility->name }}
@@ -205,13 +206,14 @@
 </div>
 
 <style>
-    .room-card {
-        transition: all 0.3s ease;
-    }
-
     .room-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
+    }
+
+    .badge.gap-1 {
+        margin-right: 0.25rem;
+        margin-bottom: 0.25rem;
     }
 </style>
 @endsection

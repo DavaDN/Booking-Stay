@@ -1,9 +1,14 @@
 @extends('layouts.app')
 
 @push('styles')
+
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
 <style>
     body {
-        font-family: 'Segoe UI', sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
 
     .hero {
@@ -69,7 +74,7 @@
     .features i {
         font-size: 30px;
         margin-bottom: 10px;
-        color: #002f6c;
+        color: #7eb6ff;
     }
 
     .about {
@@ -78,6 +83,10 @@
         border-radius: 50px 50px 0 0;
         padding: 40px;
         margin-top: 50px;
+    }
+
+    .medium-justify {
+        text-align: justify;
     }
 
     .features .shadow {
@@ -269,12 +278,15 @@
 {{-- About Section --}}
 <div class="about text-center">
     <h3 class="fw-bold">Tentang Kami</h3>
-    <p>
+    <p style ="text-align: justify; margin-top: 32px;">
         BookingStay adalah platform pemesanan hotel yang dirancang untuk memberikan pengalaman menginap terbaik bagi setiap tamu.
         Kami menyediakan berbagai pilihan tipe kamar, fasilitas lengkap, serta promo menarik setiap bulannya.
         Dengan jaringan yang luas dan layanan 24 jam, BookingStay memastikan perjalananmu jadi lebih nyaman, mudah, dan menyenangkan.
     </p>
-    <small class="d-block mt-3">Booking mudah, menginap tanpa ragu.</small>
+    <p style ="text-align: justify;">
+        Dengan tampilan yang modern dan navigasi yang mudah, kamu dapat menemukan kamar impian hanya dalam beberapa klik. Booking Stay berkomitmen menghadirkan kenyamanan, kemudahan, dan kepercayaan dalam setiap pemesanan.
+    </p>
+    <medium class="d-block mt-3 medium-justify">🌟 Booking mudah, menginap tanpa ragu..</medium>
 </div>
 
 {{-- Login Modal --}}

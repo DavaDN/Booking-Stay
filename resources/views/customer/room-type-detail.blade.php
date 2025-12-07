@@ -64,16 +64,6 @@
                                 </div>
                             </div>
 
-                            <!-- Capacity -->
-                            @if($roomType->capacity)
-                            <div class="mb-4">
-                                <h5 class="font-weight-bold mb-2">Kapasitas</h5>
-                                <p class="text-muted">
-                                    <i class="fas fa-users"></i> {{ $roomType->capacity }} orang
-                                </p>
-                            </div>
-                            @endif
-
                             <!-- Description -->
                             @if($roomType->description)
                             <div class="mb-4">
@@ -151,7 +141,7 @@
 
                                     <!-- Booking Button -->
                                     @if($roomType->available_rooms > 0)
-                                        <a href="{{ route('customer.bookings.create', ['room_type_id' => $roomType->id]) }}"
+                                        <a href="{{ route('bookings.create', ['room_type_id' => $roomType->id]) }}"
                                            class="btn btn-lg btn-block"
                                            style="background-color: #2365A2; color: white;">
                                             <i class="fas fa-calendar-check"></i> Pesan Sekarang
@@ -168,11 +158,11 @@
                                     <div class="small text-muted">
                                         <p class="mb-2">
                                             <i class="fas fa-info-circle"></i>
-                                            Harga belum termasuk pajak
+                                            Harga belum termasuk pajak dan biaya layanan
                                         </p>
                                         <p class="mb-0">
-                                            <i class="fas fa-clock"></i>
-                                            Check-in: 14:00 | Check-out: 12:00
+                                            <i class="fas fa-shield-alt"></i>
+                                            Pembatalan gratis dalam 24 jam
                                         </p>
                                     </div>
                                 </div>
@@ -184,7 +174,7 @@
         </div>
     </div>
 
-    <!-- Available Rooms List -->
+    <!-- Available Rooms List (Optional) -->
     @if($availableRooms->count() > 0)
     <div class="row">
         <div class="col-12">
@@ -193,11 +183,11 @@
                     <h4 class="font-weight-bold mb-4">Kamar yang Tersedia</h4>
                     <div class="row">
                         @foreach($availableRooms as $room)
-                        <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="col-md-3 mb-3">
                             <div class="card border">
                                 <div class="card-body text-center">
                                     <i class="fas fa-door-open" style="font-size: 2rem; color: #2365A2;"></i>
-                                    <h5 class="font-weight-bold mt-2 mb-0">Kamar {{ $room->room_number }}</h5>
+                                    <h5 class="font-weight-bold mt-2 mb-0">{{ $room->room_number }}</h5>
                                     <small class="text-success">Tersedia</small>
                                 </div>
                             </div>
