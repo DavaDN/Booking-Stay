@@ -49,6 +49,12 @@ return [
         ],
 
         // Guard customer via web
+        'customer' => [
+            'driver' => 'session',
+            'provider' => 'customers',
+        ],
+
+        // Guard customer_web (legacy/alias)
         'customer_web' => [
             'driver' => 'session',
             'provider' => 'customers',

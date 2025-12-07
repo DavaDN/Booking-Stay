@@ -21,8 +21,47 @@
 
     {{-- Custom CSS tambahan dari child --}}
     @stack('styles')
+
+    <script>
+        // Setup axios dengan CSRF token
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = document.querySelector('meta[name="csrf-token"]');
+            if (token) {
+                if (window.axios) {
+                    window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.getAttribute('content');
+                }
+                // Setup untuk fetch API
+                window.csrfToken = token.getAttribute('content');
+            }
+        });
+    </script>
 </head>
 <body class="font-sans antialiased">
+    {{-- Display session errors --}}
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+            <strong>Error!</strong>
+            @foreach ($errors->all() as $error)
+                <div>{{ $error }}</div>
+            @endforeach
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-warning alert-dismissible fade show m-3" role="alert">
+            <strong>Perhatian!</strong> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    @if (session('success'))
+        <div class="alert alert-success alert-dismissible fade show m-3" role="alert">
+            {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     {{-- Navbar --}}
     @include('layouts.navigation')
     

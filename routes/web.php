@@ -12,7 +12,8 @@ use App\Http\Controllers\Admin\{
     FacilityHotelController,
     BookingController,
     TransactionController,
-    HotelController
+    HotelController,
+    ReportController
 };
 
 use App\Http\Controllers\Customer\{
@@ -158,6 +159,9 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     // Transactions
     Route::resource('transactions', TransactionController::class);
     Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus'])->name('admin.transactions.updateStatus');
+
+    // Report
+    Route::get('report', [ReportController::class, 'index'])->name('admin.report');
 });
 
 /*
