@@ -13,6 +13,22 @@ use Carbon\Carbon;
 class CustomerAuthController extends Controller
 {
     /**
+     * Show login form
+     */
+    public function showLoginForm()
+    {
+        return view('customer.auth.login');
+    }
+
+    /**
+     * Show register form
+     */
+    public function showRegisterForm()
+    {
+        return view('customer.auth.register');
+    }
+
+    /**
      * Tampilkan Halaman Verify OTP (GET)
      */
     public function showVerifyOtpForm()

@@ -15,6 +15,7 @@ class RoomType extends Model
         'capacity',
         'description',
         'image',
+        'hotel_id',
     ];
 
     public function rooms()

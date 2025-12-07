@@ -30,7 +30,7 @@ class FacilitiesController extends Controller
 
         Facilities::create($data);
 
-        return redirect()->route('admin.facilities')->with('success', 'Fasilitas berhasil ditambahkan!');
+        return redirect()->route('facilities.index')->with('success', 'Fasilitas berhasil ditambahkan!');
     }
 
     public function update(Request $request, $id)
@@ -45,18 +45,15 @@ class FacilitiesController extends Controller
         $data = $request->only('name');
 
         if ($request->hasFile('image')) {
-            // Hapus gambar lama
             if ($facilities->image && Storage::disk('public')->exists($facilities->image)) {
                 Storage::disk('public')->delete($facilities->image);
             }
-
-            // Simpan gambar baru
             $data['image'] = $request->file('image')->store('facilities', 'public');
         }
 
         $facilities->update($data);
 
-        return redirect()->route('admin.facilities')->with('success', 'Fasilitas berhasil diperbarui!');
+        return redirect()->route('facilities.index')->with('success', 'Fasilitas berhasil diperbarui!');
     }
 
     public function destroy($id)
@@ -69,6 +66,6 @@ class FacilitiesController extends Controller
 
         $facility->delete();
 
-        return redirect()->route('admin.facilities')->with('success', 'Fasilitas berhasil dihapus!');
+        return redirect()->route('facilities.index')->with('success', 'Fasilitas berhasil dihapus!');
     }
 }

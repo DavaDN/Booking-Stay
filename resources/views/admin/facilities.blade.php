@@ -146,7 +146,7 @@
 
                 <div class="icon-container">
                     <img 
-                        src="{{ $facility->image ? asset('storage/app/public/facilites' . $facility->image) : asset('images/default.png') }}" 
+                        src="{{ $facility->image ? asset('storage/' . $facility->image) : asset('images/default.png') }}" 
                         alt="{{ $facility->name }}" 
                         class="icon">
                 </div>

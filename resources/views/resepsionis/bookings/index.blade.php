@@ -50,8 +50,8 @@
                             </td>
                             <td>{{ $booking->customer->name ?? 'N/A' }}</td>
                             <td>{{ $booking->roomType->name ?? 'N/A' }}</td>
-                            <td>{{ \Carbon\Carbon::parse($booking->check_in_date)->format('d/m/Y') }}</td>
-                            <td>{{ \Carbon\Carbon::parse($booking->check_out_date)->format('d/m/Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($booking->check_in)->format('d/m/Y') }}</td>
+                            <td>{{ \Carbon\Carbon::parse($booking->check_out)->format('d/m/Y') }}</td>
                             <td>Rp {{ number_format($booking->total_price, 0, ',', '.') }}</td>
                             <td>
                                 @if($booking->status === 'pending')

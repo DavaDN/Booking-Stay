@@ -14,9 +14,11 @@ class Booking extends Model
         'room_type_id',
         'check_in',
         'check_out',
-        'total_room',
+        'number_of_rooms',
         'booking_code',
+        'total_price',
         'status',
+        'special_requests',
     ];
 
     public function customer()

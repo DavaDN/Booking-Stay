@@ -137,7 +137,7 @@
                             <label class="form-label text-muted small">Check-In:</label>
                         </div>
                         <div class="col-7">
-                            <p class="mb-0">{{ \Carbon\Carbon::parse($transaction->booking->check_in_date)->format('d/m/Y') }}</p>
+                            <p class="mb-0">{{ \Carbon\Carbon::parse($transaction->booking->check_in)->format('d/m/Y') }}</p>
                         </div>
                     </div>
 
@@ -146,7 +146,7 @@
                             <label class="form-label text-muted small">Check-Out:</label>
                         </div>
                         <div class="col-7">
-                            <p class="mb-0">{{ \Carbon\Carbon::parse($transaction->booking->check_out_date)->format('d/m/Y') }}</p>
+                            <p class="mb-0">{{ \Carbon\Carbon::parse($transaction->booking->check_out)->format('d/m/Y') }}</p>
                         </div>
                     </div>
 

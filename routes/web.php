@@ -97,8 +97,7 @@ Route::get('/', [LandingPageController::class, 'index'])->name('landing.index');
 */
 Route::get('customer/login', [CustomerAuthController::class, 'showLoginForm'])->name('customer.login.form');
 Route::get('customer/register', [CustomerAuthController::class, 'showRegisterForm'])->name('customer.register.form');
-
-
+Route::get('customer/verify-otp', [CustomerAuthController::class, 'showVerifyOtpForm'])->name('customer.verify-otp.form');
 
 Route::post('customer/login', [CustomerAuthController::class, 'login'])->name('customer.login');
 Route::post('customer/register', [CustomerAuthController::class, 'register'])->name('customer.register');
