@@ -13,7 +13,8 @@ use App\Http\Controllers\Admin\{
     BookingController,
     TransactionController,
     HotelController,
-    ReportController
+    ReportController,
+    DashboardController as AdminDashboardController
 };
 
 use App\Http\Controllers\Customer\{
@@ -131,9 +132,7 @@ Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 */
 Route::prefix('admin')->middleware('auth:admin')->group(function () {
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
     // Resepsionis hanya dikelola oleh admin
     Route::resource('resepsionis', ResepsionisController::class);
