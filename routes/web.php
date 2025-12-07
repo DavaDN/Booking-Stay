@@ -102,6 +102,7 @@ Route::get('customer/verify-otp', [CustomerAuthController::class, 'showVerifyOtp
 Route::post('customer/login', [CustomerAuthController::class, 'login'])->name('customer.login');
 Route::post('customer/register', [CustomerAuthController::class, 'register'])->name('customer.register');
 Route::post('customer/verify-otp', [CustomerAuthController::class, 'verifyOtp'])->name('customer.verify-otp');
+Route::post('customer/resend-otp', [CustomerAuthController::class, 'resendOtp'])->name('customer.resend-otp');
 Route::post('customer/logout', [CustomerAuthController::class, 'logout'])->name('customer.logout');
 
 /*

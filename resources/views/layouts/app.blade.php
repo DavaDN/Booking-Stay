@@ -33,32 +33,35 @@
 
 <body class="font-sans antialiased">
 
-    {{-- ALERT ERROR --}}
-    @if ($errors->any())
-        <div class="alert alert-danger alert-dismissible fade show m-3">
-            <strong>Error!</strong>
-            @foreach ($errors->all() as $error)
-                <div>{{ $error }}</div>
-            @endforeach
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+    {{-- ALERTS: allow child views to suppress global alerts by defining section 'hide-layout-alerts' --}}
+    @unless(View::hasSection('hide-layout-alerts'))
+        {{-- ALERT ERROR --}}
+        @if ($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show m-3">
+                <strong>Error!</strong>
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-    {{-- SESSION ERROR --}}
-    @if (session('error'))
-        <div class="alert alert-warning alert-dismissible fade show m-3">
-            <strong>Perhatian!</strong> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+        {{-- SESSION ERROR --}}
+        @if (session('error'))
+            <div class="alert alert-warning alert-dismissible fade show m-3">
+                <strong>Perhatian!</strong> {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
 
-    {{-- SESSION SUCCESS --}}
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show m-3">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+        {{-- SESSION SUCCESS --}}
+        @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show m-3">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+    @endunless
 
     {{-- NAVBAR --}}
     @include('layouts.navigation')
@@ -71,83 +74,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 
-    {{-- ========================================================= --}}
-    {{-- ====================== MODAL LOGIN ======================== --}}
-    {{-- ========================================================= --}}
-    <div class="modal fade" id="loginModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content p-3">
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Login Customer</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <form action="{{ route('customer.login') }}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-
-                        <label class="fw-semibold">Email</label>
-                        <input type="email" name="email" class="form-control" required>
-
-                        <label class="fw-semibold mt-3">Password</label>
-                        <input type="password" name="password" class="form-control" required>
-
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button class="btn btn-dark px-4">Login</button>
-                    </div>
-                </form>
-
-            </div>
-        </div>
-    </div>
-
-    {{-- ========================================================= --}}
-    {{-- ==================== MODAL REGISTER ====================== --}}
-    {{-- ========================================================= --}}
-    <div class="modal fade" id="registerModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content p-3">
-
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">Register Customer</h5>
-                    <button class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <form action="{{ route('customer.register') }}" method="POST">
-                    @csrf
-
-                    <div class="modal-body">
-
-                        <label class="fw-semibold">Nama Lengkap</label>
-                        <input type="text" name="name" class="form-control" required>
-
-                        <label class="fw-semibold mt-3">Email</label>
-                        <input type="email" name="email" class="form-control" required>
-
-                        <label class="fw-semibold mt-3">Nomor HP</label>
-                        <input type="text" name="phone" class="form-control" required>
-
-                        <label class="fw-semibold mt-3">Password</label>
-                        <input type="password" name="password" class="form-control" required>
-
-                        <label class="fw-semibold mt-3">Konfirmasi Password</label>
-                        <input type="password" name="password_confirmation" class="form-control" required>
-
-                    </div>
-
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                        <button class="btn btn-primary px-4">Register</button>
-                    </div>
-
-                </form>
-
-            </div>
-        </div>
-    </div>
 
 </body>
 </html>

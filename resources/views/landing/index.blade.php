@@ -289,71 +289,8 @@
     <medium class="d-block mt-3 medium-justify">🌟 Booking mudah, menginap tanpa ragu..</medium>
 </div>
 
-{{-- Login Modal --}}
-<div class="modal fade" id="loginModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Login Customer</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="POST" action="{{ route('customer.login') }}">
-                @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label>Email</label>
-                        <input type="email" name="email" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Password</label>
-                        <input type="password" name="password" class="form-control" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-dark">Login</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-{{-- Register Modal --}}
-<div class="modal fade" id="registerModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Register Customer</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="POST" action="{{ route('customer.register') }}">
-                @csrf
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label>Nama</label>
-                        <input type="text" name="name" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Email</label>
-                        <input type="email" name="email" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>No HP</label>
-                        <input type="text" name="phone" class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label>Password</label>
-                        <input type="password" name="password" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Konfirmasi Password</label>
-                        <input type="password" name="password_confirmation" class="form-control" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-dark">Register</button>
-                </div>
-            </form>
-        </div>
-    </div>
+<div class="text-center mt-4">
+    <a href="{{ route('customer.login') }}" class="btn btn-dark me-2">Login Customer</a>
+    <a href="{{ route('customer.register') }}" class="btn btn-outline-dark">Register Customer</a>
 </div>
 @endsection

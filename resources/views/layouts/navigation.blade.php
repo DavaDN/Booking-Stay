@@ -8,10 +8,10 @@
 
         <!-- Menu -->
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="#">Home</a></li>
-            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="#">Search</a></li>
-            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="#">Blog</a></li>
-            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="#">Tentang Kami</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Home</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Search</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Blog</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Tentang Kami</a></li>
 
             @auth('customer_web')
             <!-- Kalau sudah login -->
@@ -34,12 +34,12 @@
                 </ul>
             </li>
             @else
-            <!-- Kalau belum login -->
+            <!-- Kalau belum login: arahkan ke halaman Login/Register -->
             <li class="nav-item ms-3">
-                <a class="btn btn-outline-dark px-4" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Login</a>
+                <a class="btn btn-outline-dark px-4" href="{{ route('customer.login') }}">Login</a>
             </li>
             <li class="nav-item ms-2">
-                <a class="btn btn-dark px-4" href="#" data-bs-toggle="modal" data-bs-target="#registerModal">Register</a>
+                <a class="btn btn-dark px-4" href="{{ route('customer.register') }}">Register</a>
             </li>
             @endauth
         </ul>
