@@ -93,13 +93,24 @@ class CustomerBookController extends Controller
     }
 
     /**
-     * Update booking status
+     * Update booking status or cancel
      */
     public function update(Request $request, $id)
     {
         $booking = Booking::where('customer_id', Auth::guard('customer')->id())
                          ->findOrFail($id);
 
+        // Handle cancel action
+        if ($request->action === 'cancel') {
+            if ($booking->status !== 'pending') {
+                return redirect()->back()->with('error', 'Hanya booking dengan status pending yang bisa dibatalkan');
+            }
+            $booking->update(['status' => 'cancelled']);
+            return redirect()->route('customer.bookings.index')
+                           ->with('success', 'Booking berhasil dibatalkan!');
+        }
+
+        // Handle update booking details
         $request->validate([
             'check_in' => 'required|date',
             'check_out' => 'required|date|after:check_in',
@@ -112,5 +123,23 @@ class CustomerBookController extends Controller
 
         return redirect()->route('customer.bookings.show', $booking->id)
                        ->with('success', 'Booking berhasil diperbarui!');
+    }
+
+    /**
+     * Delete booking
+     */
+    public function destroy($id)
+    {
+        $booking = Booking::where('customer_id', Auth::guard('customer')->id())
+                         ->findOrFail($id);
+
+        if ($booking->status !== 'pending') {
+            return redirect()->back()->with('error', 'Hanya booking dengan status pending yang bisa dihapus');
+        }
+
+        $booking->delete();
+
+        return redirect()->route('customer.bookings.index')
+                       ->with('success', 'Booking berhasil dihapus!');
     }
 }

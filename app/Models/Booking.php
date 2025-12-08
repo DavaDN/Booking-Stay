@@ -14,11 +14,19 @@ class Booking extends Model
         'room_type_id',
         'check_in',
         'check_out',
-        'number_of_rooms',
+        'total_room',
+        'guests',
         'booking_code',
         'total_price',
         'status',
         'special_requests',
+    ];
+
+    protected $casts = [
+        'check_in' => 'datetime',
+        'check_out' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function customer()

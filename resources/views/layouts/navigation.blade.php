@@ -8,37 +8,43 @@
 
         <!-- Menu -->
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Home</a></li>
-            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Search</a></li>
-            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Blog</a></li>
-            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Tentang Kami</a></li>
-
             @auth('customer')
-            <!-- Kalau sudah login (customer guard) -->
+            <!-- Menu untuk Customer yang Sudah Login -->
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.hotels.index') }}"><i class="fas fa-home"></i> Hotel</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.list') }}"><i class="fas fa-list"></i> List Room</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.bookings.index') }}"><i class="fas fa-calendar-check"></i> Booking Saya</a></li>
+            
+            <!-- Akun Dropdown -->
             <li class="nav-item dropdown ms-3">
                 <a class="btn btn-dark dropdown-toggle px-3" href="#" id="akunDropdown" role="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                    Akun
+                    <i class="fas fa-user-circle" style="font-size: 1.5rem;"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="akunDropdown">
                     <li class="dropdown-item-text px-3">
                         <strong>{{ Auth::guard('customer')->user()->name }}</strong>
+                        <div class="text-muted small">{{ Auth::guard('customer')->user()->email }}</div>
                         <div class="text-muted small">Customer</div>
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        <a class="dropdown-item" href="{{ route('customer.profile') }}">Edit Profile</a>
+                        <a class="dropdown-item" href="{{ route('customer.profile') }}"><i class="fas fa-cog"></i> Edit Profile</a>
                     </li>
                     <li>
-                        <form action="{{ route('customer.logout') }}" method="POST" class="d-inline">
+                        <form action="{{ route('customer.logout') }}" method="POST" class="d-inline w-100">
                             @csrf
-                            <button type="submit" class="dropdown-item">Logout</button>
+                            <button type="submit" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</button>
                         </form>
                     </li>
                 </ul>
             </li>
             @else
-            <!-- Kalau belum login: arahkan ke halaman Login/Register -->
+            <!-- Menu untuk Pengunjung yang Belum Login -->
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Home</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Search</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Blog</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Tentang Kami</a></li>
+            
             <li class="nav-item ms-3">
                 <a class="btn btn-outline-dark px-4" href="{{ route('customer.login') }}">Login</a>
             </li>

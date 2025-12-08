@@ -3,12 +3,42 @@
 @section('title', 'Semua Tipe Kamar - Booking Stay')
 
 @section('content')
+<style>
+    body {
+        padding-top: 70px;
+    }
+    
+    .container-fluid {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, #2365A2 0%, #1a4d7a 100%);
+        color: white;
+        padding: 40px 20px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+    }
+    
+    .page-header h1 {
+        margin-bottom: 10px;
+        font-size: 32px;
+    }
+    
+    .page-header p {
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+</style>
+
 <div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="h2 font-weight-bold text-dark">Semua Tipe Kamar</h1>
-            <p class="text-muted">Temukan kamar yang sesuai dengan kebutuhan Anda</p>
-        </div>
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <h1 class="h2 font-weight-bold">
+            <i class="fas fa-door-open"></i> Semua Tipe Kamar
+        </h1>
+        <p class="text-white-50">Temukan kamar yang sesuai dengan kebutuhan Anda</p>
     </div>
 
     <!-- Filter & Search Section -->
@@ -152,7 +182,7 @@
                         <div class="mb-3">
                             <div class="d-flex flex-wrap" style="gap: 0.25rem;">
                                 @foreach($roomType->facilities->take(2) as $facility)
-                                    <span class="badge badge-light border small">
+                                    <span class="badge badge-light border small" style="color: #000; font-weight: 600;">
                                         {{ $facility->name }}
                                     </span>
                                 @endforeach
