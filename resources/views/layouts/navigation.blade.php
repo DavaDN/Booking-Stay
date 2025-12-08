@@ -12,7 +12,7 @@
             <!-- Menu untuk Customer yang Sudah Login -->
             <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.hotels.index') }}"><i class="fas fa-home"></i> Hotel</a></li>
             <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.list') }}"><i class="fas fa-list"></i> List Room</a></li>
-            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.bookings.index') }}"><i class="fas fa-calendar-check"></i> Booking Saya</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.bookings.index') }}"><i class="fas fa-calendar-check"></i> Booking</a></li>
             
             <!-- Akun Dropdown -->
             <li class="nav-item dropdown ms-3">
