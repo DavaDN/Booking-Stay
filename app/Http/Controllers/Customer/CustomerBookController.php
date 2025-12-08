@@ -58,8 +58,7 @@ class CustomerBookController extends Controller
             'room_type_id' => 'required|exists:room_types,id',
             'check_in' => 'required|date|after_or_equal:today',
             'check_out' => 'required|date|after:check_in',
-            'guests' => 'required|integer|min:1',
-            'total_room' => 'required|integer|min:1',
+            'number_of_rooms' => 'required|integer|min:1',
             'special_requests' => 'nullable|string',
         ]);
 
@@ -73,7 +72,7 @@ class CustomerBookController extends Controller
         $checkIn = new \DateTime($request->check_in);
         $checkOut = new \DateTime($request->check_out);
         $nights = $checkOut->diff($checkIn)->days;
-        $total_price = $roomType->price * $request->total_room * $nights;
+        $total_price = $roomType->price * $request->number_of_rooms * $nights;
 
         $booking = Booking::create([
             'customer_id' => $customer->id,
@@ -81,14 +80,13 @@ class CustomerBookController extends Controller
             'booking_code' => $booking_code,
             'check_in' => $request->check_in,
             'check_out' => $request->check_out,
-            'guests' => $request->guests,
-            'total_room' => $request->total_room,
+            'number_of_rooms' => $request->number_of_rooms,
             'total_price' => $total_price,
             'special_requests' => $request->special_requests,
             'status' => 'pending',
         ]);
 
-        return redirect()->route('customer.bookings.show', $booking->id)
+        return redirect()->route('customer.bookings.index')
                        ->with('success', 'Booking berhasil dibuat! Kode: ' . $booking_code);
     }
 
