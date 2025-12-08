@@ -13,18 +13,22 @@
             <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Blog</a></li>
             <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('landing.index') }}">Tentang Kami</a></li>
 
-            @auth('customer_web')
-            <!-- Kalau sudah login -->
+            @auth('customer')
+            <!-- Kalau sudah login (customer guard) -->
             <li class="nav-item dropdown ms-3">
                 <a class="btn btn-dark dropdown-toggle px-3" href="#" id="akunDropdown" role="button"
                     data-bs-toggle="dropdown" aria-expanded="false">
                     Akun
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="akunDropdown">
-                    <li class="dropdown-item-text">
-                        <strong>{{ Auth::guard('customer_web')->user()->name }}</strong>
+                    <li class="dropdown-item-text px-3">
+                        <strong>{{ Auth::guard('customer')->user()->name }}</strong>
+                        <div class="text-muted small">Customer</div>
                     </li>
                     <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="{{ route('customer.profile') }}">Edit Profile</a>
+                    </li>
                     <li>
                         <form action="{{ route('customer.logout') }}" method="POST" class="d-inline">
                             @csrf

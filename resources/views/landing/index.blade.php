@@ -288,9 +288,4 @@
     </p>
     <medium class="d-block mt-3 medium-justify">🌟 Booking mudah, menginap tanpa ragu..</medium>
 </div>
-
-<div class="text-center mt-4">
-    <a href="{{ route('customer.login') }}" class="btn btn-dark me-2">Login Customer</a>
-    <a href="{{ route('customer.register') }}" class="btn btn-outline-dark">Register Customer</a>
-</div>
 @endsection

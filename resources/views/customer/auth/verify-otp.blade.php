@@ -3,7 +3,6 @@
 @section('content')
 <div class="d-flex align-items-center justify-content-center min-vh-100">
     <div class="card shadow-sm p-4" style="width:100%; max-width:450px;">
-    <div class="card shadow-sm border-0">
         <div class="card-body p-4">
 
             <h4 class="text-center mb-3 fw-bold">Verifikasi OTP</h4>
@@ -11,7 +10,6 @@
                 Masukkan kode OTP yang sudah dikirim ke email kamu.
             </p>
 
-            {{-- Suppress layout-global alerts for this view and show inline alerts here --}}
             @section('hide-layout-alerts')@endsection
 
             @if ($errors->any())
@@ -62,7 +60,6 @@
                 <input type="hidden" name="email" value="{{ session('otp_email') ?? old('email') }}">
             </form>
         </div>
-    </div>
 </div>
 </div>
 @endsection

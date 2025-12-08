@@ -3,6 +3,7 @@
 @section('title', 'Daftar Hotel - Booking Stay')
 
 @section('content')
+<div class="d-flex align-items-center justify-content-center min-vh-100">
 <div class="container-fluid py-4">
     <div class="row mb-4">
         <div class="col-12">
@@ -104,6 +105,7 @@
             {{ $hotels->links() }}
         </div>
     </div>
+</div>
 </div>
 
 <style>
