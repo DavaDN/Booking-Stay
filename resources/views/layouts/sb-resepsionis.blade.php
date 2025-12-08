@@ -7,6 +7,7 @@
     <title>Dashboard Resepsionis</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -101,9 +102,10 @@
             <a href="{{ route('resepsionis.dashboard') }}" class="nav-link {{ request()->routeIs('resepsionis.dashboard') ? 'active' : '' }}">
                 <i class="bi bi-house"></i> Dashboard
             </a>
-            <a href="{{ route('bookings.index') }}" class="nav-link {{ request()->routeIs('bookings.*') ? 'active' : '' }}">
-                <i class="bi bi-journal-text"></i> Reservasi
-            </a>
+                        <a href="{{ route('resepsionis.reservations.index') }}" 
+                class="nav-link {{ request()->routeIs('resepsionis.reservations.*') ? 'active' : '' }}">
+                    Reservasi
+                </a>
             <a href="{{ route('bookings.index') }}" class="nav-link">
                 <i class="bi bi-box-arrow-in-right"></i> Check-In
             </a>

@@ -29,7 +29,8 @@ use App\Http\Controllers\Customer\{
 
 use App\Http\Controllers\Resepsionis\{
     ProfileResepsionisController,
-    DashboardController
+    DashboardController,
+    ReservationController
 };
 
 use App\Http\Controllers\LandingPageController;
@@ -184,6 +185,24 @@ Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () 
             ->name('resepsionis.profile.edit');
         Route::post('profile/update', [ProfileResepsionisController::class, 'update'])
             ->name('resepsionis.profile.update');
+
+            Route::prefix('resepsionis')
+    ->name('resepsionis.')
+    ->group(function () {
+
+    Route::get('/reservations', [ReservationController::class, 'index'])
+        ->name('reservations.index');
+
+    Route::post('/reservations', [ReservationController::class, 'store'])
+        ->name('reservations.store');
+
+    Route::put('/reservations/{id}', [ReservationController::class, 'update'])
+        ->name('reservations.update');
+
+    Route::delete('/reservations/{id}', [ReservationController::class, 'destroy'])
+        ->name('reservations.destroy');
+});
+
     });
 });
 
