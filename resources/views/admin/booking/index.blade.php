@@ -19,13 +19,16 @@
         display: flex;
         gap: 10px;
         margin-top: 15px;
+        flex-wrap: wrap;
     }
 
-    .search-box input {
+    .search-box input,
+    .search-box select {
         padding: 10px 15px;
         border: 1px solid #ddd;
         border-radius: 8px;
         flex: 1;
+        min-width: 200px;
     }
 
     .table-container {
@@ -108,20 +111,65 @@
         background: #c0392b;
     }
 
+    .btn-search {
+        background: #3498db;
+        color: white;
+    }
+
+    .btn-search:hover {
+        background: #2980b9;
+    }
+
     .no-data {
         text-align: center;
         padding: 40px;
         color: #999;
     }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .stat-card h6 {
+        margin: 0 0 5px 0;
+        font-size: 12px;
+        color: #999;
+    }
+
+    .stat-card .number {
+        font-size: 24px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
 </style>
 
 <div class="header">
-    <h5>Daftar Booking</h5>
-    <p class="text-muted mb-0">Kelola semua reservasi hotel</p>
+    <h5>🏨 Manajemen Booking Hotel</h5>
+    <p class="text-muted mb-0">Kelola semua reservasi dari customer</p>
     
     <form method="GET" class="search-box mt-3">
-        <input type="text" name="search" placeholder="Cari booking code atau customer..." value="{{ request('search') }}">
-        <button type="submit" class="btn" style="background: #3498db; color: white;">Cari</button>
+        <input type="text" name="search" placeholder="Cari kode booking atau nama customer..." value="{{ request('search') }}">
+        <select name="status" class="form-control">
+            <option value="">-- Semua Status --</option>
+            @foreach($statusOptions as $option)
+                <option value="{{ $option }}" {{ request('status') === $option ? 'selected' : '' }}>
+                    {{ ucfirst(str_replace('_', ' ', $option)) }}
+                </option>
+            @endforeach
+        </select>
+        <button type="submit" class="btn btn-search">🔍 Cari</button>
+        <a href="{{ route('admin.bookings.index') }}" class="btn" style="background: #95a5a6; color: white;">🔄 Reset</a>
     </form>
 </div>
 
@@ -144,18 +192,21 @@
                 @foreach ($bookings as $booking)
                     <tr>
                         <td><strong>{{ $booking->booking_code }}</strong></td>
-                        <td>{{ $booking->customer->name ?? 'N/A' }}</td>
+                        <td>
+                            <div>{{ $booking->customer->name ?? 'N/A' }}</div>
+                            <small class="text-muted">{{ $booking->customer->email ?? '' }}</small>
+                        </td>
                         <td>{{ $booking->roomType->name ?? 'N/A' }}</td>
-                        <td>{{ $booking->check_in->format('d/m/Y') }}</td>
-                        <td>{{ $booking->check_out->format('d/m/Y') }}</td>
-                        <td>Rp {{ number_format($booking->total_price, 0, ',', '.') }}</td>
+                        <td>{{ $booking->check_in->format('d M Y') }}</td>
+                        <td>{{ $booking->check_out->format('d M Y') }}</td>
+                        <td><strong>Rp {{ number_format($booking->total_price, 0, ',', '.') }}</strong></td>
                         <td>
                             <span class="badge badge-{{ $booking->status }}">
                                 {{ ucfirst(str_replace('_', ' ', $booking->status)) }}
                             </span>
                         </td>
                         <td>
-                            <a href="{{ route('bookings.show', $booking->id) }}" class="btn btn-info" title="Detail">
+                            <a href="{{ route('admin.bookings.show', $booking->id) }}" class="btn btn-info" title="Lihat Detail">
                                 <i class="fas fa-eye"></i>
                             </a>
                             @if ($booking->status === 'pending')
@@ -163,18 +214,20 @@
                                     @csrf
                                     @method('PATCH')
                                     <input type="hidden" name="status" value="confirmed">
-                                    <button type="submit" class="btn btn-warning" title="Konfirmasi">
+                                    <button type="submit" class="btn btn-warning" title="Konfirmasi Booking">
                                         <i class="fas fa-check"></i>
                                     </button>
                                 </form>
                             @endif
-                            <form action="{{ route('bookings.destroy', $booking->id) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus?')" title="Hapus">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
+                            @if(in_array($booking->status, ['pending', 'confirmed']))
+                                <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus booking ini?')" title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

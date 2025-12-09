@@ -32,4 +32,14 @@ class RoomType extends Model
     {
         return $this->belongsTo(Hotel::class);
     }
+
+    /**
+     * Get count of available rooms
+     */
+    public function getAvailableRoomsAttribute()
+    {
+        return $this->rooms()
+            ->where('status', 'available')
+            ->count();
+    }
 }

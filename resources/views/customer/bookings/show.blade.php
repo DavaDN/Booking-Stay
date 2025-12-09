@@ -172,7 +172,7 @@
             </div>
             <div class="detail-item">
                 <label>Jumlah Kamar</label>
-                <value>{{ $booking->total_room }} Kamar</value>
+                <value>{{ $booking->number_of_rooms }} Kamar</value>
             </div>
             <div class="detail-item">
                 <label>Check-In</label>
@@ -185,10 +185,6 @@
             <div class="detail-item">
                 <label>Lama Menginap</label>
                 <value>{{ $booking->check_out->diffInDays($booking->check_in) }} Malam</value>
-            </div>
-            <div class="detail-item">
-                <label>Total Tamu</label>
-                <value>{{ $booking->guests }} Orang</value>
             </div>
             <div class="detail-item">
                 <label>Total Harga</label>

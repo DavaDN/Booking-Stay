@@ -21,6 +21,13 @@ class Booking extends Model
         'special_requests',
     ];
 
+    protected $casts = [
+        'check_in' => 'datetime',
+        'check_out' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);

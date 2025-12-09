@@ -208,6 +208,8 @@ Route::prefix('customer')->middleware('auth:customer')->name('customer.')->group
     Route::get('bookings/create', [CustomerBookController::class, 'create'])->name('customer.bookings.create');
     Route::post('bookings', [CustomerBookController::class, 'store'])->name('customer.bookings.store');
     Route::get('bookings/{id}', [CustomerBookController::class, 'show'])->name('customer.bookings.show');
+    Route::put('bookings/{id}', [CustomerBookController::class, 'update'])->name('customer.bookings.update');
+    Route::delete('bookings/{id}', [CustomerBookController::class, 'destroy'])->name('customer.bookings.destroy');
 
     Route::resource('transactions', CustomerTransactionController::class)->only(['index', 'show', 'create', 'store', 'update']);
 

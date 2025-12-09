@@ -227,11 +227,7 @@
                         </div>
                         <div class="info-item">
                             <label>Jumlah Kamar</label>
-                            <value>{{ $booking->total_room }}</value>
-                        </div>
-                        <div class="info-item">
-                            <label>Total Tamu</label>
-                            <value>{{ $booking->guests }} orang</value>
+                            <value>{{ $booking->number_of_rooms }}</value>
                         </div>
                         <div class="info-item">
                             <label>Total Harga</label>
@@ -250,11 +246,6 @@
                         <a href="{{ route('customer.bookings.show', $booking->id) }}" class="btn btn-primary">
                             <i class="fas fa-eye"></i> Detail
                         </a>
-                        @if ($booking->status === 'pending' || $booking->status === 'confirmed')
-                            <a href="{{ route('customer.bookings.edit', $booking->id) }}" class="btn" style="background: #f39c12; color: white;">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                        @endif
                         @if ($booking->status === 'pending')
                             <form action="{{ route('customer.bookings.update', $booking->id) }}" method="POST" style="flex: 1;">
                                 @csrf

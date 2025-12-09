@@ -239,33 +239,18 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="total_room">Jumlah Kamar *</label>
+                    <label for="number_of_rooms">Jumlah Kamar *</label>
                     <input 
                         type="number" 
-                        id="total_room" 
-                        name="total_room" 
-                        value="{{ old('total_room', 1) }}" 
+                        id="number_of_rooms" 
+                        name="number_of_rooms" 
+                        value="{{ old('number_of_rooms', 1) }}" 
                         required
                         min="1"
                         onchange="updatePrice()"
                     >
-                    @if ($errors->has('total_room'))
-                        <div class="error-message">{{ $errors->first('total_room') }}</div>
-                    @endif
-                </div>
-
-                <div class="form-group">
-                    <label for="guests">Jumlah Tamu *</label>
-                    <input 
-                        type="number" 
-                        id="guests" 
-                        name="guests" 
-                        value="{{ old('guests', 1) }}" 
-                        required
-                        min="1"
-                    >
-                    @if ($errors->has('guests'))
-                        <div class="error-message">{{ $errors->first('guests') }}</div>
+                    @if ($errors->has('number_of_rooms'))
+                        <div class="error-message">{{ $errors->first('number_of_rooms') }}</div>
                     @endif
                 </div>
             </div>
@@ -323,7 +308,7 @@
         const roomTypeSelect = document.getElementById('room_type_id');
         const checkInInput = document.getElementById('check_in');
         const checkOutInput = document.getElementById('check_out');
-        const totalRoomInput = document.getElementById('total_room');
+        const totalRoomInput = document.getElementById('number_of_rooms');
 
         const selectedOption = roomTypeSelect.options[roomTypeSelect.selectedIndex];
         const pricePerNight = selectedOption.getAttribute('data-price') || 0;

@@ -3,100 +3,227 @@
 @section('title', 'Semua Tipe Kamar - Booking Stay')
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="h2 font-weight-bold text-dark">Semua Tipe Kamar</h1>
-            <p class="text-muted">Temukan kamar yang sesuai dengan kebutuhan Anda</p>
-        </div>
+<style>
+    body {
+        padding-top: 70px;
+        background-color: #f8f9fa;
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, #2365A2 0%, #1a4d7a 100%);
+        color: white;
+        padding: 40px 20px;
+        margin-bottom: 30px;
+        border-radius: 8px;
+    }
+    
+    .page-header h1 {
+        margin-bottom: 10px;
+        font-size: 32px;
+    }
+    
+    .sidebar-filter {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        height: fit-content;
+        position: sticky;
+        top: 80px;
+    }
+    
+    .filter-section {
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .filter-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    
+    .filter-section h6 {
+        color: #2365A2;
+        font-weight: 700;
+        font-size: 14px;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        letter-spacing: 0.5px;
+    }
+    
+    .filter-section label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 14px;
+        color: #333;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+    
+    .filter-section label:hover {
+        color: #2365A2;
+    }
+    
+    .filter-section input[type="text"],
+    .filter-section input[type="number"],
+    .filter-section select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        margin-bottom: 10px;
+        transition: border-color 0.2s ease;
+    }
+    
+    .filter-section input:focus,
+    .filter-section select:focus {
+        outline: none;
+        border-color: #2365A2;
+        box-shadow: 0 0 0 3px rgba(35, 101, 162, 0.1);
+    }
+    
+    .filter-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 20px;
+    }
+    
+    .filter-buttons .btn {
+        padding: 10px;
+        font-size: 13px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    
+    .filter-buttons .btn-search {
+        background: #2365A2;
+        color: white;
+        grid-column: 1 / -1;
+    }
+    
+    .filter-buttons .btn-search:hover {
+        background: #1a4d7a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(35, 101, 162, 0.2);
+    }
+    
+    .filter-buttons .btn-reset {
+        background: #f0f0f0;
+        color: #333;
+        grid-column: 1 / -1;
+    }
+    
+    .filter-buttons .btn-reset:hover {
+        background: #e0e0e0;
+    }
+    
+    .room-card {
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .room-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
+    }
+</style>
+
+<div class="container-fluid py-4" style="max-width: 1400px; margin: 0 auto;">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <h1 class="h2 font-weight-bold">
+            <i class="fas fa-door-open"></i> Semua Tipe Kamar
+        </h1>
+        <p class="text-white-50">Temukan kamar yang sesuai dengan kebutuhan Anda</p>
     </div>
 
-    <!-- Filter & Search Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <form method="GET" action="{{ route('customer.list') }}">
-                        <div class="row">
-                            <!-- Search -->
-                            <div class="col-md-3 mb-3">
-                                <label class="small font-weight-bold mb-1">Cari Kamar</label>
-                                <input type="text"
-                                       name="search"
-                                       class="form-control"
-                                       placeholder="Nama kamar atau deskripsi..."
-                                       value="{{ request('search') }}">
-                            </div>
+    <!-- Main Content with Sidebar -->
+    <div class="row">
+        <!-- Sidebar Filter -->
+        <div class="col-lg-3 mb-4">
+            <div class="sidebar-filter">
+                <form method="GET" action="{{ route('customer.list') }}" id="filterForm">
+                    <!-- Search -->
+                    <div class="filter-section">
+                        <h6><i class="fas fa-search"></i> Cari Kamar</h6>
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               placeholder="Nama kamar..."
+                               value="{{ request('search') }}">
+                    </div>
 
-                            <!-- Hotel Filter -->
-                            <div class="col-md-3 mb-3">
-                                <label class="small font-weight-bold mb-1">Hotel</label>
-                                <select name="hotel_id" class="form-control">
-                                    <option value="">Semua Hotel</option>
-                                    @foreach($hotels as $hotel)
-                                        <option value="{{ $hotel->id }}"
-                                                {{ request('hotel_id') == $hotel->id ? 'selected' : '' }}>
-                                            {{ $hotel->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                    <!-- Hotel Filter -->
+                    <div class="filter-section">
+                        <h6><i class="fas fa-hotel"></i> Hotel</h6>
+                        <select name="hotel_id" class="form-control">
+                            <option value="">Semua Hotel</option>
+                            @foreach($hotels as $hotel)
+                                <option value="{{ $hotel->id }}"
+                                        {{ request('hotel_id') == $hotel->id ? 'selected' : '' }}>
+                                    {{ $hotel->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                            <!-- City Filter -->
-                            <div class="col-md-2 mb-3">
-                                <label class="small font-weight-bold mb-1">Kota</label>
-                                <select name="city" class="form-control">
-                                    <option value="">Semua Kota</option>
-                                    @foreach($cities as $city)
-                                        <option value="{{ $city }}"
-                                                {{ request('city') == $city ? 'selected' : '' }}>
-                                            {{ $city }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                    <!-- City Filter -->
+                    <div class="filter-section">
+                        <h6><i class="fas fa-map-marker-alt"></i> Kota</h6>
+                        <select name="city" class="form-control">
+                            <option value="">Semua Kota</option>
+                            @foreach($cities as $city)
+                                <option value="{{ $city }}"
+                                        {{ request('city') == $city ? 'selected' : '' }}>
+                                    {{ $city }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                            <!-- Min Price -->
-                            <div class="col-md-2 mb-3">
-                                <label class="small font-weight-bold mb-1">Harga Min</label>
-                                <input type="number"
-                                       name="min_price"
-                                       class="form-control"
-                                       placeholder="0"
-                                       value="{{ request('min_price') }}">
-                            </div>
+                    <!-- Price Range -->
+                    <div class="filter-section">
+                        <h6><i class="fas fa-money-bill-wave"></i> Kisaran Harga</h6>
+                        <label style="margin-bottom: 8px; color: #666;">Min (Rp)</label>
+                        <input type="number"
+                               name="min_price"
+                               class="form-control"
+                               placeholder="0"
+                               value="{{ request('min_price') }}">
+                        
+                        <label style="margin-bottom: 8px; color: #666; margin-top: 10px;">Max (Rp)</label>
+                        <input type="number"
+                               name="max_price"
+                               class="form-control"
+                               placeholder="10000000"
+                               value="{{ request('max_price') }}">
+                    </div>
 
-                            <!-- Max Price -->
-                            <div class="col-md-2 mb-3">
-                                <label class="small font-weight-bold mb-1">Harga Max</label>
-                                <input type="number"
-                                       name="max_price"
-                                       class="form-control"
-                                       placeholder="10000000"
-                                       value="{{ request('max_price') }}">
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary mr-2">
-                                    <i class="fas fa-search"></i> Cari
-                                </button>
-                                <a href="{{ route('customer.list') }}" class="btn btn-outline-secondary">
-                                    <i class="fas fa-redo"></i> Reset
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                    <!-- Filter Buttons -->
+                    <div class="filter-buttons">
+                        <button type="submit" class="btn btn-search">
+                            <i class="fas fa-search"></i> Cari
+                        </button>
+                        <a href="{{ route('customer.list') }}" class="btn btn-reset" style="text-decoration: none; text-align: center;">
+                            <i class="fas fa-redo"></i> Reset
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
 
-    <!-- Room Types Grid -->
-    <div class="row">
+        <!-- Room Types Grid -->
+        <div class="col-lg-9">
+            <div class="row">
         @forelse($roomTypes as $roomType)
-            <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+            <div class="col-md-6 col-lg-4 col-xl-4 mb-4">
                 <div class="card h-100 border-0 shadow-sm room-card">
                     <!-- Room Image -->
                     <div style="height: 200px; overflow: hidden; position: relative;">
@@ -152,7 +279,7 @@
                         <div class="mb-3">
                             <div class="d-flex flex-wrap" style="gap: 0.25rem;">
                                 @foreach($roomType->facilities->take(2) as $facility)
-                                    <span class="badge badge-light border small">
+                                    <span class="badge badge-light border small" style="color: #000; font-weight: 600;">
                                         {{ $facility->name }}
                                     </span>
                                 @endforeach
@@ -194,24 +321,15 @@
                 </div>
             </div>
         @endforelse
-    </div>
+            </div>
 
-    <!-- Pagination -->
-    <div class="row mt-4">
-        <div class="col-12 d-flex justify-content-end">
-            {{ $roomTypes->links() }}
+            <!-- Pagination -->
+            <div class="row mt-4">
+                <div class="col-12 d-flex justify-content-end">
+                    {{ $roomTypes->links() }}
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-<style>
-    .room-card {
-        transition: all 0.3s ease;
-    }
-
-    .room-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.15) !important;
-    }
-</style>
 @endsection
