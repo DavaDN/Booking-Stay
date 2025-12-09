@@ -198,18 +198,18 @@ Route::prefix('customer')->middleware('auth:customer')->name('customer.')->group
     Route::put('profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
     Route::delete('profile', [ProfileController::class, 'deleteAccount'])->name('profile.delete');
 
-    Route::get('home', [CustomerListHotelController::class, 'index'])->name('customer.hotels.index');
-    Route::get('home/{id}', [CustomerListHotelController::class, 'show'])->name('customer.hotels.show');
+    Route::get('home', [CustomerListHotelController::class, 'index'])->name('home');
+    Route::get('home/{id}', [CustomerListHotelController::class, 'show'])->name('hotels.show');
 
-    Route::get('list', [CustomerListRoomTypeController::class, 'index'])->name('customer.list');
-    Route::get('list/{id}', [CustomerListRoomTypeController::class, 'show'])->name('customer.list.show');
+    Route::get('list', [CustomerListRoomTypeController::class, 'index'])->name('list');
+    Route::get('list/{id}', [CustomerListRoomTypeController::class, 'show'])->name('list.show');
 
-    Route::get('bookings', [CustomerBookController::class, 'index'])->name('customer.bookings.index');
-    Route::get('bookings/create', [CustomerBookController::class, 'create'])->name('customer.bookings.create');
-    Route::post('bookings', [CustomerBookController::class, 'store'])->name('customer.bookings.store');
-    Route::get('bookings/{id}', [CustomerBookController::class, 'show'])->name('customer.bookings.show');
-    Route::put('bookings/{id}', [CustomerBookController::class, 'update'])->name('customer.bookings.update');
-    Route::delete('bookings/{id}', [CustomerBookController::class, 'destroy'])->name('customer.bookings.destroy');
+    Route::get('bookings', [CustomerBookController::class, 'index'])->name('bookings.index');
+    Route::get('bookings/create', [CustomerBookController::class, 'create'])->name('bookings.create');
+    Route::post('bookings', [CustomerBookController::class, 'store'])->name('bookings.store');
+    Route::get('bookings/{id}', [CustomerBookController::class, 'show'])->name('bookings.show');
+    Route::put('bookings/{id}', [CustomerBookController::class, 'update'])->name('bookings.update');
+    Route::delete('bookings/{id}', [CustomerBookController::class, 'destroy'])->name('bookings.destroy');
 
     Route::resource('transactions', CustomerTransactionController::class)->only(['index', 'show', 'create', 'store', 'update']);
 

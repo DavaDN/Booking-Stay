@@ -10,7 +10,7 @@
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
             @auth('customer')
             <!-- Menu untuk Customer yang Sudah Login -->
-            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.hotels.index') }}"><i class="fas fa-home"></i> Hotel</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.home') }}"><i class="fas fa-home"></i> Hotel</a></li>
             <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.list') }}"><i class="fas fa-list"></i> List Room</a></li>
             <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.bookings.index') }}"><i class="fas fa-calendar-check"></i> Booking</a></li>
             
