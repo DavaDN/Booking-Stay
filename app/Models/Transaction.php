@@ -15,6 +15,11 @@ class Transaction extends Model
         'total',
         'status',
         'payment_date',
+        'customer_id',
+        'midtrans_order_id',
+        'payment_type',
+        'midtrans_status',
+        'midtrans_response',
     ];
 
     public function booking()

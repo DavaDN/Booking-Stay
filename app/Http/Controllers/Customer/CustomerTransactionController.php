@@ -18,9 +18,12 @@ class CustomerTransactionController extends Controller
         $search = $request->get('search');
         $customerId = Auth::guard('customer')->id();
         
-        $query = Transaction::whereHas('booking', function ($q) use ($customerId) {
-            $q->where('customer_id', $customerId);
-        })->with(['booking.customer']);
+        $query = Transaction::with(['booking.customer'])
+            ->where(function($q) use ($customerId) {
+                $q->whereHas('booking', function ($q2) use ($customerId) {
+                    $q2->where('customer_id', $customerId);
+                })->orWhere('customer_id', $customerId);
+            });
 
         if ($search) {
             $query->whereHas('booking', function ($q) use ($search) {
@@ -40,9 +43,12 @@ class CustomerTransactionController extends Controller
     {
         $customerId = Auth::guard('customer')->id();
         
-        $transaction = Transaction::whereHas('booking', function ($q) use ($customerId) {
-            $q->where('customer_id', $customerId);
-        })->with(['booking.customer', 'booking.roomType'])->findOrFail($id);
+        $transaction = Transaction::with(['booking.customer', 'booking.roomType'])
+            ->where(function($q) use ($customerId) {
+                $q->whereHas('booking', function ($q2) use ($customerId) {
+                    $q2->where('customer_id', $customerId);
+                })->orWhere('customer_id', $customerId);
+            })->findOrFail($id);
 
         return view('customer.transactions.show', compact('transaction'));
     }
@@ -82,6 +88,7 @@ class CustomerTransactionController extends Controller
 
         $transaction = Transaction::create([
             'booking_id' => $booking->id,
+            'customer_id' => $customerId,
             'payment_method' => $request->payment_method,
             'total' => $booking->total_price,
             'status' => 'pending',

@@ -1,6 +1,115 @@
 @extends('layouts.app')
 
 @section('content')
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Detail Transaksi</h5>
+            <a href="{{ route('customer.transactions.index') }}" class="btn btn-sm btn-secondary">Kembali</a>
+        </div>
+
+        <div class="card-body">
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h6>Informasi Transaksi</h6>
+                    <table class="table table-borderless">
+                        <tr><th>ID</th><td>{{ $transaction->id }}</td></tr>
+                        <tr><th>Metode</th><td>{{ ucfirst($transaction->payment_method) }}</td></tr>
+                        <tr><th>Total</th><td>Rp {{ number_format($transaction->total,0,',','.') }}</td></tr>
+                        <tr><th>Status</th><td>{{ ucfirst($transaction->status) }}</td></tr>
+                        <tr><th>Dibuat</th><td>{{ $transaction->created_at->format('d/m/Y H:i') }}</td></tr>
+                    </table>
+                </div>
+
+                <div class="col-md-6">
+                    <h6>Informasi Booking</h6>
+                    @if($transaction->booking)
+                        <table class="table table-borderless">
+                            <tr><th>Kode Booking</th><td>{{ $transaction->booking->booking_code }}</td></tr>
+                            <tr><th>Tipe Kamar</th><td>{{ $transaction->booking->roomType->name ?? '-' }}</td></tr>
+                            <tr><th>Check-in</th><td>{{ optional($transaction->booking->check_in)->format('d/m/Y') }}</td></tr>
+                            <tr><th>Check-out</th><td>{{ optional($transaction->booking->check_out)->format('d/m/Y') }}</td></tr>
+                        </table>
+                    @else
+                        <div class="alert alert-info">Transaksi ini tidak terkait booking.</div>
+                    @endif
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <h6>Rincian Midtrans</h6>
+                @if($transaction->midtrans_response)
+                    @php
+                        $mid = json_decode($transaction->midtrans_response, true) ?: [];
+                    @endphp
+
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped">
+                            <tbody>
+                                @if(!empty($mid['transaction_status']))
+                                    <tr><th>Status Midtrans</th><td>{{ $mid['transaction_status'] }}</td></tr>
+                                @endif
+                                @if(!empty($mid['transaction_time']))
+                                    <tr><th>Waktu Transaksi</th><td>{{ $mid['transaction_time'] }}</td></tr>
+                                @endif
+                                @if(!empty($mid['gross_amount']))
+                                    <tr><th>Jumlah (Midtrans)</th><td>Rp {{ number_format($mid['gross_amount'],0,',','.') }}</td></tr>
+                                @endif
+                                @if(!empty($mid['payment_code']))
+                                    <tr><th>Payment Code</th><td>{{ $mid['payment_code'] }}</td></tr>
+                                @endif
+                                @if(!empty($mid['permata_va_number']))
+                                    <tr><th>Permata VA</th><td>{{ $mid['permata_va_number'] }}</td></tr>
+                                @endif
+                                @if(!empty($mid['va_numbers']) && is_array($mid['va_numbers']))
+                                    <tr><th>VA Numbers</th>
+                                        <td>
+                                            @foreach($mid['va_numbers'] as $va)
+                                                <div><strong>{{ $va['bank'] }}:</strong> {{ $va['va_number'] }}</div>
+                                            @endforeach
+                                        </td>
+                                    </tr>
+                                @endif
+                                @if(!empty($mid['redirect_url']))
+                                    <tr><th>Redirect URL</th><td><a href="{{ $mid['redirect_url'] }}" target="_blank">Open</a></td></tr>
+                                @endif
+                                @if(!empty($mid['payment_type']))
+                                    <tr><th>Payment Type</th><td>{{ $mid['payment_type'] }}</td></tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <details>
+                        <summary>Raw Midtrans Response</summary>
+                        <pre style="max-height: 300px; overflow:auto;">{{ json_encode($mid, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                    </details>
+                @else
+                    <div class="alert alert-secondary">Belum ada data Midtrans untuk transaksi ini.</div>
+                @endif
+            </div>
+
+            <div class="d-flex gap-2">
+                @if($transaction->status === 'pending')
+                    <form method="POST" action="{{ route('customer.transactions.update', $transaction->id) }}">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="action" value="cancel">
+                        <button class="btn btn-danger" onclick="return confirm('Batalkan transaksi?')">Batalkan</button>
+                    </form>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+@extends('layouts.app')
+
+@section('content')
 <style>
     :root {
         --primary: #2365A2;

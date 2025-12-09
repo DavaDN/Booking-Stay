@@ -29,8 +29,7 @@ use App\Http\Controllers\Customer\{
 
 use App\Http\Controllers\Resepsionis\{
     ProfileResepsionisController,
-    DashboardController,
-    ReservationController
+    DashboardController
 };
 
 use App\Http\Controllers\LandingPageController;
@@ -185,24 +184,6 @@ Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () 
             ->name('resepsionis.profile.edit');
         Route::post('profile/update', [ProfileResepsionisController::class, 'update'])
             ->name('resepsionis.profile.update');
-
-            Route::prefix('resepsionis')
-    ->name('resepsionis.')
-    ->group(function () {
-
-    Route::get('/reservations', [ReservationController::class, 'index'])
-        ->name('reservations.index');
-
-    Route::post('/reservations', [ReservationController::class, 'store'])
-        ->name('reservations.store');
-
-    Route::put('/reservations/{id}', [ReservationController::class, 'update'])
-        ->name('reservations.update');
-
-    Route::delete('/reservations/{id}', [ReservationController::class, 'destroy'])
-        ->name('reservations.destroy');
-});
-
     });
 });
 
@@ -211,11 +192,11 @@ Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () 
 | Customer Area (Web)
 |--------------------------------------------------------------------------
 */
-Route::prefix('customer')->middleware('auth:customer')->group(function () {
+Route::prefix('customer')->middleware('auth:customer')->name('customer.')->group(function () {
 
-    Route::get('profile', [ProfileController::class, 'profile'])->name('customer.profile');
-    Route::put('profile', [ProfileController::class, 'updateProfile'])->name('customer.profile.update');
-    Route::delete('profile', [ProfileController::class, 'deleteAccount'])->name('customer.profile.delete');
+    Route::get('profile', [ProfileController::class, 'profile'])->name('profile');
+    Route::put('profile', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::delete('profile', [ProfileController::class, 'deleteAccount'])->name('profile.delete');
 
     Route::get('home', [CustomerListHotelController::class, 'index'])->name('customer.hotels.index');
     Route::get('home/{id}', [CustomerListHotelController::class, 'show'])->name('customer.hotels.show');
@@ -228,8 +209,22 @@ Route::prefix('customer')->middleware('auth:customer')->group(function () {
     Route::post('bookings', [CustomerBookController::class, 'store'])->name('customer.bookings.store');
     Route::get('bookings/{id}', [CustomerBookController::class, 'show'])->name('customer.bookings.show');
 
-    Route::resource('transactions', CustomerTransactionController::class)->only(['index', 'show', 'create', 'store']);
+    Route::resource('transactions', CustomerTransactionController::class)->only(['index', 'show', 'create', 'store', 'update']);
 
 
 
+});
+
+// Midtrans notification (public endpoint used by Midtrans)
+use App\Http\Controllers\Payment\MidtransController;
+Route::post('midtrans/notification', [MidtransController::class, 'notification'])->name('midtrans.notification');
+
+// Create Snap token (customer must be authenticated)
+Route::prefix('customer')->middleware('auth:customer')->name('customer.')->group(function () {
+    Route::post('midtrans/create-snap', [MidtransController::class, 'createSnapToken'])->name('midtrans.create_snap');
+        Route::get('transactions/{id}/midtrans', [MidtransController::class, 'transactionDetails'])->name('midtrans.transaction_details');
+        
+        // Midtrans demo routes (sandbox test page)
+        Route::get('midtrans/demo', [\App\Http\Controllers\Payment\MidtransDemoController::class, 'showDemo'])->name('midtrans.demo');
+        Route::post('midtrans/demo/create', [\App\Http\Controllers\Payment\MidtransDemoController::class, 'createDemoSnap'])->name('midtrans.demo_create');
 });

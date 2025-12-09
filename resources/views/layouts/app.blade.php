@@ -17,10 +17,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <style>
+        :root { --navbar-height: 68px; --alert-area-height: 42px; }
+
         /* Alerts fixed under the navbar */
         .site-alerts {
             position: fixed;
-            top: 68px; /* adjust to match navbar height */
+            top: var(--navbar-height); /* match navbar height */
             left: 0;
             right: 0;
             z-index: 1050;
@@ -33,9 +35,15 @@
             border-radius: 6px;
             margin-top: 6px;
         }
-        /* push page content down slightly so fixed alerts don't cover it when present */
-        body.has-site-alerts {
-            padding-top: 110px; /* navbar (approx 68px) + alert area */
+
+        /* Always push content below navbar */
+        .min-h-screen {
+            padding-top: var(--navbar-height);
+        }
+
+        /* If there are site alerts, increase the top padding so content is fully visible */
+        .has-site-alerts .min-h-screen {
+            padding-top: calc(var(--navbar-height) + var(--alert-area-height));
         }
     </style>
 

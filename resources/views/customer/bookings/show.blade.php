@@ -251,9 +251,9 @@
                     </form>
                 @endif
                 @if ((!$booking->transaction) && ($booking->status === 'confirmed' || $booking->status === 'checked_in'))
-                    <a href="{{ route('customer.transactions.create') }}" class="btn btn-primary">
-                        <i class="fas fa-credit-card"></i> Lakukan Pembayaran
-                    </a>
+                    <button id="payButton" class="btn btn-primary" data-booking-id="{{ $booking->id }}">
+                        <i class="fas fa-credit-card"></i> Bayar Sekarang
+                    </button>
                 @endif
                 @if ($booking->transaction)
                     <a href="{{ route('customer.transactions.show', $booking->transaction->id) }}" class="btn btn-primary">
@@ -264,4 +264,75 @@
         </div>
     </div>
 </div>
+@php
+    $midtransScript = config('midtrans.is_production')
+        ? 'https://app.midtrans.com/snap/snap.js'
+        : 'https://app.sandbox.midtrans.com/snap/snap.js';
+@endphp
+
+<script src="{{ $midtransScript }}" data-client-key="{{ config('midtrans.client_key') }}"></script>
+<script>
+    (function(){
+        const payButton = document.getElementById('payButton');
+        if (!payButton) return;
+
+        payButton.addEventListener('click', async function (e) {
+            e.preventDefault();
+            const bookingId = this.dataset.bookingId;
+            this.disabled = true;
+            this.innerText = 'Mempersiapkan pembayaran...';
+
+            try {
+                const res = await fetch("{{ route('midtrans.create_snap') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ booking_id: bookingId })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(()=>({}));
+                    alert(err.message || 'Gagal membuat token pembayaran');
+                    this.disabled = false;
+                    this.innerText = 'Bayar Sekarang';
+                    return;
+                }
+
+                const data = await res.json();
+                const token = data.token;
+                const transactionId = data.transaction_id;
+
+                if (!token) {
+                    alert('Token pembayaran tidak diterima');
+                    this.disabled = false;
+                    this.innerText = 'Bayar Sekarang';
+                    return;
+                }
+
+                window.snap.pay(token, {
+                    onSuccess: function(result){
+                        window.location.href = "{{ url('customer/transactions') }}/" + transactionId;
+                    },
+                    onPending: function(result){
+                        window.location.href = "{{ url('customer/transactions') }}/" + transactionId;
+                    },
+                    onError: function(result){
+                        alert('Pembayaran gagal atau dibatalkan');
+                        payButton.disabled = false;
+                        payButton.innerText = 'Bayar Sekarang';
+                    }
+                });
+
+            } catch (err) {
+                console.error(err);
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+                this.disabled = false;
+                this.innerText = 'Bayar Sekarang';
+            }
+        });
+    })();
+</script>
+
 @endsection

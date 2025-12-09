@@ -89,7 +89,7 @@ class AdminAuthController extends Controller
         Auth::guard('admin')->login($admin);
 
 
-        return redirect('/admin/dashboard')->with('success', 'Registrasi berhasil!');
+        return redirect()->route('admin.dashboard')->with('success', 'Registrasi berhasil!');
     }
 
     public function logout(Request $request)
@@ -103,6 +103,6 @@ class AdminAuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/admin/login');
+        return redirect()->route('login');
     }
 }
