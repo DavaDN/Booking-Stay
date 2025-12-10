@@ -34,6 +34,14 @@ class RoomType extends Model
     }
 
     /**
+     * Many-to-many relation to hotels for room types assigned to multiple hotels
+     */
+    public function hotels()
+    {
+        return $this->belongsToMany(Hotel::class, 'hotel_room_type', 'room_type_id', 'hotel_id');
+    }
+
+    /**
      * Get count of available rooms
      */
     public function getAvailableRoomsAttribute()

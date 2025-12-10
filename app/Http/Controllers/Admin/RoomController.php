@@ -23,7 +23,7 @@ class RoomController extends Controller
         $rooms = $query->paginate(10)->appends($request->query());
 
 
-        return view('admin.rooms.index', compact('rooms'));
+        return view('admin.room', compact('rooms'));
     }
 
 

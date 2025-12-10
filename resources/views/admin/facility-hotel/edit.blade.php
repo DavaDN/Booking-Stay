@@ -136,13 +136,13 @@
 
 <div class="header">
     <h5>Edit Fasilitas Hotel</h5>
-    <a href="{{ route('facility-hotels.index') }}" class="btn btn-secondary">
+    <a href="{{ route('admin.facility-hotels.index') }}" class="btn btn-secondary">
         <i class="fas fa-arrow-left"></i> Kembali
     </a>
 </div>
 
 <div class="form-container">
-    <form action="{{ route('facility-hotels.update', $facilityHotel->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.facility-hotels.update', $facilityHotel->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -206,9 +206,6 @@
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-save"></i> Update Fasilitas
             </button>
-            <a href="{{ route('facility-hotels.index') }}" class="btn btn-secondary">
-                <i class="fas fa-times"></i> Batal
-            </a>
         </div>
     </form>
 </div>

@@ -67,7 +67,7 @@
     }
 
     .badge-pending { background: #fff3cd; color: #856404; }
-    .badge-confirmed { background: #d4edda; color: #155724; }
+    .badge-paid { background: #d4edda; color: #155724; }
     .badge-cancelled { background: #f8d7da; color: #721c24; }
     .badge-checked_in { background: #d1ecf1; color: #0c5460; }
     .badge-checked_out { background: #e7e8ea; color: #383d41; }
