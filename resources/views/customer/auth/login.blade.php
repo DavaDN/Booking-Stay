@@ -1,34 +1,203 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="d-flex align-items-center justify-content-center min-vh-100">
-    <div class="card shadow-sm p-4" style="width:100%; max-width:420px;">
-        <h3 class="fw-bold mb-3 text-center">Login Customer</h3>
+<div class="auth-page">
+    <style>
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-        @if(session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
 
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+        .auth-header {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
 
-        <form action="{{ route('customer.login') }}" method="POST">
-            @csrf
+        .auth-header h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 10px;
+            letter-spacing: -0.5px;
+        }
 
-            <label>Email</label>
-            <input type="email" name="email" class="form-control mb-2" required>
+        .auth-header p {
+            font-size: 14px;
+            opacity: 0.9;
+            margin: 0;
+        }
 
-            <label>Password</label>
-            <input type="password" name="password" class="form-control mb-3" required>
+        .auth-body {
+            padding: 40px 30px;
+        }
 
-            <button class="btn btn-primary w-100">Login</button>
-        </form>
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-        <p class="text-center mt-3 mb-0">
-            Belum punya akun?
-            <a href="{{ route('customer.register') }}">Daftar sekarang</a>
-        </p>
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f9f9f9;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4A90E2;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .auth-footer {
+            padding: 0 30px 30px;
+            text-align: center;
+        }
+
+        .auth-footer p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        .auth-footer a {
+            color: #4A90E2;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .auth-footer a:hover {
+            color: #357ABD;
+            text-decoration: underline;
+        }
+
+        .alert-custom {
+            margin-bottom: 20px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            border-left: 4px solid;
+        }
+
+        .alert-danger-custom {
+            background: #fee;
+            color: #c33;
+            border-left-color: #c33;
+        }
+
+        .alert-success-custom {
+            background: #efe;
+            color: #3c3;
+            border-left-color: #3c3;
+        }
+    </style>
+
+    <div class="auth-container">
+        <div class="auth-header">
+            <h2>Welcome Back</h2>
+            <p>Login ke akun Booking-Stay Anda</p>
+        </div>
+
+        <div class="auth-body">
+            @if(session('error'))
+                <div class="alert-custom alert-danger-custom">
+                    <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div class="alert-custom alert-success-custom">
+                    <i class="fas fa-check-circle"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            <form action="{{ route('customer.login') }}" method="POST">
+                @csrf
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Masukkan email Anda" 
+                           value="{{ old('email') }}" required>
+                    @error('email')
+                        <small style="color: #c33;">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Masukkan password" required>
+                    @error('password')
+                        <small style="color: #c33;">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <button type="submit" class="btn-login">Login Sekarang</button>
+            </form>
+        </div>
+
+        <div class="auth-footer">
+            <p>Belum punya akun? 
+                <a href="{{ route('customer.register.form') }}">Daftar sekarang</a>
+            </p>
+        </div>
     </div>
 </div>
 @endsection

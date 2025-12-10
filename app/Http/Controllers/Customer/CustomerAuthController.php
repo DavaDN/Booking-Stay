@@ -119,7 +119,7 @@ class CustomerAuthController extends Controller
         Auth::guard('customer')->login($customer);
 
         // Redirect langsung ke Dashboard (Home Customer)
-        return redirect()->route('customer.hotels.index')->with('success', 'Verifikasi berhasil! Selamat datang.');
+        return redirect()->route('customer.home')->with('success', 'Verifikasi berhasil! Selamat datang.');
     }
 
     /**
@@ -139,7 +139,7 @@ class CustomerAuthController extends Controller
             $request->session()->regenerate();
             
             // Redirect langsung ke Dashboard
-            return redirect()->route('customer.hotels.index')->with('success', 'Login berhasil! Selamat datang.');
+            return redirect()->route('customer.home')->with('success', 'Login berhasil! Selamat datang.');
         }
     }
 
