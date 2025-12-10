@@ -111,12 +111,12 @@
                         <div class="col-7">
                             @if($transaction->booking->status === 'pending')
                                 <span class="badge bg-warning text-dark">Pending</span>
-                            @elseif($transaction->booking->status === 'confirmed')
-                                <span class="badge bg-success">Confirmed</span>
-                            @elseif($transaction->booking->status === 'checked_in')
-                                <span class="badge bg-info">Checked In</span>
-                            @elseif($transaction->booking->status === 'checked_out')
-                                <span class="badge bg-secondary">Checked Out</span>
+                            @elseif($transaction->booking->status === 'paid')
+                                <span class="badge bg-success">Paid</span>
+                            @elseif($transaction->booking->status === 'check-in')
+                                <span class="badge bg-info">Check In</span>
+                            @elseif($transaction->booking->status === 'check-out')
+                                <span class="badge bg-secondary">Check Out</span>
                             @else
                                 <span class="badge bg-danger">{{ ucfirst($transaction->booking->status) }}</span>
                             @endif

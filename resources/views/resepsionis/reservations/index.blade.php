@@ -27,7 +27,7 @@
         </div>
 
         <div class="card-body">
-            <form action="{{ route('resepsionis.reservations.store') }}" method="POST">
+            <form action="{{ route('reservations.store') }}" method="POST">
                 @csrf
 
                 <div class="row g-3 mb-3">
@@ -49,7 +49,7 @@
                         <select name="room_id" class="form-select" required>
                             <option value="">-- Select Room --</option>
                             @foreach($rooms as $room)
-                                <option value="{{ $room->id }}">
+                                <option value="{{ $room->id }}" data-room-type="{{ $room->room_type_id }}">
                                     Room {{ $room->number }} - {{ $room->roomType->name ?? '-' }}
                                 </option>
                             @endforeach
@@ -85,6 +85,82 @@
                 <button class="btn btn-primary px-4">
                     Save Reservation
                 </button>
+            </form>
+        </div>
+    </div>
+
+    {{-- Walk-in Booking by Resepsionis (creates Booking + Transaction and opens Midtrans) --}}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white fw-semibold">
+            Create Booking (Walk-in)
+        </div>
+        <div class="card-body">
+            <form action="{{ route('resepsionis.bookings.create') }}" method="POST">
+                @csrf
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Customer (existing)</label>
+                        <select name="customer_id" class="form-select">
+                            <option value="">-- Select Customer --</option>
+                            @foreach($customers as $c)
+                                <option value="{{ $c->id }}">{{ $c->name }} ({{ $c->email }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Or New Customer Name</label>
+                        <input type="text" name="customer_name" class="form-control" placeholder="Full name">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">New Customer Email</label>
+                        <input type="email" name="customer_email" class="form-control" placeholder="email@example.com">
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Room Type</label>
+                        <select id="walk_room_type" name="room_type_id" class="form-select" required>
+                            <option value="">-- Select Room Type --</option>
+                            @foreach($rooms as $room)
+                                @if($room->roomType)
+                                    <option value="{{ $room->roomType->id }}">{{ $room->roomType->name }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Room Number</label>
+                        <select id="walk_room_id" name="room_id" class="form-select" required>
+                            <option value="">-- Select Room --</option>
+                            @foreach($rooms as $room)
+                                <option value="{{ $room->id }}" data-room-type="{{ $room->room_type_id }}">Room {{ $room->number }} - {{ $room->roomType->name ?? '-' }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">Check-in</label>
+                        <input type="date" name="check_in" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">Check-out</label>
+                        <input type="date" name="check_out" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Price per day (IDR)</label>
+                        <input type="number" name="price_per_day" class="form-control" required>
+                    </div>
+                </div>
+
+                <button class="btn btn-success">Create & Pay (Midtrans)</button>
             </form>
         </div>
     </div>
@@ -145,7 +221,7 @@
                                 </button>
 
                                 {{-- Delete --}}
-                                <form action="{{ route('resepsionis.reservations.destroy', $row->id) }}"
+                                <form action="{{ route('reservations.destroy', $row->id) }}"
                                       method="POST" class="d-inline">
                                     @csrf
                                     @method('DELETE')
@@ -163,7 +239,7 @@
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
 
-                                    <form action="{{ route('resepsionis.reservations.update', $row->id) }}" method="POST">
+                                    <form action="{{ route('reservations.update', $row->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
 
@@ -234,4 +310,20 @@
     </div>
 
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    // filter room options when selecting room type in walk-in booking form
+    document.getElementById('walk_room_type').addEventListener('change', function() {
+        var type = this.value;
+        var roomSelect = document.getElementById('walk_room_id');
+        Array.from(roomSelect.options).forEach(function(opt){
+            if (!opt.value) return; // keep placeholder
+            var rt = opt.getAttribute('data-room-type');
+            opt.style.display = rt == type ? '' : 'none';
+        });
+        roomSelect.value = '';
+    });
+</script>
 @endsection

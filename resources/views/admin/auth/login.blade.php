@@ -181,7 +181,7 @@
         </div>
         <div class="right-panel">
             <h2>Login 
-                Admin&Resepsionis</h2>
+                Staff</h2>
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="form-group">

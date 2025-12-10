@@ -11,20 +11,20 @@ class ProfileResepsionisController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::guard('resepsionis')->user();
         return view('resepsionis.profile.index', compact('user'));
     }
 
     public function edit()
     {
-        $user = Auth::user();
+        $user = Auth::guard('resepsionis')->user();
         return view('resepsionis.profile.edit', compact('user'));
     }
 
     public function update(Request $request)
     {
         /** @var \App\Models\User $user */
-        $user = Auth::user();
+        $user = Auth::guard('resepsionis')->user();
 
         $request->validate([
             'name'     => 'required|string|max:255',

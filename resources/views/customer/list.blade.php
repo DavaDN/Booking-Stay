@@ -326,7 +326,7 @@
             <!-- Pagination -->
             <div class="row mt-4">
                 <div class="col-12 d-flex justify-content-end">
-                    {{ $roomTypes->links() }}
+                    {{ $roomTypes->links('vendor.pagination.custom') }}
                 </div>
             </div>
         </div>

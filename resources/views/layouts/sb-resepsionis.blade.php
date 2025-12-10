@@ -89,6 +89,7 @@
             transition: margin-left 0.3s ease;
         }
     </style>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -99,22 +100,42 @@
             <img src="{{ asset('images/logo (2).png') }}" alt="Logo">
         </div>
         <nav class="nav flex-column">
-            <a href="{{ route('resepsionis.dashboard') }}" class="nav-link {{ request()->routeIs('resepsionis.dashboard') ? 'active' : '' }}">
+            <a href="{{ route('resepsionis.dashboard') }}"
+                class="nav-link {{ request()->routeIs('resepsionis.dashboard') ? 'active' : '' }}">
                 <i class="bi bi-house"></i> Dashboard
             </a>
-                        <a href="{{ route('resepsionis.reservations.index') }}" 
-                class="nav-link {{ request()->routeIs('resepsionis.reservations.*') ? 'active' : '' }}">
-                    Reservasi
+            <div class="nav-item">
+                @php
+                    $isReportActive = request()->routeIs('resepsionis.transactions.*') || request()->routeIs('resepsionis.bookings.*') || request()->routeIs('transactions.*') || request()->routeIs('bookings.*');
+                    $transactionRoute = Route::has('resepsionis.transactions.index') ? route('resepsionis.transactions.index') : (Route::has('transactions.index') ? route('transactions.index') : '#');
+                    $bookingRoute = Route::has('resepsionis.bookings.index') ? route('resepsionis.bookings.index') : (Route::has('bookings.index') ? route('bookings.index') : '#');
+                @endphp
+
+                <a class="nav-link d-flex align-items-center justify-content-between {{ $isReportActive ? 'active' : '' }}"
+                    data-bs-toggle="collapse" href="#reportMenu" role="button"
+                    aria-expanded="{{ $isReportActive ? 'true' : 'false' }}"
+                    aria-controls="reportMenu">
+                    <span><i class="bi bi-file-earmark-text"></i> <span>Master Data</span></span>
+                    <i class="bi bi-chevron-down"></i>
                 </a>
-            <a href="{{ route('bookings.index') }}" class="nav-link">
-                <i class="bi bi-box-arrow-in-right"></i> Check-In
-            </a>
-            <a href="{{ route('transactions.index') }}" class="nav-link {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
-                <i class="bi bi-box-arrow-right"></i> Check-Out
-            </a>
-            <a href="#" class="nav-link">
-                <i class="bi bi-bar-chart"></i> Laporan
-            </a>
+
+                <div class="collapse {{ $isReportActive ? 'show' : '' }}" id="reportMenu">
+                    <div class="sidebar-subnav"
+                        style="padding-left:10px; padding-top:6px; display:flex; flex-direction:column; gap:6px;">
+                        <a href="{{ $transactionRoute }}"
+                            class="nav-link {{ request()->routeIs('resepsionis.transactions.*') || request()->routeIs('transactions.*') ? 'active' : '' }}">
+                            <i class="bi bi-wallet2"></i> Transaction
+                        </a>
+                        <a href="{{ $bookingRoute }}"
+                            class="nav-link {{ request()->routeIs('resepsionis.bookings.*') || request()->routeIs('bookings.*') ? 'active' : '' }}">
+                            <i class="bi bi-card-checklist"></i> Booking
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+
+
             <a href="#" class="nav-link">
                 <i class="bi bi-gear"></i> Pengaturan
             </a>
@@ -122,7 +143,7 @@
 
         <!-- Logout -->
         <div class="logout">
-            <a href="{{ url('/admin/login') }}">
+            <a href="{{ route('login') }}">
                 <i class="bi bi-box-arrow-left"></i> Log-Out
             </a>
         </div>
@@ -140,7 +161,8 @@
 
             <div class="notification-icon position-relative me-3" style="font-size: 20px;">
                 <i class="bi bi-bell"></i>
-                <span class="notification-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                <span
+                    class="notification-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                     style="font-size: 10px;">
                     3
                 </span>

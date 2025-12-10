@@ -355,26 +355,7 @@
     @if($booking->status !== 'cancelled' && $booking->status !== 'checked_out')
     <div class="card">
         <div class="card-title">⚙️ Update Status Booking</div>
-        <form action="{{ route('admin.bookings.updateStatus', $booking->id) }}" method="POST">
-            @csrf
-            @method('PATCH')
-            
-            <div class="form-group">
-                <label for="status">Pilih Status Baru:</label>
-                <select name="status" id="status" required>
-                    <option value="">-- Pilih Status --</option>
-                    <option value="pending" {{ $booking->status === 'pending' ? 'selected' : '' }}>Pending (Menunggu Konfirmasi)</option>
-                    <option value="confirmed" {{ $booking->status === 'confirmed' ? 'selected' : '' }}>Confirmed (Dikonfirmasi)</option>
-                    <option value="checked_in" {{ $booking->status === 'checked_in' ? 'selected' : '' }}>Checked In (Sudah Check-In)</option>
-                    <option value="checked_out" {{ $booking->status === 'checked_out' ? 'selected' : '' }}>Checked Out (Sudah Check-Out)</option>
-                    <option value="cancelled">Cancelled (Dibatalkan)</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn btn-success">
-                <i class="fas fa-save"></i> Update Status
-            </button>
-        </form>
+            <!-- Admin cannot change booking status here; status is updated by customer payment and resepsionis actions -->
     </div>
     @endif
 

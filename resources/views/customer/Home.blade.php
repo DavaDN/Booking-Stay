@@ -345,7 +345,7 @@
 
         <!-- Pagination -->
         <div class="pagination-wrapper">
-            {{ $hotels->links() }}
+              {{ $hotels->links('vendor.pagination.custom') }}
         </div>
     @else
         <div class="empty-state">

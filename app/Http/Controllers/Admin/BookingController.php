@@ -64,16 +64,9 @@ class BookingController extends Controller
      */
     public function updateStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|in:pending,confirmed,cancelled,checked_in,checked_out'
-        ]);
-
-        $booking = Booking::findOrFail($id);
-        $oldStatus = $booking->status;
-        $booking->update(['status' => $request->status]);
-
-        return redirect()->route('admin.bookings.show', $booking->id)
-                       ->with('success', "Booking status berhasil diupdate dari {$oldStatus} menjadi {$request->status}");
+        // Admin should not manually change booking status. Booking lifecycle is driven by
+        // customer actions (payment/cancel) and resepsionis confirmations (check-in/check-out).
+        return redirect()->back()->with('error', 'Admin tidak diperkenankan mengubah status booking. Status diatur oleh customer dan resepsionis.');
     }
 
     /**

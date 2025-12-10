@@ -21,7 +21,7 @@ class HotelController extends Controller
         $hotel = $query->paginate(10)->appends($request->query());
 
 
-        return view('admin.hotel', compact('hotel'));
+        return view('admin.hotels.index', compact('hotel'));
     }
 
     public function store(Request $request)
@@ -46,7 +46,7 @@ class HotelController extends Controller
 
 
         return $hotel
-            ? redirect()->route('hotels.index')->with('success', 'Hotel berhasil ditambahkan.')
+            ? redirect()->route('admin.hotels.index')->with('success', 'Hotel berhasil ditambahkan.')
             : redirect()->back()->with('error', 'Gagal menambahkan hotel. Silakan coba lagi.');
     }
 

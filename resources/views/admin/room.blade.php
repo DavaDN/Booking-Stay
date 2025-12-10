@@ -107,7 +107,7 @@
         <button class="btn-add" id="btnOpenModal">
             <i class="fas fa-plus"></i> Tambah Kamar
         </button>
-        <form method="GET" action="{{ route('rooms.index') }}" class="search-bar">
+        <form method="GET" action="{{ route('admin.rooms.index') }}" class="search-bar">
             <input type="text" name="search" placeholder="search room" value="{{ request('search') }}">
             <button type="submit"><i class="fas fa-search"></i></button>
         </form>
@@ -134,7 +134,7 @@
                         <button class="btn-edit" onclick="openEditModal('{{ $room->id }}')">
                             <i class="fas fa-pen"></i>
                         </button>
-                        <form action="{{ route('rooms.destroy', $room->id) }}" method="POST" onsubmit="return confirm('Hapus kamar ini?')">
+                        <form action="{{ route('admin.rooms.destroy', $room->id) }}" method="POST" onsubmit="return confirm('Hapus kamar ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn-delete"><i class="fas fa-trash"></i></button>
@@ -253,7 +253,7 @@
         e.preventDefault();
         let formData = new FormData(this);
 
-        let res = await fetch("{{ route('rooms.store') }}", {
+        let res = await fetch("{{ route('admin.rooms.store') }}", {
             method: "POST",
             headers: { "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value },
             body: formData

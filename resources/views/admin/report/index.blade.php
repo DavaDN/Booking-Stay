@@ -249,7 +249,7 @@
             <!-- Pagination -->
             @if($transactions->hasPages())
             <div class="d-flex justify-content-center mt-4">
-                {{ $transactions->links('pagination::bootstrap-4') }}
+                {{ $transactions->links('vendor.pagination.custom') }}
             </div>
             @endif
         </div>

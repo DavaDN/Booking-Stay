@@ -26,9 +26,4 @@ class Transaction extends Model
     {
         return $this->belongsTo(Booking::class);
     }
-
-    public function discount()
-    {
-        return $this->belongsTo(Discount::class);
-    }
 }

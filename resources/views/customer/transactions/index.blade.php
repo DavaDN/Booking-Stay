@@ -229,7 +229,7 @@
         </div>
 
         <div class="mt-4">
-            {{ $transactions->links() }}
+            {{ $transactions->links('vendor.pagination.custom') }}
         </div>
     @else
         <div class="no-data">

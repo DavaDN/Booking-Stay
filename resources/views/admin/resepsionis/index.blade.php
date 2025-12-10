@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>Receptionist Management</h4>
-        <a href="{{ route('resepsionis.create') }}" class="btn btn-primary">
+        <a href="{{ route('admin.resepsionis.create') }}" class="btn btn-primary">
             <i class="fas fa-plus"></i> Tambah Receptionist
         </a>
     </div>
@@ -30,8 +30,8 @@
                                 <a href="mailto:{{ $r->email }}">{{ $r->email }}</a>
                             </td>
                             <td>
-                                <a href="{{ route('resepsionis.edit', $r->id) }}" class="text-primary">Edit</a> |
-                                <form action="{{ route('resepsionis.destroy', $r->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus resepsionis ini?')">
+                                <a href="{{ route('admin.resepsionis.edit', $r->id) }}" class="text-primary">Edit</a> |
+                                <form action="{{ route('admin.resepsionis.destroy', $r->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus resepsionis ini?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-link text-danger p-0 m-0">Delete</button>
@@ -49,7 +49,7 @@
     </div>
 
     <div class="mt-3">
-        {{ $resepsionis->links() }}
+        {{ $resepsionis->links('vendor.pagination.custom') }}
     </div>
 </div>
 @endsection

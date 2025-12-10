@@ -7,7 +7,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Edit Receptionist') }}
             </h2>
-            <a href="{{ route('resepsionis.index') }}">
+            <a href="{{ route('admin.resepsionis.index') }}">
                 <x-secondary-button>
                     {{ __('Kembali') }}
                 </x-secondary-button>
@@ -17,7 +17,7 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900">
                 
-                <form action="{{ route('resepsionis.update', $resepsionis->id) }}" method="POST" class="space-y-6">
+                <form action="{{ route('admin.resepsionis.update', $resepsionis->id) }}" method="POST" class="space-y-6">
                     @csrf
                     @method('PUT') 
 
@@ -35,6 +35,17 @@
                             <x-input-error class="mt-2" :messages="$errors->get('email')" />
                         </div>
 
+                        <div>
+                            <x-input-label for="hotel_id" :value="__('Hotel')" />
+                            <select name="hotel_id" id="hotel_id" class="mt-1 block w-full form-select">
+                                <option value="">-- Pilih Hotel --</option>
+                                @foreach($hotels as $hotel)
+                                    <option value="{{ $hotel->id }}" {{ old('hotel_id', $resepsionis->hotel_id) == $hotel->id ? 'selected' : '' }}>{{ $hotel->name }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error class="mt-2" :messages="$errors->get('hotel_id')" />
+                        </div>
+
                         <div class="col-span-1 md:col-span-2 border-t border-gray-100 pt-4">
                             <h3 class="text-sm font-medium text-gray-500 mb-4">Ganti Password (Opsional)</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -49,7 +60,7 @@
                     </div>
 
                     <div class="flex items-center justify-end mt-6 gap-4 border-t border-gray-100 pt-4">
-                        <a href="{{ route('resepsionis.index') }}">
+                        <a href="{{ route('admin.resepsionis.index') }}">
                             <x-secondary-button type="button">
                                 {{ __('Batal') }}
                             </x-secondary-button>

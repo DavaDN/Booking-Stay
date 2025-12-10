@@ -262,7 +262,7 @@
         </div>
 
         <div class="mt-4">
-            {{ $bookings->links() }}
+            {{ $bookings->links('vendor.pagination.custom') }}
         </div>
     @else
         <div class="no-data">

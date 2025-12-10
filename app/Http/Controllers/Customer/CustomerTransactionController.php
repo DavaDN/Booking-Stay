@@ -115,9 +115,14 @@ class CustomerTransactionController extends Controller
 
         if ($request->action === 'cancel' && $transaction->status === 'pending') {
             $transaction->update(['status' => 'cancelled']);
-            
+
+            // Also mark related booking as cancelled if exists and still pending
+            if ($transaction->booking && $transaction->booking->status === 'pending') {
+                $transaction->booking->update(['status' => 'cancelled']);
+            }
+
             return redirect()->route('customer.transactions.index')
-                           ->with('success', 'Transaksi berhasil dibatalkan.');
+                           ->with('success', 'Transaksi berhasil dibatalkan. Booking terkait juga dibatalkan jika masih pending.');
         }
 
         return back()->with('error', 'Tidak dapat membatalkan transaksi dengan status ini.');

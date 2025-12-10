@@ -92,7 +92,7 @@
     <h5>Daftar Customer</h5>
     <p class="text-muted mb-0">Kelola semua data customer Anda</p>
     
-    <form method="GET" class="search-box mt-3">
+    <form method="GET" class="search-box mt-1">
         <input type="text" name="search" placeholder="Cari customer..." value="{{ request('search') }}">
         <button type="submit" class="btn" style="background: #3498db; color: white;">Cari</button>
     </form>
@@ -120,7 +120,7 @@
                         <td>{{ $item->phone ?? '-' }}</td>
                         <td>{{ $item->created_at ? $item->created_at->format('d/m/Y') : '-' }}</td>
                         <td>
-                            <form action="{{ route('customers.destroy', $item->id) }}" method="POST" style="display: inline;">
+                            <form action="{{ route('admin.customers.destroy', $item->id) }}" method="POST" style="display: inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn-delete" onclick="return confirm('Yakin ingin menghapus?')">
@@ -134,7 +134,7 @@
         </table>
 
         <div class="d-flex justify-content-end">
-            {{ $customers->links() }}
+              {{ $customers->links('vendor.pagination.custom') }}
         </div>
     @else
         <div class="no-data">

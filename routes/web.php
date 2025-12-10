@@ -32,7 +32,11 @@ use App\Http\Controllers\Resepsionis\{
     DashboardController
 };
 
+use App\Http\Controllers\Resepsionis\ReservationController;
+
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\Payment\MidtransDemoController;
+use App\Http\Controllers\Payment\MidtransController;
 
 Route::get('/csrf-token', function () {
     return response()->json(['token' => csrf_token()]);
@@ -123,9 +127,9 @@ Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 | Admin Area
 |--------------------------------------------------------------------------
 */
-Route::prefix('admin')->middleware('auth:admin')->group(function () {
+Route::prefix('admin')->middleware('auth:admin')->name('admin.')->group(function () {
 
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('resepsionis', ResepsionisController::class);
 
@@ -141,22 +145,26 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
     Route::resource('bookings', BookingController::class);
     Route::patch('bookings/{id}/status', [BookingController::class, 'updateStatus'])
-        ->name('admin.bookings.updateStatus');
+        ->name('bookings.updateStatus');
 
     Route::resource('transactions', TransactionController::class);
     Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus'])
-        ->name('admin.transactions.updateStatus');
+        ->name('transactions.updateStatus');
 
-    Route::get('report', [ReportController::class, 'index'])->name('admin.report');
+    // Exports: PDF and Excel
+    Route::get('transactions/export/pdf', [TransactionController::class, 'exportPdf'])->name('transactions.pdf');
+    Route::get('transactions/export/excel', [TransactionController::class, 'exportExcel'])->name('transactions.excel');
+
+    Route::get('report', [ReportController::class, 'index'])->name('report');
 
     //profile
-    Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::middleware(['auth'])->group(function () {
         Route::get('profile', [ProfileAdminController::class, 'index'])
-            ->name('admin.profile');
+            ->name('profile');
         Route::get('profile/edit', [ProfileAdminController::class, 'edit'])
-            ->name('admin.profile.edit');
+            ->name('profile.edit');
         Route::post('profile/update', [ProfileAdminController::class, 'update'])
-            ->name('admin.profile.update');
+            ->name('profile.update');
     });
 });
 
@@ -169,13 +177,31 @@ Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () 
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('resepsionis.dashboard');
 
-    Route::resource('bookings', BookingController::class)->only(['index', 'show', 'update']);
-    Route::patch('bookings/{id}/status', [BookingController::class, 'updateStatus'])
-        ->name('resepsionis.bookings.updateStatus');
+    // Reservations (resepsionis)
+    Route::resource('reservations', ReservationController::class);
 
-    Route::resource('transactions', TransactionController::class)->only(['index', 'show', 'update']);
-    Route::patch('transactions/{id}/status', [TransactionController::class, 'updateStatus'])
+    // Map legacy 'bookings' path to resepsionis reservations controller (use reservations resource)
+    Route::resource('bookings', ReservationController::class)->only(['index', 'show', 'update', 'destroy']);
+
+    // Use Resepsionis-specific TransactionController so data is scoped by hotel
+    Route::resource('transactions', \App\Http\Controllers\Resepsionis\TransactionController::class)->only(['index', 'show', 'update']);
+    Route::patch('transactions/{id}/status', [\App\Http\Controllers\Resepsionis\TransactionController::class, 'updateStatus'])
         ->name('resepsionis.transactions.updateStatus');
+
+    // Resepsionis: create bookings (walk-in) and midtrans checkout
+    Route::post('bookings/create', [\App\Http\Controllers\Resepsionis\ReservationController::class, 'createBooking'])
+        ->name('resepsionis.bookings.create');
+
+    // Resepsionis bookings management
+    Route::get('bookings', [\App\Http\Controllers\Resepsionis\BookingController::class, 'index'])->name('resepsionis.bookings.index');
+    Route::get('bookings/{id}', [\App\Http\Controllers\Resepsionis\BookingController::class, 'show'])->name('resepsionis.bookings.show');
+    Route::patch('bookings/{id}/status', [\App\Http\Controllers\Resepsionis\BookingController::class, 'updateStatus'])->name('resepsionis.bookings.updateStatus');
+
+    Route::post('midtrans/create-snap', [\App\Http\Controllers\Payment\MidtransController::class, 'createSnapForResepsionis'])
+        ->name('resepsionis.midtrans.create');
+
+    Route::get('midtrans/checkout/{transaction}', [\App\Http\Controllers\Payment\MidtransController::class, 'showSnapForResepsionis'])
+        ->name('resepsionis.midtrans.checkout');
 
     Route::middleware(['auth'])->prefix('resepsionis')->group(function () {
         Route::get('profile', [ProfileResepsionisController::class, 'index'])
@@ -218,7 +244,7 @@ Route::prefix('customer')->middleware('auth:customer')->name('customer.')->group
 });
 
 // Midtrans notification (public endpoint used by Midtrans)
-use App\Http\Controllers\Payment\MidtransController;
+
 Route::post('midtrans/notification', [MidtransController::class, 'notification'])->name('midtrans.notification');
 
 // Create Snap token (customer must be authenticated)
@@ -227,6 +253,6 @@ Route::prefix('customer')->middleware('auth:customer')->name('customer.')->group
         Route::get('transactions/{id}/midtrans', [MidtransController::class, 'transactionDetails'])->name('midtrans.transaction_details');
         
         // Midtrans demo routes (sandbox test page)
-        Route::get('midtrans/demo', [\App\Http\Controllers\Payment\MidtransDemoController::class, 'showDemo'])->name('midtrans.demo');
-        Route::post('midtrans/demo/create', [\App\Http\Controllers\Payment\MidtransDemoController::class, 'createDemoSnap'])->name('midtrans.demo_create');
+        Route::get('midtrans/demo', [MidtransDemoController::class, 'showDemo'])->name('midtrans.demo');
+        Route::post('midtrans/demo/create', [MidtransDemoController::class, 'createDemoSnap'])->name('midtrans.demo_create');
 });

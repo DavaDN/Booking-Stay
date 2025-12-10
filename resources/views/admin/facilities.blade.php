@@ -137,7 +137,7 @@
                     <a href="#" onclick="openModal('editModal{{ $facility->id }}')">
                         <span class="edit-icon">✏️</span>
                     </a>
-                    <form action="{{ route('facilities.destroy', $facility->id) }}" method="POST" onsubmit="return confirm('Yakin hapus fasilitas ini?')">
+                    <form action="{{ route('admin.facilities.destroy', $facility->id) }}" method="POST" onsubmit="return confirm('Yakin hapus fasilitas ini?')">
                         @csrf
                         @method('DELETE')
                         <button type="submit"><span class="delete-icon">🗑️</span></button>
@@ -158,7 +158,7 @@
                 <div class="modal-content">
                     <h4>Edit Fasilitas</h4>
                     <span class="close-modal" onclick="closeModal('editModal{{ $facility->id }}')">&times;</span>
-                    <form action="{{ route('facilities.update', $facility->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.facilities.update', $facility->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="form-group">
@@ -187,7 +187,7 @@
     <div class="modal-content">
         <h4>Tambah Fasilitas</h4>
         <span class="close-modal" onclick="closeModal('createModal')">&times;</span>
-        <form action="{{ route('facilities.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.facilities.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <div class="form-group">
                 <label>Nama</label>

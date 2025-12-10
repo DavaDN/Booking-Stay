@@ -13,7 +13,14 @@ class Resepsionis extends Authenticatable
         'name',
         'email',
         'password',
+        'hotel_id',
     ];
 
     protected $hidden = ['password'];
+
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class);
+    }
 }
+

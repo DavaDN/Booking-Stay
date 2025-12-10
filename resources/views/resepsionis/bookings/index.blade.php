@@ -1,4 +1,4 @@
-@extends('layouts.sidebar')
+@extends('layouts.sb-resepsionis')
 
 @section('title', 'Daftar Booking - Resepsionis')
 
@@ -54,50 +54,56 @@
                             <td>{{ \Carbon\Carbon::parse($booking->check_out)->format('d/m/Y') }}</td>
                             <td>Rp {{ number_format($booking->total_price, 0, ',', '.') }}</td>
                             <td>
-                                @if($booking->status === 'pending')
-                                    <span class="badge bg-warning text-dark">Pending</span>
-                                @elseif($booking->status === 'confirmed')
-                                    <span class="badge bg-success">Confirmed</span>
-                                @elseif($booking->status === 'checked_in')
-                                    <span class="badge bg-info">Checked In</span>
-                                @elseif($booking->status === 'checked_out')
-                                    <span class="badge bg-secondary">Checked Out</span>
-                                @else
-                                    <span class="badge bg-danger">{{ ucfirst($booking->status) }}</span>
-                                @endif
+                                    @if($booking->status === 'pending')
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    @elseif($booking->status === 'paid')
+                                        <span class="badge bg-success">Paid</span>
+                                    @elseif($booking->status === 'check-in')
+                                        <span class="badge bg-info">Check In</span>
+                                    @elseif($booking->status === 'check-out')
+                                        <span class="badge bg-secondary">Check Out</span>
+                                    @else
+                                        <span class="badge bg-danger">{{ ucfirst($booking->status) }}</span>
+                                    @endif
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
                                     <a href="{{ route('resepsionis.bookings.show', $booking->id) }}" class="btn btn-sm btn-info" title="Lihat Detail">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    @if($booking->status === 'pending')
+
+                                    
+                                    @if($booking->status === 'paid')
                                         <form action="{{ route('resepsionis.bookings.updateStatus', $booking->id) }}" method="POST" style="display: inline;">
                                             @csrf
                                             @method('PATCH')
-                                            <input type="hidden" name="status" value="confirmed">
-                                            <button type="submit" class="btn btn-sm btn-success" title="Confirm">
-                                                <i class="fas fa-check"></i>
-                                            </button>
-                                        </form>
-                                    @elseif($booking->status === 'confirmed')
-                                        <form action="{{ route('resepsionis.bookings.updateStatus', $booking->id) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="status" value="checked_in">
+                                            <input type="hidden" name="status" value="check-in">
                                             <button type="submit" class="btn btn-sm btn-primary" title="Check In">
                                                 <i class="fas fa-sign-in-alt"></i>
                                             </button>
                                         </form>
-                                    @elseif($booking->status === 'checked_in')
-                                        <form action="{{ route('resepsionis.bookings.updateStatus', $booking->id) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="status" value="checked_out">
-                                            <button type="submit" class="btn btn-sm btn-secondary" title="Check Out">
+
+                                    {{-- After check-in, show check-out but disable until check-out datetime reached --}}
+                                    @elseif($booking->status === 'check-in')
+                                        @php
+                                            $now = \Carbon\Carbon::now();
+                                            $checkoutAt = \Carbon\Carbon::parse($booking->check_out);
+                                        @endphp
+
+                                        @if($now->gte($checkoutAt))
+                                            <form action="{{ route('resepsionis.bookings.updateStatus', $booking->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="check-out">
+                                                <button type="submit" class="btn btn-sm btn-secondary" title="Check Out">
+                                                    <i class="fas fa-sign-out-alt"></i>
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button class="btn btn-sm btn-secondary" disabled title="Check-out only available on {{ \Carbon\Carbon::parse($booking->check_out)->format('d/m/Y H:i') }}">
                                                 <i class="fas fa-sign-out-alt"></i>
                                             </button>
-                                        </form>
+                                        @endif
                                     @endif
                                 </div>
                             </td>
@@ -117,7 +123,7 @@
 
     <!-- Pagination -->
     <div class="d-flex justify-content-end mt-3">
-        {{ $bookings->links() }}
+        {{ $bookings->links('vendor.pagination.custom') }}
     </div>
 </div>
 @endsection

@@ -39,12 +39,12 @@
                         <div class="col-7">
                             @if($booking->status === 'pending')
                                 <span class="badge bg-warning text-dark">Pending</span>
-                            @elseif($booking->status === 'confirmed')
-                                <span class="badge bg-success">Confirmed</span>
-                            @elseif($booking->status === 'checked_in')
-                                <span class="badge bg-info">Checked In</span>
-                            @elseif($booking->status === 'checked_out')
-                                <span class="badge bg-secondary">Checked Out</span>
+                            @elseif($booking->status === 'paid')
+                                <span class="badge bg-success">Paid</span>
+                            @elseif($booking->status === 'check-in')
+                                <span class="badge bg-info">Check In</span>
+                            @elseif($booking->status === 'check-out')
+                                <span class="badge bg-secondary">Check Out</span>
                             @else
                                 <span class="badge bg-danger">{{ ucfirst($booking->status) }}</span>
                             @endif
@@ -197,28 +197,22 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body d-flex gap-2">
                     @if($booking->status === 'pending')
+                        {{-- No direct confirm action; payment flow marks booking as paid --}}
+                        <span class="text-muted">Awaiting payment</span>
+                    @elseif($booking->status === 'paid')
                         <form action="{{ route('resepsionis.bookings.updateStatus', $booking->id) }}" method="POST" style="display: inline;">
                             @csrf
                             @method('PATCH')
-                            <input type="hidden" name="status" value="confirmed">
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-check"></i> Konfirmasi Booking
-                            </button>
-                        </form>
-                    @elseif($booking->status === 'confirmed')
-                        <form action="{{ route('resepsionis.bookings.updateStatus', $booking->id) }}" method="POST" style="display: inline;">
-                            @csrf
-                            @method('PATCH')
-                            <input type="hidden" name="status" value="checked_in">
+                            <input type="hidden" name="status" value="check-in">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-sign-in-alt"></i> Check In
                             </button>
                         </form>
-                    @elseif($booking->status === 'checked_in')
+                    @elseif($booking->status === 'check-in')
                         <form action="{{ route('resepsionis.bookings.updateStatus', $booking->id) }}" method="POST" style="display: inline;">
                             @csrf
                             @method('PATCH')
-                            <input type="hidden" name="status" value="checked_out">
+                            <input type="hidden" name="status" value="check-out">
                             <button type="submit" class="btn btn-secondary">
                                 <i class="fas fa-sign-out-alt"></i> Check Out
                             </button>

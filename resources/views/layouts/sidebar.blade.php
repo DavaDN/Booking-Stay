@@ -422,33 +422,51 @@
 
             <div class="sidebar-nav">
                 <!-- Urutan menu sesuai design -->
-                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                <a href="{{ Route::has('admin.dashboard') ? route('admin.dashboard') : '#' }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                     <i class="fas fa-home"></i> <span>Dashboard</span>
                 </a>
 
-                <a href="{{ route('facilities.index') }}" class="{{ request()->routeIs('facilities.*') ? 'active' : '' }}">
+                <a href="{{ Route::has('admin.hotels.index') ? route('admin.hotels.index') : '#' }}" class="{{ request()->routeIs('admin.hotels.*') ? 'active' : '' }}">
+                    <i class="fas fa-hotel"></i> <span>Hotel</span>
+                </a>
+
+                <a href="{{ Route::has('admin.facilities.index') ? route('admin.facilities.index') : '#' }}" class="{{ request()->routeIs('admin.facilities.*') ? 'active' : '' }}">
                     <i class="fas fa-cogs"></i> <span>Facility Room</span>
                 </a>
 
-                <a href="{{ route('room-types.index') }}" class="{{ request()->routeIs('room-types.*') ? 'active' : '' }}">
+                <a href="{{ Route::has('admin.room-types.index') ? route('admin.room-types.index') : '#' }}" class="{{ request()->routeIs('admin.room-types.*') ? 'active' : '' }}">
                     <i class="fas fa-door-open"></i> <span>Room Type</span>
                 </a>
 
-                <a href="{{ route('rooms.index') }}" class="{{ request()->routeIs('rooms.*') ? 'active' : '' }}">
+                <a href="{{ Route::has('admin.rooms.index') ? route('admin.rooms.index') : '#' }}" class="{{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">
                     <i class="fas fa-bed"></i> <span>Room</span>
                 </a>
 
-                <a href="{{ route('resepsionis.index') }}" class="{{ request()->routeIs('resepsionis.*') ? 'active' : '' }}">
+                <a href="{{ Route::has('admin.resepsionis.index') ? route('admin.resepsionis.index') : '#' }}" class="{{ request()->routeIs('admin.resepsionis.*') ? 'active' : '' }}">
                     <i class="fas fa-user-tie"></i> <span>Receptionist</span>
                 </a>
 
-                <a href="{{ route('customers.index') }}" class="{{ request()->routeIs('customers.*') ? 'active' : '' }}">
+                <a href="{{ Route::has('admin.customers.index') ? route('admin.customers.index') : '#' }}" class="{{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
                     <i class="fas fa-users"></i> <span>Customer</span>
                 </a>
 
-                <a href="{{ route('transactions.index') }}" class="{{ request()->routeIs('transactions.*') ? 'active' : '' }}">
-                    <i class="fas fa-file-alt"></i> <span>Report</span>
-                </a>
+                <div class="nav-item">
+                    <a class="d-flex align-items-center justify-content-between {{ request()->routeIs('admin.transactions.*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#reportMenu" role="button" aria-expanded="{{ request()->routeIs('admin.transactions.*') ? 'true' : 'false' }}" aria-controls="reportMenu">
+                        <span><i class="fas fa-file-alt"></i> <span>Report</span></span>
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+
+                    <div class="collapse {{ request()->routeIs('admin.transactions.*') ? 'show' : '' }}" id="reportMenu">
+                        <div class="sidebar-subnav" style="padding-left:10px; padding-top:6px; display:flex; flex-direction:column; gap:6px;">
+                            <a href="{{ Route::has('admin.transactions.index') ? route('admin.transactions.index') : '#' }}" class="{{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">
+                                <i class="fas fa-list"></i> <span>Transactions</span>
+                            </a>
+                            <a href="{{ Route::has('admin.bookings.index') ? route('admin.bookings.index') : '#' }}" class="{{ request()->routeIs('admin.bookings.index') ? 'active' : '' }}">
+                                <i class="fas fa-list"></i> <span>Bookings</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="logout-btn">
@@ -475,7 +493,7 @@
                         <span class="notification-badge">3</span>
                     </div>
                     <div class="user-profile">
-                        <a href="{{ route('admin.profile') }}" style="color: inherit;">
+                        <a href="{{ Route::has('admin.profile') ? route('admin.profile') : '#' }}" style="color: inherit;">
                             <i class="fas fa-user"></i>
                         </a>
                     </div>

@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Booking;
 use App\Models\Transaction;
+use App\Models\Room;
+use App\Models\Reservation;
+use Illuminate\Support\Facades\DB;
 
 class MidtransController extends Controller
 {
@@ -112,8 +115,11 @@ class MidtransController extends Controller
                 $transaction->midtrans_response = json_encode($payload);
                 // map status
                 $status = $payload['transaction_status'] ?? null;
+                $previousStatus = $transaction->status;
+
                 if ($status === 'capture' || $status === 'settlement' || $status === 'success') {
                     $transaction->status = 'paid';
+                    $transaction->payment_date = now();
                 } elseif ($status === 'pending') {
                     $transaction->status = 'pending';
                 } else {
@@ -121,6 +127,49 @@ class MidtransController extends Controller
                 }
 
                 $transaction->save();
+
+                // If the transaction just changed to 'paid', allocate rooms and create reservations
+                if ($transaction->status === 'paid' && $previousStatus !== 'paid') {
+                    try {
+                        $booking = $transaction->booking;
+                        if ($booking) {
+                            // set booking status to paid (payment completed)
+                            $booking->status = 'paid';
+                            $booking->save();
+
+                            $roomTypeId = $booking->room_type_id ?? null;
+                            $roomsNeeded = (int) ($booking->number_of_rooms ?? 1);
+
+                            if ($roomTypeId && $roomsNeeded > 0) {
+                                DB::transaction(function () use ($roomTypeId, $roomsNeeded, $booking) {
+                                    $availableRooms = Room::where('room_type_id', $roomTypeId)
+                                        ->where('status', 'available')
+                                        ->lockForUpdate()
+                                        ->take($roomsNeeded)
+                                        ->get();
+
+                                    foreach ($availableRooms as $room) {
+                                        Reservation::create([
+                                            'customer_id' => $booking->customer_id,
+                                            'room_id' => $room->id,
+                                            'check_in_date' => $booking->check_in->format('Y-m-d'),
+                                            'check_in_time' => $booking->check_in->format('H:i:s'),
+                                            'check_out_date' => $booking->check_out->format('Y-m-d'),
+                                            'check_out_time' => $booking->check_out->format('H:i:s'),
+                                            // initial reservation status after payment: mark as paid
+                                            'status' => 'paid',
+                                        ]);
+
+                                        $room->status = 'booked';
+                                        $room->save();
+                                    }
+                                }, 5);
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        Log::error('Auto-reservation on payment failed: ' . $e->getMessage(), ['transaction_id' => $transaction->id]);
+                    }
+                }
             }
         }
 
@@ -182,5 +231,70 @@ class MidtransController extends Controller
             'transaction' => $transaction->toArray(),
             'midtrans' => $parsed,
         ]);
+    }
+
+    /**
+     * Create snap token for resepsionis checkout (server side) and return token JSON.
+     */
+    public function createSnapForResepsionis(Request $request)
+    {
+        $request->validate(['transaction_id' => 'required|exists:transactions,id']);
+        $transaction = Transaction::with('booking')->findOrFail($request->transaction_id);
+
+        $orderId = $transaction->midtrans_order_id ?? ('ORDER-' . $transaction->id . '-' . time());
+        $transaction->midtrans_order_id = $orderId;
+        $transaction->save();
+
+        $serverKey = config('midtrans.server_key');
+        $isProduction = config('midtrans.is_production');
+        $url = $isProduction
+            ? 'https://api.midtrans.com/snap/v1/transactions'
+            : 'https://api.sandbox.midtrans.com/snap/v1/transactions';
+
+        $payload = [
+            'transaction_details' => [
+                'order_id' => $orderId,
+                'gross_amount' => (int) $transaction->total,
+            ],
+            'customer_details' => [
+                'first_name' => $transaction->booking->customer->name ?? 'Guest',
+                'email' => $transaction->booking->customer->email ?? null,
+            ],
+            'item_details' => [
+                [
+                    'id' => $transaction->booking->room_type_id ?? 'room',
+                    'price' => (int) $transaction->total,
+                    'quantity' => 1,
+                    'name' => 'Booking ' . ($transaction->booking->booking_code ?? $transaction->id),
+                ]
+            ],
+        ];
+
+        $client = Http::withBasicAuth($serverKey, '')->asJson();
+        if (!$isProduction) $client = $client->withOptions(['verify' => false]);
+        $response = $client->post($url, $payload);
+
+        if ($response->successful()) {
+            $data = $response->json();
+            $token = $data['token'] ?? null;
+            $transaction->midtrans_response = json_encode($data);
+            $transaction->save();
+            return response()->json(['token' => $token, 'transaction_id' => $transaction->id]);
+        }
+
+        return response()->json(['message' => 'Midtrans error'], 500);
+    }
+
+    public function showSnapForResepsionis($transactionId)
+    {
+        $transaction = Transaction::findOrFail($transactionId);
+        // If token already stored in midtrans_response, try to extract token
+        $token = null;
+        if ($transaction->midtrans_response) {
+            $raw = json_decode($transaction->midtrans_response, true);
+            $token = $raw['token'] ?? null;
+        }
+
+        return view('resepsionis.payments.snap', compact('token', 'transaction'));
     }
 }

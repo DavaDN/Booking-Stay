@@ -116,7 +116,7 @@
 <div class="header">
     <h5>Room Type Management</h5>
     <!-- <p>Kelola kategori kamar dan fasilitas</p> -->
-    <a href="{{ route('room-types.create') }}" class="btn-add">
+    <a href="{{ route('admin.room-types.create') }}" class="btn-add">
         <i class="fas fa-plus"></i> Tambah Tipe Kamar
     </a>
 </div>
@@ -156,10 +156,10 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="{{ route('room-types.edit', $type->id) }}" class="btn-icon btn-edit">
+                    <a href="{{ route('admin.room-types.edit', $type->id) }}" class="btn-icon btn-edit">
                         <i class="fas fa-pen"></i>
                     </a>
-                    <form action="{{ route('room-types.destroy', $type->id) }}" method="POST" onsubmit="return confirm('Hapus tipe kamar ini?')">
+                    <form action="{{ route('admin.room-types.destroy', $type->id) }}" method="POST" onsubmit="return confirm('Hapus tipe kamar ini?')">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn-icon btn-delete">

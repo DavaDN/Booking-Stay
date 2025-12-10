@@ -118,10 +118,24 @@
     <h5>Daftar Transaksi</h5>
     <p class="text-muted mb-0">Kelola semua transaksi pembayaran</p>
     
-    <form method="GET" class="search-box mt-3">
+    <form method="GET" class="search-box mt-1">
         <input type="text" name="search" placeholder="Cari booking code..." value="{{ request('search') }}">
         <button type="submit" class="btn" style="background: #3498db; color: white;">Cari</button>
     </form>
+
+    <div class="d-flex justify-content-end mt-1" style="gap:8px; margin-left: -250px;">
+        @if(Route::has('admin.transactions.pdf'))
+            <a href="{{ route('admin.transactions.pdf') }}" target="_blank" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Download PDF
+            </a>
+        @endif
+
+        @if(Route::has('admin.transactions.excel'))
+            <a href="{{ route('admin.transactions.excel') }}" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Download Excel
+            </a>
+        @endif
+    </div>
 </div>
 
 <div class="table-container">
@@ -154,17 +168,7 @@
                         </td>
                         <td>{{ $item->created_at->format('d/m/Y H:i') }}</td>
                         <td>
-                            @if ($item->status === 'pending')
-                                <form action="{{ route('admin.transactions.updateStatus', $item->id) }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="status" value="paid">
-                                    <button type="submit" class="btn btn-success" title="Konfirmasi Pembayaran">
-                                        <i class="fas fa-check"></i> Bayar
-                                    </button>
-                                </form>
-                            @endif
-                            <form action="{{ route('transactions.destroy', $item->id) }}" method="POST" style="display: inline;">
+                            <form action="{{ route('admin.transactions.destroy', $item->id) }}" method="POST" style="display: inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger" onclick="return confirm('Yakin ingin menghapus?')" title="Hapus">
@@ -178,7 +182,7 @@
         </table>
 
         <div class="d-flex justify-content-end mt-4">
-            {{ $transaction->links() }}
+            {{ $transaction->links('vendor.pagination.custom') }}
         </div>
     @else
         <div class="no-data">

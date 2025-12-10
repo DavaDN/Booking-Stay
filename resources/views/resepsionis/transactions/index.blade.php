@@ -1,4 +1,4 @@
-@extends('layouts.sidebar')
+@extends('layouts.sb-resepsionis')
 
 @section('title', 'Daftar Transaksi - Resepsionis')
 
@@ -104,7 +104,7 @@
 
     <!-- Pagination -->
     <div class="d-flex justify-content-end mt-3">
-        {{ $transactions->links() }}
+        {{ $transactions->links('vendor.pagination.custom') }}
     </div>
 </div>
 @endsection

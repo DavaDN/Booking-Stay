@@ -208,7 +208,7 @@
     </div>
 
     <div class="d-flex justify-content-end mt-4">
-        {{ $facilityHotels->links() }}
+        {{ $facilityHotels->links('vendor.pagination.custom') }}
     </div>
 @else
     <div class="no-data">

@@ -68,11 +68,11 @@
 
 <div class="header">
     <h5>Tambah Tipe Kamar</h5>
-    <a href="{{ route('room-types.index') }}" class="btn-cancel">Kembali</a>
+    <a href="{{ route('admin.room-types.index') }}" class="btn-cancel">Kembali</a>
 </div>
 
 <div class="card-form">
-    <form action="{{ route('room-types.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.room-types.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-3">

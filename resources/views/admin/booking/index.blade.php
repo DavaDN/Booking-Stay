@@ -158,7 +158,7 @@
     <h5>🏨 Manajemen Booking Hotel</h5>
     <p class="text-muted mb-0">Kelola semua reservasi dari customer</p>
     
-    <form method="GET" class="search-box mt-3">
+    <form method="GET" class="search-box mt-1">
         <input type="text" name="search" placeholder="Cari kode booking atau nama customer..." value="{{ request('search') }}">
         <select name="status" class="form-control">
             <option value="">-- Semua Status --</option>
@@ -209,16 +209,7 @@
                             <a href="{{ route('admin.bookings.show', $booking->id) }}" class="btn btn-info" title="Lihat Detail">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            @if ($booking->status === 'pending')
-                                <form action="{{ route('admin.bookings.updateStatus', $booking->id) }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="status" value="confirmed">
-                                    <button type="submit" class="btn btn-warning" title="Konfirmasi Booking">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                </form>
-                            @endif
+                            <!-- Admin no longer confirms bookings; handled by payment webhook and resepsionis -->
                             @if(in_array($booking->status, ['pending', 'confirmed']))
                                 <form action="{{ route('admin.bookings.destroy', $booking->id) }}" method="POST" style="display: inline;">
                                     @csrf
@@ -235,7 +226,7 @@
         </table>
 
         <div class="d-flex justify-content-end mt-4">
-            {{ $bookings->links() }}
+            {{ $bookings->links('vendor.pagination.custom') }}
         </div>
     @else
         <div class="no-data">

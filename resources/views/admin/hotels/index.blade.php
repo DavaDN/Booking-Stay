@@ -176,7 +176,7 @@
         <h5>Daftar Hotel</h5>
         <p>Kelola semua data hotel Anda</p>
     </div>
-    <a href="{{ route('hotels.create') }}" class="btn-add">
+    <a href="{{ route('admin.hotels.create') }}" class="btn-add">
         <i class="fas fa-plus"></i> Tambah Hotel
     </a>
 </div>
@@ -207,10 +207,10 @@
                     </div>
                     <p style="color: #999; font-size: 12px;">{{ $item->address }}</p>
                     <div class="hotel-actions">
-                        <a href="{{ route('hotels.edit', $item->id) }}" class="btn btn-edit">
+                        <a href="{{ route('admin.hotels.edit', $item->id) }}" class="btn btn-edit">
                             <i class="fas fa-edit"></i> Edit
                         </a>
-                        <form action="{{ route('hotels.destroy', $item->id) }}" method="POST" style="flex: 1;">
+                        <form action="{{ route('admin.hotels.destroy', $item->id) }}" method="POST" style="flex: 1;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus?')" style="width: 100%;">
@@ -224,7 +224,7 @@
     </div>
 
     <div class="d-flex justify-content-end mt-4">
-        {{ $hotel->links() }}
+        {{ $hotel->links('vendor.pagination.custom') }}
     </div>
 @else
     <div class="no-data" style="background: white; border-radius: 8px;">
