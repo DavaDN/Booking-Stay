@@ -40,58 +40,6 @@
                 </div>
             </div>
 
-            <div class="mb-3">
-                <h6>Rincian Midtrans</h6>
-                @if($transaction->midtrans_response)
-                    @php
-                        $mid = json_decode($transaction->midtrans_response, true) ?: [];
-                    @endphp
-
-                    <div class="table-responsive">
-                        <table class="table table-sm table-striped">
-                            <tbody>
-                                @if(!empty($mid['transaction_status']))
-                                    <tr><th>Status Midtrans</th><td>{{ $mid['transaction_status'] }}</td></tr>
-                                @endif
-                                @if(!empty($mid['transaction_time']))
-                                    <tr><th>Waktu Transaksi</th><td>{{ $mid['transaction_time'] }}</td></tr>
-                                @endif
-                                @if(!empty($mid['gross_amount']))
-                                    <tr><th>Jumlah (Midtrans)</th><td>Rp {{ number_format($mid['gross_amount'],0,',','.') }}</td></tr>
-                                @endif
-                                @if(!empty($mid['payment_code']))
-                                    <tr><th>Payment Code</th><td>{{ $mid['payment_code'] }}</td></tr>
-                                @endif
-                                @if(!empty($mid['permata_va_number']))
-                                    <tr><th>Permata VA</th><td>{{ $mid['permata_va_number'] }}</td></tr>
-                                @endif
-                                @if(!empty($mid['va_numbers']) && is_array($mid['va_numbers']))
-                                    <tr><th>VA Numbers</th>
-                                        <td>
-                                            @foreach($mid['va_numbers'] as $va)
-                                                <div><strong>{{ $va['bank'] }}:</strong> {{ $va['va_number'] }}</div>
-                                            @endforeach
-                                        </td>
-                                    </tr>
-                                @endif
-                                @if(!empty($mid['redirect_url']))
-                                    <tr><th>Redirect URL</th><td><a href="{{ $mid['redirect_url'] }}" target="_blank">Open</a></td></tr>
-                                @endif
-                                @if(!empty($mid['payment_type']))
-                                    <tr><th>Payment Type</th><td>{{ $mid['payment_type'] }}</td></tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <details>
-                        <summary>Raw Midtrans Response</summary>
-                        <pre style="max-height: 300px; overflow:auto;">{{ json_encode($mid, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
-                    </details>
-                @else
-                    <div class="alert alert-secondary">Belum ada data Midtrans untuk transaksi ini.</div>
-                @endif
-            </div>
 
             <div class="d-flex gap-2">
                 @if($transaction->status === 'pending')
@@ -102,10 +50,52 @@
                         <button class="btn btn-danger" onclick="return confirm('Batalkan transaksi?')">Batalkan</button>
                     </form>
                 @endif
+
+                @if($transaction->status !== 'paid')
+                    <button id="checkStatusBtn" class="btn btn-secondary">Periksa Status Pembayaran</button>
+                @endif
             </div>
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    (function(){
+        const btn = document.getElementById('checkStatusBtn');
+        if (!btn) return;
+        btn.addEventListener('click', async function(e){
+            e.preventDefault();
+            btn.disabled = true;
+            const original = btn.innerText;
+            btn.innerText = 'Memeriksa...';
+            try {
+                const resp = await fetch("{{ route('customer.midtrans.check_status', $transaction->id) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                if (!resp.ok) {
+                    const body = await resp.json().catch(()=>({}));
+                    alert(body.message || 'Gagal memeriksa status');
+                    btn.disabled = false;
+                    btn.innerText = original;
+                    return;
+                }
+                // reload to reflect updated status
+                window.location.reload();
+            } catch (err) {
+                console.error(err);
+                alert('Terjadi kesalahan saat memeriksa status');
+                btn.disabled = false;
+                btn.innerText = original;
+            }
+        });
+    })();
+</script>
+@endpush
 @endsection
 @extends('layouts.app')
 

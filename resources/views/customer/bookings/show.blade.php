@@ -67,7 +67,7 @@
     }
 
     .badge-pending { background: #fff3cd; color: #856404; }
-    .badge-confirmed { background: #d4edda; color: #155724; }
+    .badge-paid { background: #d4edda; color: #155724; }
     .badge-cancelled { background: #f8d7da; color: #721c24; }
 
     .section {
@@ -142,7 +142,7 @@
     }
 </style>
 
-<div class="container">
+<div class="container mt-5">
     <div style="margin-bottom: 20px;">
         <a href="{{ route('customer.bookings.index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Kembali
@@ -163,6 +163,10 @@
                 <value>{{ $booking->booking_code }}</value>
             </div>
             <div class="detail-item">
+                <label>Hotel</label>
+                <value>{{ $booking->hotel->name ?? 'N/A' }}</value>
+            </div>
+            <div class="detail-item">
                 <label>Tipe Kamar</label>
                 <value>{{ $booking->roomType->name ?? 'N/A' }}</value>
             </div>
@@ -174,6 +178,16 @@
                 <label>Jumlah Kamar</label>
                 <value>{{ $booking->number_of_rooms }} Kamar</value>
             </div>
+            @if(!empty($rooms) && $rooms->count() > 0)
+            <div class="detail-item">
+                <label>Nomor Kamar</label>
+                <value>
+                    @foreach($rooms as $r)
+                        <span style="display:inline-block; margin-right:8px;">Room {{ $r->number }}</span>
+                    @endforeach
+                </value>
+            </div>
+            @endif
             <div class="detail-item">
                 <label>Check-In</label>
                 <value>{{ $booking->check_in->format('d/m/Y') }}</value>
@@ -226,11 +240,6 @@
                 </div>
             </div>
         @else
-            @if ($booking->status === 'confirmed' || $booking->status === 'checked_in')
-                <div class="alert alert-info">
-                    <strong><i class="fas fa-info-circle"></i> Info:</strong> Anda belum membuat transaksi untuk booking ini. Silakan lakukan pembayaran untuk menyelesaikan reservasi.
-                </div>
-            @endif
         @endif
 
         <div class="section">
@@ -246,7 +255,7 @@
                         </button>
                     </form>
                 @endif
-                @if ((!$booking->transaction) && ($booking->status === 'confirmed' || $booking->status === 'checked_in'))
+                @if (!$booking->transaction && in_array($booking->status, ['pending','confirmed','checked_in']))
                     <button id="payButton" class="btn btn-primary" data-booking-id="{{ $booking->id }}">
                         <i class="fas fa-credit-card"></i> Bayar Sekarang
                     </button>
@@ -255,6 +264,9 @@
                     <a href="{{ route('customer.transactions.show', $booking->transaction->id) }}" class="btn btn-primary">
                         <i class="fas fa-receipt"></i> Lihat Transaksi
                     </a>
+                    @if($booking->transaction->status !== 'paid')
+                        <button id="checkStatusBtnBooking" class="btn btn-secondary">Periksa Status Pembayaran</button>
+                    @endif
                 @endif
             </div>
         </div>
@@ -279,7 +291,7 @@
             this.innerText = 'Mempersiapkan pembayaran...';
 
             try {
-                const res = await fetch("{{ route('midtrans.create_snap') }}", {
+                const res = await fetch("{{ route('customer.midtrans.create_snap') }}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -308,12 +320,36 @@
                 }
 
                 window.snap.pay(token, {
-                    onSuccess: function(result){
-                        window.location.href = "{{ url('customer/transactions') }}/" + transactionId;
-                    },
-                    onPending: function(result){
-                        window.location.href = "{{ url('customer/transactions') }}/" + transactionId;
-                    },
+                        onSuccess: async function(result){
+                            try {
+                                const checkUrl = "{{ url('customer/transactions') }}" + '/' + transactionId + '/check-status';
+                                await fetch(checkUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    }
+                                });
+                            } catch (e) {
+                                console.warn('check-status failed', e);
+                            }
+                            window.location.href = "{{ url('customer/transactions') }}/" + transactionId;
+                        },
+                        onPending: async function(result){
+                            try {
+                                const checkUrl = "{{ url('customer/transactions') }}" + '/' + transactionId + '/check-status';
+                                await fetch(checkUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    }
+                                });
+                            } catch (e) {
+                                console.warn('check-status failed', e);
+                            }
+                            window.location.href = "{{ url('customer/transactions') }}/" + transactionId;
+                        },
                     onError: function(result){
                         alert('Pembayaran gagal atau dibatalkan');
                         payButton.disabled = false;
@@ -326,6 +362,41 @@
                 alert('Terjadi kesalahan. Silakan coba lagi.');
                 this.disabled = false;
                 this.innerText = 'Bayar Sekarang';
+            }
+        });
+    })();
+</script>
+
+<script>
+    (function(){
+        const btn = document.getElementById('checkStatusBtnBooking');
+        if (!btn) return;
+        btn.addEventListener('click', async function(e){
+            e.preventDefault();
+            btn.disabled = true;
+            const original = btn.innerText;
+            btn.innerText = 'Memeriksa...';
+            try {
+                const resp = await fetch("{{ route('customer.midtrans.check_status', $booking->transaction->id ?? 0) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                if (!resp.ok) {
+                    const body = await resp.json().catch(()=>({}));
+                    alert(body.message || 'Gagal memeriksa status');
+                    btn.disabled = false;
+                    btn.innerText = original;
+                    return;
+                }
+                window.location.reload();
+            } catch (err) {
+                console.error(err);
+                alert('Terjadi kesalahan saat memeriksa status');
+                btn.disabled = false;
+                btn.innerText = original;
             }
         });
     })();

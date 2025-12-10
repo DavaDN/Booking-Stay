@@ -37,7 +37,13 @@ class CustomerBookController extends Controller
                          ->with(['roomType', 'transaction'])
                          ->findOrFail($id);
 
-        return view('customer.bookings.show', compact('booking'));
+        // load selected rooms if stored
+        $rooms = [];
+        if (!empty($booking->room_ids) && is_array($booking->room_ids)) {
+            $rooms = \App\Models\Room::whereIn('id', $booking->room_ids)->get();
+        }
+
+        return view('customer.bookings.show', compact('booking', 'rooms'));
     }
 
     /**
@@ -45,7 +51,7 @@ class CustomerBookController extends Controller
      */
     public function create()
     {
-        $roomTypes = RoomType::with(['rooms', 'facilities'])->get();
+        $roomTypes = RoomType::with(['rooms'])->get();
         return view('customer.bookings.create', compact('roomTypes'));
     }
 
@@ -58,7 +64,8 @@ class CustomerBookController extends Controller
             'room_type_id' => 'required|exists:room_types,id',
             'check_in' => 'required|date|after_or_equal:today',
             'check_out' => 'required|date|after:check_in',
-            'number_of_rooms' => 'required|integer|min:1',
+            'room_ids' => 'required|array|min:1',
+            'room_ids.*' => 'required|exists:rooms,id',
             'special_requests' => 'nullable|string',
         ]);
 
@@ -68,11 +75,24 @@ class CustomerBookController extends Controller
         // Generate booking code
         $booking_code = 'BK' . strtoupper(uniqid());
 
-        // Calculate nights
+        // Calculate nights and validate selected rooms
         $checkIn = new \DateTime($request->check_in);
         $checkOut = new \DateTime($request->check_out);
         $nights = $checkOut->diff($checkIn)->days;
-        $total_price = $roomType->price * $request->number_of_rooms * $nights;
+
+        $selectedRoomIds = array_map('intval', $request->input('room_ids', []));
+        $countRooms = count($selectedRoomIds);
+
+        // ensure selected rooms belong to the chosen room type and are available
+        $validRoomsCount = \App\Models\Room::whereIn('id', $selectedRoomIds)
+            ->where('room_type_id', $request->room_type_id)
+            ->count();
+
+        if ($validRoomsCount !== $countRooms) {
+            return back()->withInput()->with('error', 'Beberapa kamar yang dipilih tidak tersedia atau tidak sesuai tipe kamar.');
+        }
+
+        $total_price = $roomType->price * $countRooms * $nights;
 
         $booking = Booking::create([
             'customer_id' => $customer->id,
@@ -80,7 +100,8 @@ class CustomerBookController extends Controller
             'booking_code' => $booking_code,
             'check_in' => $request->check_in,
             'check_out' => $request->check_out,
-            'number_of_rooms' => $request->number_of_rooms,
+            'number_of_rooms' => $countRooms,
+            'room_ids' => $selectedRoomIds,
             'total_price' => $total_price,
             'special_requests' => $request->special_requests,
             'status' => 'pending',

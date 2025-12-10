@@ -193,8 +193,8 @@
                     <tr>
                         <td><strong>{{ $booking->booking_code }}</strong></td>
                         <td>
-                            <div>{{ $booking->customer->name ?? 'N/A' }}</div>
-                            <small class="text-muted">{{ $booking->customer->email ?? '' }}</small>
+                            <div>{{ $booking->customer->name ?? $booking->customer_name ?? 'N/A' }}</div>
+                            <small class="text-muted">{{ $booking->customer->email ?? $booking->customer_email ?? '' }}</small>
                         </td>
                         <td>{{ $booking->roomType->name ?? 'N/A' }}</td>
                         <td>{{ $booking->check_in->format('d M Y') }}</td>

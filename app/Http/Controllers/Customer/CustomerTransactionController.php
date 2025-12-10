@@ -54,51 +54,6 @@ class CustomerTransactionController extends Controller
     }
 
     /**
-     * Create new transaction for booking
-     */
-    public function create()
-    {
-        $customerId = Auth::guard('customer')->id();
-        $bookings = Booking::where('customer_id', $customerId)
-                          ->where('status', 'confirmed')
-                          ->doesntHave('transaction')
-                          ->get();
-
-        return view('customer.transactions.create', compact('bookings'));
-    }
-
-    /**
-     * Store new transaction
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'booking_id' => 'required|exists:bookings,id',
-            'payment_method' => 'required|in:credit_card,debit_card,bank_transfer,cash,e_wallet',
-        ]);
-
-        $customerId = Auth::guard('customer')->id();
-        $booking = Booking::where('customer_id', $customerId)
-                         ->findOrFail($request->booking_id);
-
-        // Check if transaction already exists
-        if ($booking->transaction) {
-            return back()->with('error', 'Booking ini sudah memiliki transaksi.');
-        }
-
-        $transaction = Transaction::create([
-            'booking_id' => $booking->id,
-            'customer_id' => $customerId,
-            'payment_method' => $request->payment_method,
-            'total' => $booking->total_price,
-            'status' => 'pending',
-        ]);
-
-        return redirect()->route('customer.transactions.show', $transaction->id)
-                       ->with('success', 'Transaksi berhasil dibuat!');
-    }
-
-    /**
      * Update transaction (cancel only)
      */
     public function update(Request $request, $id)

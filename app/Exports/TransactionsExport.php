@@ -39,7 +39,7 @@ class TransactionsExport implements FromCollection, WithHeadings, WithMapping
         return [
             $transaction->id,
             $transaction->booking->booking_code ?? 'N/A',
-            $transaction->booking->customer->name ?? 'N/A',
+            $transaction->booking->customer->name ?? $transaction->booking->customer_name ?? 'N/A',
             ucfirst(str_replace('_', ' ', $transaction->payment_method)),
             $transaction->total,
             ucfirst($transaction->status),

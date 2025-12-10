@@ -50,15 +50,16 @@
                             </h1>
 
                             <!-- Hotel Info -->
+                            @php $hotel = $roomType->hotel ?? ($roomType->hotels->first() ?? null); @endphp
                             <div class="mb-4">
                                 <h5 class="font-weight-bold mb-2">Hotel</h5>
                                 <div class="d-flex align-items-start">
                                     <i class="fas fa-hotel mt-1 mr-3" style="color: #2365A2; font-size: 1.2rem;"></i>
                                     <div>
-                                        <p class="font-weight-bold mb-0">{{ $roomType->hotel->name }}</p>
+                                        <p class="font-weight-bold mb-0">{{ optional($hotel)->name ?? '-' }}</p>
                                         <p class="text-muted mb-0">
                                             <i class="fas fa-map-marker-alt"></i>
-                                            {{ $roomType->hotel->city }}, {{ $roomType->hotel->address }}
+                                            {{ optional($hotel)->city ?? '-' }}, {{ optional($hotel)->address ?? '-' }}
                                         </p>
                                     </div>
                                 </div>

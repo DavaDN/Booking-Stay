@@ -22,15 +22,15 @@ class RoomTypeController extends Controller
 
         $roomTypes = $query->paginate(10)->appends($request->query());
         $totalRooms = Room::count();
-        $availableRooms = Room::where('status', 'available')->count();
 
-        return view('admin.room-type', compact('roomTypes', 'totalRooms', 'availableRooms'));
+        return view('admin.room-type', compact('roomTypes', 'totalRooms'));
     }
 
     public function create()
     {
         $facilities = Facilities::all();
-        return view('admin.room-type.create', compact('facilities'));
+        $hotels = \App\Models\Hotel::all();
+        return view('admin.room-type.create', compact('facilities', 'hotels'));
     }
 
     public function store(Request $request)
@@ -43,6 +43,8 @@ class RoomTypeController extends Controller
             'image'         => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
             'facility_ids'  => 'required|array|min:1',
             'facility_ids.*'=> 'exists:facilities,id',
+            'hotel_ids'     => 'required|array|min:1',
+            'hotel_ids.*'   => 'exists:hotels,id',
         ]);
 
         $roomType = RoomType::create($request->only(['name', 'price', 'capacity', 'description']));
@@ -60,7 +62,10 @@ class RoomTypeController extends Controller
         // Attach fasilitas
         $roomType->facilities()->attach($request->facility_ids);
 
-        return redirect()->route('room-types.index')->with('success', 'Room type berhasil ditambahkan.');
+        // Attach hotels
+        $roomType->hotels()->attach($request->hotel_ids);
+
+        return redirect()->route('admin.room-types.index')->with('success', 'Room type berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -68,8 +73,10 @@ class RoomTypeController extends Controller
         $roomType = RoomType::findOrFail($id);
         $facilities = Facilities::all();
         $selected = $roomType->facilities->pluck('id')->toArray();
+        $hotels = \App\Models\Hotel::all();
+        $selectedHotels = $roomType->hotels->pluck('id')->toArray();
 
-        return view('admin.room-type.edit', compact('roomType', 'facilities', 'selected'));
+        return view('admin.room-type.edit', compact('roomType', 'facilities', 'selected', 'hotels', 'selectedHotels'));
     }
 
     public function update(Request $request, $id)
@@ -82,6 +89,8 @@ class RoomTypeController extends Controller
             'image'         => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
             'facility_ids'  => 'nullable|array',
             'facility_ids.*'=> 'exists:facilities,id',
+            'hotel_ids'     => 'nullable|array',
+            'hotel_ids.*'   => 'exists:hotels,id',
         ]);
 
         $roomType = RoomType::findOrFail($id);
@@ -102,7 +111,14 @@ class RoomTypeController extends Controller
             $roomType->facilities()->sync($request->facility_ids);
         }
 
-        return redirect()->route('room-types.index')->with('success', 'Room type berhasil diperbarui.');
+        // Update hotels
+        if ($request->has('hotel_ids')) {
+            $roomType->hotels()->sync($request->hotel_ids);
+        } else {
+            $roomType->hotels()->detach();
+        }
+
+        return redirect()->route('admin.room-types.index')->with('success', 'Room type berhasil diperbarui.');
     }
 
     public function destroy($id)
@@ -110,6 +126,6 @@ class RoomTypeController extends Controller
         $roomType = RoomType::findOrFail($id);
         $roomType->delete();
 
-        return redirect()->route('room-types.index')->with('success', 'Room type berhasil dihapus.');
+        return redirect()->route('admin.room-types.index')->with('success', 'Room type berhasil dihapus.');
     }
 }

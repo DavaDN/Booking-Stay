@@ -161,6 +161,20 @@
         cursor: pointer;
     }
 
+    /* ensure checkboxes look like checkboxes (override generic input styles) */
+    .room-option input[type="checkbox"] {
+        width: auto !important;
+        height: auto !important;
+        padding: 0 !important;
+        margin: 0 8px 0 0 !important;
+        display: inline-block !important;
+        vertical-align: middle !important;
+    }
+
+    .room-option span {
+        color: #333;
+    }
+
     @media (max-width: 768px) {
         .form-row {
             grid-template-columns: 1fr;
@@ -238,18 +252,12 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="number_of_rooms">Jumlah Kamar *</label>
-                    <input 
-                        type="number" 
-                        id="number_of_rooms" 
-                        name="number_of_rooms" 
-                        value="{{ old('number_of_rooms', 1) }}" 
-                        required
-                        min="1"
-                        onchange="updatePrice()"
-                    >
-                    @if ($errors->has('number_of_rooms'))
-                        <div class="error-message">{{ $errors->first('number_of_rooms') }}</div>
+                    <label for="room_ids">Pilih Nomor Kamar *</label>
+                    <div id="roomList" class="room-select">
+                        <div class="p-2 text-muted">Pilih tipe kamar terlebih dahulu untuk menampilkan nomor kamar tersedia.</div>
+                    </div>
+                    @if ($errors->has('room_ids'))
+                        <div class="error-message">{{ $errors->first('room_ids') }}</div>
                     @endif
                 </div>
             </div>
@@ -307,14 +315,17 @@
         const roomTypeSelect = document.getElementById('room_type_id');
         const checkInInput = document.getElementById('check_in');
         const checkOutInput = document.getElementById('check_out');
-        const totalRoomInput = document.getElementById('number_of_rooms');
+        const roomListEl = document.getElementById('roomList');
 
         const selectedOption = roomTypeSelect.options[roomTypeSelect.selectedIndex];
-        const pricePerNight = selectedOption.getAttribute('data-price') || 0;
+        const pricePerNight = selectedOption ? (selectedOption.getAttribute('data-price') || 0) : 0;
         const checkIn = new Date(checkInInput.value);
         const checkOut = new Date(checkOutInput.value);
-        const nights = checkIn && checkOut ? Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24)) : 0;
-        const totalRooms = parseInt(totalRoomInput.value) || 1;
+        const nights = (checkInInput.value && checkOutInput.value) ? Math.max(0, Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24))) : 0;
+
+        // count selected rooms
+        const checkedRooms = roomListEl ? roomListEl.querySelectorAll('input[name="room_ids[]"]:checked').length : 0;
+        const totalRooms = checkedRooms || 0;
         const totalPrice = pricePerNight * nights * totalRooms;
 
         // Update display
@@ -323,6 +334,53 @@
         document.getElementById('roomCount').textContent = totalRooms;
         document.getElementById('totalPrice').textContent = totalPrice > 0 ? 'Rp ' + parseInt(totalPrice).toLocaleString('id-ID') : '-';
     }
+
+    // roomTypes data from server (includes available rooms)
+    const roomTypesData = @json($roomTypes);
+
+    function renderRoomList() {
+        const roomTypeSelect = document.getElementById('room_type_id');
+        const roomListEl = document.getElementById('roomList');
+        const typeId = parseInt(roomTypeSelect.value) || null;
+        roomListEl.innerHTML = '';
+
+        if (!typeId) {
+            roomListEl.innerHTML = '<div class="p-2 text-muted">Pilih tipe kamar terlebih dahulu untuk menampilkan nomor kamar tersedia.</div>';
+            updatePrice();
+            return;
+        }
+
+        const selectedType = roomTypesData.find(rt => rt.id === typeId);
+        if (!selectedType || !selectedType.rooms || selectedType.rooms.length === 0) {
+            roomListEl.innerHTML = '<div class="p-2 text-muted">Tidak ada kamar tersedia untuk tipe ini.</div>';
+            updatePrice();
+            return;
+        }
+
+        // create checkbox list
+        selectedType.rooms.forEach(room => {
+            const div = document.createElement('div');
+            div.className = 'room-option';
+            div.innerHTML = `
+                <label style="width:100%; display:flex; align-items:center; gap:10px;">
+                    <input type="checkbox" name="room_ids[]" value="${room.id}" onchange="updatePrice()"> 
+                    <span>Room ${room.number} ${room.floor ? '- Lantai ' + room.floor : ''}</span>
+                </label>
+            `;
+            roomListEl.appendChild(div);
+        });
+
+        updatePrice();
+    }
+
+    // update room list when room type changes
+    document.getElementById('room_type_id').addEventListener('change', renderRoomList);
+
+    // initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        renderRoomList();
+        updatePrice();
+    });
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', updatePrice);

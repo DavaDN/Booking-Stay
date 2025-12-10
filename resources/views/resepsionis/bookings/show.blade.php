@@ -1,4 +1,4 @@
-@extends('layouts.sidebar')
+@extends('layouts.sb-resepsionis')
 
 @section('title', 'Detail Booking - Resepsionis')
 

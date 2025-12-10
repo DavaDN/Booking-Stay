@@ -118,6 +118,22 @@
             @enderror
         </div>
 
+        <div class="mb-3">
+            <label class="form-label">Tersedia di Hotel</label>
+            <div class="row">
+                @foreach ($hotels as $hotel)
+                    <div class="col-md-4">
+                        <label>
+                            <input type="checkbox" name="hotel_ids[]" value="{{ $hotel->id }}"> {{ $hotel->name }}
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+            @error('hotel_ids')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
+        </div>
+
         <div class="mt-4 d-flex justify-content-end gap-2">
             <button type="submit" class="btn-submit">Simpan</button>
         </div>

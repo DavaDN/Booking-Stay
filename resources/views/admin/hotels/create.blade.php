@@ -136,13 +136,13 @@
 
 <div class="header">
     <h5>{{ isset($hotel) ? 'Edit Hotel' : 'Tambah Hotel' }}</h5>
-    <a href="{{ route('hotels.index') }}" class="btn btn-secondary">
+    <a href="{{ route('admin.hotels.index') }}" class="btn btn-secondary">
         <i class="fas fa-arrow-left"></i> Kembali
     </a>
 </div>
 
 <div class="form-container">
-    <form action="{{ isset($hotel) ? route('hotels.update', $hotel->id) : route('hotels.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ isset($hotel) ? route('admin.hotels.update', $hotel->id) : route('admin.hotels.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @if (isset($hotel))
             @method('PUT')
@@ -222,6 +222,22 @@
             @endif
         </div>
 
+        <div class="form-group">
+            <label>Fasilitas Hotel</label>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                @foreach($facilities as $facility)
+                    <label style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" name="facilities[]" value="{{ $facility->id }}"
+                               {{ isset($hotel) && $hotel->facilities && $hotel->facilities->contains($facility->id) ? 'checked' : '' }}>
+                        <span style="font-size:14px;">{{ $facility->name }}</span>
+                    </label>
+                @endforeach
+            </div>
+            @if ($errors->has('facilities'))
+                <div class="error-message">{{ $errors->first('facilities') }}</div>
+            @endif
+        </div>
+
         @if (isset($hotel) && $hotel->image)
             <div class="image-preview">
                 <p style="font-size: 12px; color: #666; margin-bottom: 8px;">Gambar Saat Ini:</p>
@@ -239,9 +255,6 @@
                 <i class="fas fa-save"></i>
                 {{ isset($hotel) ? 'Update' : 'Tambah' }} Hotel
             </button>
-            <a href="{{ route('hotels.index') }}" class="btn btn-secondary">
-                <i class="fas fa-times"></i> Batal
-            </a>
         </div>
     </form>
 </div>

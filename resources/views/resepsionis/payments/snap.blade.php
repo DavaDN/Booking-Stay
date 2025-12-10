@@ -24,12 +24,29 @@
         const transactionId = '{{ $transaction->id }}';
 
         window.snap.pay(token, {
-            onSuccess: function(result){
-                window.location.href = '/resepsionis/transactions/' + transactionId;
-            },
-            onPending: function(result){
-                window.location.href = '/resepsionis/transactions/' + transactionId;
-            },
+                onSuccess: async function(result){
+                    // After successful payment popup, verify with server-side Midtrans API
+                    try {
+                        await fetch('{{ route('resepsionis.reservations.check_status', ['transaction' => $transaction->id]) }}', {
+                            method: 'POST',
+                            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), 'Accept': 'application/json' }
+                        });
+                    } catch (err) {
+                        console.error('Check status failed', err);
+                    }
+                    window.location.href = '/resepsionis/reservations';
+                },
+                onPending: async function(result){
+                    try {
+                        await fetch('{{ route('resepsionis.reservations.check_status', ['transaction' => $transaction->id]) }}', {
+                            method: 'POST',
+                            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), 'Accept': 'application/json' }
+                        });
+                    } catch (err) {
+                        console.error('Check status failed', err);
+                    }
+                    window.location.href = '/resepsionis/reservations';
+                },
             onError: function(result){
                 alert('Payment error or cancelled');
             }

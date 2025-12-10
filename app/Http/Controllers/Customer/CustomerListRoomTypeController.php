@@ -61,20 +61,11 @@ class CustomerListRoomTypeController extends Controller
         $cities = Hotel::select('city')->distinct()->orderBy('city')->pluck('city');
 
         $totalRooms = Room::count();
-        $availableRooms = Room::where('status', 'tersedia')->count();
 
         $facilities = Facilities::all();
 
-        // Calculate available rooms for each room type
-        foreach ($roomTypes as $roomType) {
-            $roomType->available_rooms = $roomType->rooms()
-                ->where('status', 'tersedia')
-                ->count();
 
-            $roomType->total_rooms = $roomType->rooms()->count();
-        }
-
-        return view('customer.list', compact('roomTypes', 'hotels', 'cities', 'totalRooms', 'availableRooms', 'facilities'));
+        return view('customer.list', compact('roomTypes', 'hotels', 'cities', 'totalRooms', 'facilities'));
     }
 
     public function show($id)
@@ -82,13 +73,8 @@ class CustomerListRoomTypeController extends Controller
         $roomType = RoomType::with(['rooms', 'facilities', 'hotel.facilities'])
             ->findOrFail($id);
 
-        $availableRooms = $roomType->rooms()
-            ->where('status', 'tersedia')
-            ->get();
-
-        $roomType->available_rooms = $availableRooms->count();
         $roomType->total_rooms = $roomType->rooms()->count();
 
-        return view('customer.list-show', compact('roomType', 'availableRooms'));
+        return view('customer.list-show', compact('roomType'));
     }
 }

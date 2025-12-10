@@ -164,7 +164,7 @@
         <h5>Fasilitas Hotel</h5>
         <p>Kelola semua fasilitas hotel Anda</p>
     </div>
-    <a href="{{ route('facility-hotels.create') }}" class="btn-add">
+    <a href="{{ route('admin.facility-hotels.create') }}" class="btn-add">
         <i class="fas fa-plus"></i> Tambah Fasilitas
     </a>
 </div>
@@ -191,10 +191,10 @@
                     <h6>{{ $item->name }}</h6>
                     <p>{{ Str::limit($item->description, 60) }}</p>
                     <div class="facility-actions">
-                        <a href="{{ route('facility-hotels.edit', $item->id) }}" class="btn btn-edit">
+                        <a href="{{ route('admin.facility-hotels.edit', $item->id) }}" class="btn btn-edit">
                             <i class="fas fa-edit"></i> Edit
                         </a>
-                        <form action="{{ route('facility-hotels.destroy', $item->id) }}" method="POST" style="flex: 1;">
+                        <form action="{{ route('admin.facility-hotels.destroy', $item->id) }}" method="POST" style="flex: 1;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus?')" style="width: 100%;">

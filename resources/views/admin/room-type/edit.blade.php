@@ -125,6 +125,24 @@
             </div>
         </div>
 
+        <div class="mb-3">
+            <label class="form-label">Tersedia di Hotel</label>
+            <div>
+                @foreach ($hotels as $hotel)
+                    <label style="display:block;">
+                        <input type="checkbox"
+                               name="hotel_ids[]"
+                               value="{{ $hotel->id }}"
+                               @if(in_array($hotel->id, $selectedHotels)) checked @endif>
+                        {{ $hotel->name }}
+                    </label>
+                @endforeach
+            </div>
+            @error('hotel_ids')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
+        </div>
+
         <div class="mt-4 d-flex justify-content-end gap-2">
             <button type="submit" class="btn-submit">Update</button>
         </div>

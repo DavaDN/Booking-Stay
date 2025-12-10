@@ -180,7 +180,7 @@ class DatabaseSeeder extends Seeder
                     Room::create([
                         'room_type_id' => $roomType->id,
                         'number' => $hotel->id . '-' . $roomType->id . '-' . $i,
-                        'status' => $faker->randomElement(['available', 'booked', 'maintenance']),
+                        'status' => $faker->randomElement(['available', 'booked']),
                     ]);
                 }
             }

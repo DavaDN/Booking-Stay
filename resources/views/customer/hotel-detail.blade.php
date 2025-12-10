@@ -7,7 +7,7 @@
     <!-- Back Button -->
     <div class="row mb-3">
         <div class="col-12">
-            <a href="{{ route('customer.hotels.index') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('customer.home') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left"></i> Kembali ke Daftar Hotel
             </a>
         </div>

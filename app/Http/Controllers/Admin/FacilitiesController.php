@@ -30,7 +30,7 @@ class FacilitiesController extends Controller
 
         Facilities::create($data);
 
-        return redirect()->route('facilities.index')->with('success', 'Fasilitas berhasil ditambahkan!');
+        return redirect()->route('admin.facilities.index')->with('success', 'Fasilitas berhasil ditambahkan!');
     }
 
     public function update(Request $request, $id)
@@ -53,7 +53,7 @@ class FacilitiesController extends Controller
 
         $facilities->update($data);
 
-        return redirect()->route('facilities.index')->with('success', 'Fasilitas berhasil diperbarui!');
+        return redirect()->route('admin.facilities.index')->with('success', 'Fasilitas berhasil diperbarui!');
     }
 
     public function destroy($id)
@@ -66,6 +66,6 @@ class FacilitiesController extends Controller
 
         $facility->delete();
 
-        return redirect()->route('facilities.index')->with('success', 'Fasilitas berhasil dihapus!');
+        return redirect()->route('admin.facilities.index')->with('success', 'Fasilitas berhasil dihapus!');
     }
 }

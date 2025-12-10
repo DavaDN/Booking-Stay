@@ -164,16 +164,13 @@
     }
 </style>
 
-<div class="container">
+<div class="container mt-5">
     <div class="header">
         <h3><i class="fas fa-credit-card"></i> Riwayat Transaksi</h3>
         <p>Lihat dan kelola semua transaksi pembayaran Anda</p>
         
         <div class="search-box">
             <input type="text" id="searchInput" placeholder="Cari booking code..." onkeyup="filterTransactions()">
-            <a href="{{ route('customer.transactions.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Pembayaran Baru
-            </a>
         </div>
     </div>
 

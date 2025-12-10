@@ -16,9 +16,6 @@ class DashboardController extends Controller
     {
         // Room statistics
         $totalRooms = Room::count();
-        $availableRooms = Room::where('status', 'available')->count();
-        $bookedRooms = Room::where('status', 'booked')->count();
-        $maintenanceRooms = Room::where('status', 'maintenance')->count();
 
         // Booking statistics
         $totalBookings = Booking::count();
@@ -58,9 +55,6 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', compact(
             'totalRooms',
-            'availableRooms',
-            'bookedRooms',
-            'maintenanceRooms',
             'totalBookings',
             'pendingBookings',
             'checkedInBookings',

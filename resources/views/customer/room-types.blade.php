@@ -130,15 +130,16 @@
                         </h5>
 
                         <!-- Hotel Name -->
+                        @php $hotel = $roomType->hotel ?? ($roomType->hotels->first() ?? null); @endphp
                         <p class="text-muted small mb-2">
                             <i class="fas fa-hotel"></i>
-                            {{ $roomType->hotel->name }}
+                            {{ optional($hotel)->name ?? '-' }}
                         </p>
 
                         <!-- Location -->
                         <p class="text-muted small mb-2">
                             <i class="fas fa-map-marker-alt"></i>
-                            {{ $roomType->hotel->city }}
+                            {{ optional($hotel)->city ?? '-' }}
                         </p>
 
                         <!-- Description -->

@@ -236,17 +236,6 @@
                                 <i class="fas fa-bed" style="font-size: 3rem; color: white; opacity: 0.3;"></i>
                             </div>
                         @endif
-
-                        <!-- Available Badge -->
-                        @if($roomType->available_rooms > 0)
-                            <span class="badge badge-success position-absolute" style="top: 10px; right: 10px;">
-                                {{ $roomType->available_rooms }} tersedia
-                            </span>
-                        @else
-                            <span class="badge badge-danger position-absolute" style="top: 10px; right: 10px;">
-                                Penuh
-                            </span>
-                        @endif
                     </div>
 
                     <div class="card-body d-flex flex-column">
@@ -258,13 +247,13 @@
                         <!-- Hotel Name -->
                         <p class="text-muted small mb-2">
                             <i class="fas fa-hotel"></i>
-                            {{ $roomType->hotel->name }}
+                            {{ optional($roomType->hotel)->name ?? '-' }}
                         </p>
 
                         <!-- Location -->
                         <p class="text-muted small mb-2">
                             <i class="fas fa-map-marker-alt"></i>
-                            {{ $roomType->hotel->city }}
+                            {{ optional($roomType->hotel)->city ?? '-' }}
                         </p>
 
                         <!-- Description -->

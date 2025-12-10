@@ -136,6 +136,10 @@
         background: #d4edda;
         color: #155724;
     }
+    .badge-paid {
+        background: #d4edda;
+        color: #155724;
+    }
 
     .badge-cancelled {
         background: #f8d7da;
@@ -188,7 +192,7 @@
     }
 </style>
 
-<div class="container">
+<div class="container mt-5">
     <div class="header">
         <h3><i class="fas fa-calendar-alt"></i> Booking Saya</h3>
         <p>Lihat dan kelola semua reservasi hotel Anda</p>
@@ -246,6 +250,11 @@
                         <a href="{{ route('customer.bookings.show', $booking->id) }}" class="btn btn-primary">
                             <i class="fas fa-eye"></i> Detail
                         </a>
+                        @if (!$booking->transaction && in_array($booking->status, ['pending','confirmed','checked_in']))
+                            <button class="btn btn-primary payButton" data-booking-id="{{ $booking->id }}">
+                                <i class="fas fa-credit-card"></i> Pay
+                            </button>
+                        @endif
                         @if ($booking->status === 'pending')
                             <form action="{{ route('customer.bookings.update', $booking->id) }}" method="POST" style="flex: 1;">
                                 @csrf
@@ -290,5 +299,100 @@
             }
         });
     }
+</script>
+@php
+    $midtransScript = config('midtrans.is_production')
+        ? 'https://app.midtrans.com/snap/snap.js'
+        : 'https://app.sandbox.midtrans.com/snap/snap.js';
+@endphp
+
+<script src="{{ $midtransScript }}" data-client-key="{{ config('midtrans.client_key') }}"></script>
+<script>
+    (function(){
+        const payButtons = document.querySelectorAll('.payButton');
+        if (!payButtons || payButtons.length === 0) return;
+
+        payButtons.forEach(btn => {
+            btn.addEventListener('click', async function(e){
+                e.preventDefault();
+                const bookingId = this.dataset.bookingId;
+                this.disabled = true;
+                this.innerText = 'Preparing payment...';
+                try {
+                    const res = await fetch("{{ route('customer.midtrans.create_snap') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ booking_id: bookingId })
+                    });
+
+                    if (!res.ok) {
+                        const err = await res.json().catch(()=>({}));
+                        alert(err.message || 'Failed to create payment token');
+                        this.disabled = false;
+                        this.innerText = 'Pay';
+                        return;
+                    }
+
+                    const data = await res.json();
+                    const token = data.token;
+                    const transactionId = data.transaction_id;
+
+                    if (!token) {
+                        alert('Payment token not received');
+                        this.disabled = false;
+                        this.innerText = 'Pay';
+                        return;
+                    }
+
+                    window.snap.pay(token, {
+                        onSuccess: async function(result){
+                            try {
+                                const checkUrl = "{{ url('customer/transactions') }}" + '/' + transactionId + '/check-status';
+                                await fetch(checkUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    }
+                                });
+                            } catch (e) {
+                                console.warn('check-status failed', e);
+                            }
+                            window.location.href = "{{ url('customer/transactions') }}" + '/' + transactionId;
+                        },
+                        onPending: async function(result){
+                            try {
+                                const checkUrl = "{{ url('customer/transactions') }}" + '/' + transactionId + '/check-status';
+                                await fetch(checkUrl, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    }
+                                });
+                            } catch (e) {
+                                console.warn('check-status failed', e);
+                            }
+                            window.location.href = "{{ url('customer/transactions') }}" + '/' + transactionId;
+                        },
+                        onError: function(result){
+                            alert('Payment failed or canceled');
+                            btn.disabled = false;
+                            btn.innerText = 'Pay';
+                        }
+                    });
+
+                } catch (err) {
+                    console.error(err);
+                    alert('An error occurred. Please try again.');
+                    this.disabled = false;
+                    this.innerText = 'Pay';
+                }
+            });
+        });
+    })();
 </script>
 @endsection

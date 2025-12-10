@@ -23,7 +23,7 @@ class RoomController extends Controller
         $rooms = $query->paginate(10)->appends($request->query());
 
 
-        return view('admin.room', compact('rooms'));
+        return view('admin.rooms.index', compact('rooms'));
     }
 
 
@@ -33,13 +33,12 @@ class RoomController extends Controller
             'room_type_id' => 'required|exists:room_types,id',
             'floor' => 'required|integer|min:1',
             'number' => 'required|string|max:50',
-            'status' => 'required|in:available,booked,maintenance'
         ]);
 
         $room = Room::create($request->all());
 
 
-        return redirect()->route('rooms.index')->with('success', 'Room berhasil ditambahkan');
+        return redirect()->route('admin.rooms.index')->with('success', 'Room berhasil ditambahkan');
     }
 
     public function show($id)
@@ -53,7 +52,7 @@ class RoomController extends Controller
         $room->update($request->all());
 
 
-        return redirect()->route('rooms.index')->with('success', 'Room berhasil diperbarui');
+        return redirect()->route('admin.rooms.index')->with('success', 'Room berhasil diperbarui');
     }
 
     public function destroy($id)
@@ -61,6 +60,6 @@ class RoomController extends Controller
         $room = Room::findOrFail($id);
         $room->delete();
 
-        return redirect()->route('rooms.index')->with('success', 'Room berhasil dihapus');
+        return redirect()->route('admin.rooms.index')->with('success', 'Room berhasil dihapus');
     }
 }

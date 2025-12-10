@@ -24,6 +24,22 @@ class HotelController extends Controller
         return view('admin.hotels.index', compact('hotel'));
     }
 
+    public function create()
+    {
+        // Load any data needed for the create form (e.g., available hotel facilities)
+        $facilities = \App\Models\FacilityHotel::all();
+
+        return view('admin.hotels.create', compact('facilities'));
+    }
+
+    public function edit($id)
+    {
+        $hotel = Hotel::with('facilities')->findOrFail($id);
+        $facilities = \App\Models\FacilityHotel::all();
+
+        return view('admin.hotels.create', compact('hotel', 'facilities'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -32,13 +48,16 @@ class HotelController extends Controller
             'city'        => 'required|string|max:100',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'description' => 'nullable|string',
+            'facilities'  => 'nullable|array',
+            'facilities.*'=> 'exists:facility_hotels,id',
         ]);
 
+        $data = $request->all();
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('hotels', 'public');
         }
 
-        $hotel = Hotel::create($request->all());
+        $hotel = Hotel::create($data);
 
         if ($request->has('facilities')) {
             $hotel->facilities()->sync($request->facilities);
@@ -66,20 +85,26 @@ class HotelController extends Controller
             'city'        => 'required|string|max:100',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'description' => 'nullable|string',
+            'facilities'  => 'nullable|array',
+            'facilities.*'=> 'exists:facility_hotels,id',
         ]);
 
+        $data = $request->all();
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('hotels', 'public');
         }
 
-        $hotel->update($request->all());
+        $hotel->update($data);
 
         if ($request->has('facilities')) {
             $hotel->facilities()->sync($request->facilities);
+        } else {
+            // If no facilities submitted, detach any existing ones when editing
+            $hotel->facilities()->detach();
         }
 
         return $hotel
-            ? redirect()->route('hotels.index')->with('success', 'Hotel berhasil diperbarui.')
+            ? redirect()->route('admin.hotels.index')->with('success', 'Hotel berhasil diperbarui.')
             : redirect()->back()->with('error', 'Gagal memperbarui hotel. Silakan coba lagi.');
     }
 
@@ -88,6 +113,6 @@ class HotelController extends Controller
         $hotel = Hotel::findOrFail($id);
         $hotel->delete();
 
-        return redirect()->route('hotels.index')->with('success', 'Hotel berhasil dihapus.');
+        return redirect()->route('admin.hotels.index')->with('success', 'Hotel berhasil dihapus.');
     }
 }

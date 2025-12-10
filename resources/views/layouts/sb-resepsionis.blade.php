@@ -104,11 +104,45 @@
                 class="nav-link {{ request()->routeIs('resepsionis.dashboard') ? 'active' : '' }}">
                 <i class="bi bi-house"></i> Dashboard
             </a>
+            @php
+                // Determine reservations route robustly. Some environments may report Route::has
+                // true but route() may still throw, so guard with try/catch and fallback.
+                $reservasiRoute = url('resepsionis/reservations');
+                if (Route::has('resepsionis.reservations.index')) {
+                    try {
+                        $reservasiRoute = route('resepsionis.reservations.index');
+                    } catch (\Exception $e) {
+                        $reservasiRoute = url('resepsionis/reservations');
+                    }
+                } elseif (Route::has('reservations.index')) {
+                    try {
+                        $reservasiRoute = route('reservations.index');
+                    } catch (\Exception $e) {
+                        $reservasiRoute = url('resepsionis/reservations');
+                    }
+                }
+            @endphp
+            <a href="{{ $reservasiRoute }}"
+                class="nav-link {{ request()->routeIs('resepsionis.reservations.*') || request()->routeIs('reservations.*') ? 'active' : '' }}">
+                <i class="bi bi-calendar-check"></i> Reservasi
+            </a>
             <div class="nav-item">
-                @php
+                    @php
                     $isReportActive = request()->routeIs('resepsionis.transactions.*') || request()->routeIs('resepsionis.bookings.*') || request()->routeIs('transactions.*') || request()->routeIs('bookings.*');
-                    $transactionRoute = Route::has('resepsionis.transactions.index') ? route('resepsionis.transactions.index') : (Route::has('transactions.index') ? route('transactions.index') : '#');
-                    $bookingRoute = Route::has('resepsionis.bookings.index') ? route('resepsionis.bookings.index') : (Route::has('bookings.index') ? route('bookings.index') : '#');
+                    // Resolve transaction route safely
+                    $transactionRoute = '#';
+                    if (Route::has('resepsionis.transactions.index')) {
+                        try { $transactionRoute = route('resepsionis.transactions.index'); } catch (\Exception $e) { $transactionRoute = '#'; }
+                    } elseif (Route::has('transactions.index')) {
+                        try { $transactionRoute = route('transactions.index'); } catch (\Exception $e) { $transactionRoute = '#'; }
+                    }
+                    // Resolve booking route safely
+                    $bookingRoute = '#';
+                    if (Route::has('resepsionis.bookings.index')) {
+                        try { $bookingRoute = route('resepsionis.bookings.index'); } catch (\Exception $e) { $bookingRoute = '#'; }
+                    } elseif (Route::has('bookings.index')) {
+                        try { $bookingRoute = route('bookings.index'); } catch (\Exception $e) { $bookingRoute = '#'; }
+                    }
                 @endphp
 
                 <a class="nav-link d-flex align-items-center justify-content-between {{ $isReportActive ? 'active' : '' }}"

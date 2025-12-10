@@ -429,6 +429,9 @@
                 <a href="{{ Route::has('admin.hotels.index') ? route('admin.hotels.index') : '#' }}" class="{{ request()->routeIs('admin.hotels.*') ? 'active' : '' }}">
                     <i class="fas fa-hotel"></i> <span>Hotel</span>
                 </a>
+                <a href="{{ Route::has('admin.facility-hotels.index') ? route('admin.facility-hotels.index') : '#' }}" class="{{ request()->routeIs('admin.facility-hotels.*') ? 'active' : '' }}">
+                    <i class="fas fa-hotel"></i> <span>Facility Hotel</span>
+                </a>
 
                 <a href="{{ Route::has('admin.facilities.index') ? route('admin.facilities.index') : '#' }}" class="{{ request()->routeIs('admin.facilities.*') ? 'active' : '' }}">
                     <i class="fas fa-cogs"></i> <span>Facility Room</span>

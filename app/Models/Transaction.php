@@ -20,6 +20,12 @@ class Transaction extends Model
         'payment_type',
         'midtrans_status',
         'midtrans_response',
+        'meta',
+    ];
+
+    protected $casts = [
+        'payment_date' => 'datetime',
+        'meta' => 'array',
     ];
 
     public function booking()

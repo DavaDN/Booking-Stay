@@ -9,16 +9,6 @@ use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
-    /**
-     * Display a listing of all bookings from customers
-     * 
-     * Fitur Admin Booking Management:
-     * - Melihat semua booking yang dibuat customer
-     * - Search booking berdasarkan kode atau nama customer
-     * - Update status booking (pending → confirmed → checked_in → checked_out)
-     * - Lihat detail lengkap booking dengan info customer & transaction
-     * - Kelola pembayaran dan cek status transaksi
-     */
     public function index(Request $request)
     {
         $search = $request->get('search');
@@ -55,23 +45,11 @@ class BookingController extends Controller
         return view('admin.booking.show', compact('booking'));
     }
 
-    /**
-     * Update booking status
-     * 
-     * Status workflow:
-     * pending → confirmed → checked_in → checked_out
-     * atau langsung → cancelled
-     */
     public function updateStatus(Request $request, $id)
     {
-        // Admin should not manually change booking status. Booking lifecycle is driven by
-        // customer actions (payment/cancel) and resepsionis confirmations (check-in/check-out).
         return redirect()->back()->with('error', 'Admin tidak diperkenankan mengubah status booking. Status diatur oleh customer dan resepsionis.');
     }
 
-    /**
-     * Delete booking (hanya jika status masih pending)
-     */
     public function destroy($id)
     {
         $booking = Booking::findOrFail($id);

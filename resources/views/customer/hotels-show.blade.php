@@ -7,7 +7,7 @@
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12">
-            <a href="{{ route('customer.hotels.index') }}" class="btn btn-outline-secondary mb-3">
+            <a href="{{ route('customer.home') }}" class="btn btn-outline-secondary mb-3">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
         </div>
@@ -185,7 +185,7 @@
 
                     <hr>
 
-                    <a href="{{ route('bookings.create') }}" class="btn btn-primary w-100">
+                    <a href="{{ route('customer.bookings.create', ['hotel_id' => $hotel->id]) }}" class="btn btn-primary w-100">
                         <i class="fas fa-calendar"></i> Pesan Kamar
                     </a>
 

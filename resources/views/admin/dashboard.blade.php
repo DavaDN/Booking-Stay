@@ -28,8 +28,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted small mb-2">Tersedia</h6>
-                            <h3 class="text-success mb-0">{{ $availableRooms }}</h3>
+                            <h6 class="text-muted small mb-2">Total Booking</h6>
+                            <h3 class="text-success mb-0">{{ $totalBookings }}</h3>
                         </div>
                         <i class="fas fa-check-circle fa-2x text-success opacity-50"></i>
                     </div>
@@ -43,7 +43,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted small mb-2">Terisi</h6>
-                            <h3 class="text-danger mb-0">{{ $bookedRooms }}</h3>
+                            <h3 class="text-danger mb-0">{{ $checkedInBookings }}</h3>
                         </div>
                         <i class="fas fa-door-closed fa-2x text-danger opacity-50"></i>
                     </div>
@@ -56,8 +56,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="text-muted small mb-2">Maintenance</h6>
-                            <h3 class="text-warning mb-0">{{ $maintenanceRooms }}</h3>
+                            <h6 class="text-muted small mb-2">Transaksi</h6>
+                            <h3 class="text-warning mb-0">{{ $totalTransactions }}</h3>
                         </div>
                         <i class="fas fa-tools fa-2x text-warning opacity-50"></i>
                     </div>

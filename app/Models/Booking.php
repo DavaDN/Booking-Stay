@@ -11,10 +11,13 @@ class Booking extends Model
 
     protected $fillable = [
         'customer_id',
+        'customer_name',
+        'customer_email',
         'room_type_id',
         'check_in',
         'check_out',
         'number_of_rooms',
+        'room_ids',
         'booking_code',
         'total_price',
         'status',
@@ -26,6 +29,7 @@ class Booking extends Model
         'check_out' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'room_ids' => 'array',
     ];
 
     public function customer()

@@ -48,7 +48,7 @@
                             <td>
                                 <span class="badge bg-secondary">{{ $booking->booking_code }}</span>
                             </td>
-                            <td>{{ $booking->customer->name ?? 'N/A' }}</td>
+                            <td>{{ $booking->customer->name ?? $booking->customer_name ?? 'N/A' }}</td>
                             <td>{{ $booking->roomType->name ?? 'N/A' }}</td>
                             <td>{{ \Carbon\Carbon::parse($booking->check_in)->format('d/m/Y') }}</td>
                             <td>{{ \Carbon\Carbon::parse($booking->check_out)->format('d/m/Y') }}</td>
@@ -68,8 +68,9 @@
                             </td>
                             <td>
                                 <div class="btn-group" role="group">
-                                    <a href="{{ route('resepsionis.bookings.show', $booking->id) }}" class="btn btn-sm btn-info" title="Lihat Detail">
-                                        <i class="fas fa-eye"></i>
+                                    <a href="{{ route('resepsionis.bookings.show', $booking->id) }}" class="btn btn-sm btn-info d-flex align-items-center" title="Lihat Detail" style="margin-right: 10px;">
+                                        <i class="fas fa-eye me-1"></i>
+                                        <span>Detail</span>
                                     </a>
 
                                     
@@ -78,8 +79,9 @@
                                             @csrf
                                             @method('PATCH')
                                             <input type="hidden" name="status" value="check-in">
-                                            <button type="submit" class="btn btn-sm btn-primary" title="Check In">
-                                                <i class="fas fa-sign-in-alt"></i>
+                                            <button type="submit" class="btn btn-sm btn-primary d-flex align-items-center" title="Check In">
+                                                <i class="fas fa-sign-in-alt me-1"></i>
+                                                <span>Check In</span>
                                             </button>
                                         </form>
 
@@ -95,13 +97,15 @@
                                                 @csrf
                                                 @method('PATCH')
                                                 <input type="hidden" name="status" value="check-out">
-                                                <button type="submit" class="btn btn-sm btn-secondary" title="Check Out">
-                                                    <i class="fas fa-sign-out-alt"></i>
-                                                </button>
+                                                <button type="submit" class="btn btn-sm btn-secondary d-flex align-items-center" title="Check Out">
+                                                        <i class="fas fa-sign-out-alt me-1"></i>
+                                                        <span>Check Out</span>
+                                                    </button>
                                             </form>
                                         @else
-                                            <button class="btn btn-sm btn-secondary" disabled title="Check-out only available on {{ \Carbon\Carbon::parse($booking->check_out)->format('d/m/Y H:i') }}">
-                                                <i class="fas fa-sign-out-alt"></i>
+                                            <button class="btn btn-sm btn-secondary d-flex align-items-center" disabled title="Check-out only available on {{ \Carbon\Carbon::parse($booking->check_out)->format('d/m/Y H:i') }}">
+                                                <i class="fas fa-sign-out-alt me-1"></i>
+                                                <span>Check Out</span>
                                             </button>
                                         @endif
                                     @endif

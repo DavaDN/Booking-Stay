@@ -13,6 +13,7 @@
             <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.home') }}"><i class="fas fa-home"></i> Hotel</a></li>
             <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.list') }}"><i class="fas fa-list"></i> List Room</a></li>
             <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.bookings.index') }}"><i class="fas fa-calendar-check"></i> Booking</a></li>
+            <li class="nav-item"><a class="nav-link fw-semibold text-dark" href="{{ route('customer.transactions.index') }}"><i class="fas fa-credit-card"></i> Transactions</a></li>
             
             <!-- Akun Dropdown -->
             <li class="nav-item dropdown ms-3">

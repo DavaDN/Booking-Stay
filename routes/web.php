@@ -173,12 +173,30 @@ Route::prefix('admin')->middleware('auth:admin')->name('admin.')->group(function
 | Resepsionis Area
 |--------------------------------------------------------------------------
 */
-Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () {
+Route::prefix('resepsionis')->middleware('auth:resepsionis')->name('resepsionis.')->group(function () {
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('resepsionis.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Reservations (resepsionis)
+    // AJAX endpoint to fetch rooms for a given room type (scoped to resepsionis hotel)
+    Route::get('reservations/rooms-by-type', [ReservationController::class, 'roomsByType'])
+        ->name('reservations.rooms_by_type');
+
     Route::resource('reservations', ReservationController::class);
+    // Reservation payment: create transaction and open Midtrans for resepsionis
+    Route::post('reservations/pay', [\App\Http\Controllers\Resepsionis\ReservationController::class, 'pay'])
+        ->name('reservations.pay');
+    // check-in / check-out actions for reservations
+    Route::post('reservations/{id}/check-in', [\App\Http\Controllers\Resepsionis\ReservationController::class, 'checkIn'])
+        ->name('reservations.check_in');
+    Route::post('reservations/{id}/check-out', [\App\Http\Controllers\Resepsionis\ReservationController::class, 'checkOut'])
+        ->name('reservations.check_out');
+    // Server-side check that can be called from Snap JS after onSuccess/onPending
+    Route::post('reservations/{transaction}/check-status', [\App\Http\Controllers\Payment\MidtransController::class, 'checkStatus'])
+        ->name('reservations.check_status');
+    // Pay for existing reservation (resepsionis)
+    Route::post('reservations/{id}/pay', [\App\Http\Controllers\Resepsionis\ReservationController::class, 'payExisting'])
+        ->name('reservations.payExisting');
 
     // Map legacy 'bookings' path to resepsionis reservations controller (use reservations resource)
     Route::resource('bookings', ReservationController::class)->only(['index', 'show', 'update', 'destroy']);
@@ -186,30 +204,30 @@ Route::prefix('resepsionis')->middleware('auth:resepsionis')->group(function () 
     // Use Resepsionis-specific TransactionController so data is scoped by hotel
     Route::resource('transactions', \App\Http\Controllers\Resepsionis\TransactionController::class)->only(['index', 'show', 'update']);
     Route::patch('transactions/{id}/status', [\App\Http\Controllers\Resepsionis\TransactionController::class, 'updateStatus'])
-        ->name('resepsionis.transactions.updateStatus');
+        ->name('transactions.updateStatus');
 
     // Resepsionis: create bookings (walk-in) and midtrans checkout
     Route::post('bookings/create', [\App\Http\Controllers\Resepsionis\ReservationController::class, 'createBooking'])
-        ->name('resepsionis.bookings.create');
+        ->name('bookings.create');
 
     // Resepsionis bookings management
-    Route::get('bookings', [\App\Http\Controllers\Resepsionis\BookingController::class, 'index'])->name('resepsionis.bookings.index');
-    Route::get('bookings/{id}', [\App\Http\Controllers\Resepsionis\BookingController::class, 'show'])->name('resepsionis.bookings.show');
-    Route::patch('bookings/{id}/status', [\App\Http\Controllers\Resepsionis\BookingController::class, 'updateStatus'])->name('resepsionis.bookings.updateStatus');
+    Route::get('bookings', [\App\Http\Controllers\Resepsionis\BookingController::class, 'index'])->name('bookings.index');
+    Route::get('bookings/{id}', [\App\Http\Controllers\Resepsionis\BookingController::class, 'show'])->name('bookings.show');
+    Route::patch('bookings/{id}/status', [\App\Http\Controllers\Resepsionis\BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 
     Route::post('midtrans/create-snap', [\App\Http\Controllers\Payment\MidtransController::class, 'createSnapForResepsionis'])
-        ->name('resepsionis.midtrans.create');
+        ->name('midtrans.create');
 
     Route::get('midtrans/checkout/{transaction}', [\App\Http\Controllers\Payment\MidtransController::class, 'showSnapForResepsionis'])
-        ->name('resepsionis.midtrans.checkout');
+        ->name('midtrans.checkout');
 
     Route::middleware(['auth'])->prefix('resepsionis')->group(function () {
         Route::get('profile', [ProfileResepsionisController::class, 'index'])
-            ->name('resepsionis.profile');
+            ->name('profile');
         Route::get('profile/edit', [ProfileResepsionisController::class, 'edit'])
-            ->name('resepsionis.profile.edit');
+            ->name('profile.edit');
         Route::post('profile/update', [ProfileResepsionisController::class, 'update'])
-            ->name('resepsionis.profile.update');
+            ->name('profile.update');
     });
 });
 
@@ -251,6 +269,8 @@ Route::post('midtrans/notification', [MidtransController::class, 'notification']
 Route::prefix('customer')->middleware('auth:customer')->name('customer.')->group(function () {
     Route::post('midtrans/create-snap', [MidtransController::class, 'createSnapToken'])->name('midtrans.create_snap');
         Route::get('transactions/{id}/midtrans', [MidtransController::class, 'transactionDetails'])->name('midtrans.transaction_details');
+        // Allow customer to explicitly ask server to check Midtrans status (useful when webhook is not available)
+        Route::post('transactions/{id}/check-status', [MidtransController::class, 'checkStatus'])->name('midtrans.check_status');
         
         // Midtrans demo routes (sandbox test page)
         Route::get('midtrans/demo', [MidtransDemoController::class, 'showDemo'])->name('midtrans.demo');

@@ -30,7 +30,7 @@
                 <tr>
                     <td>#{{ $t->id }}</td>
                     <td>{{ $t->booking->booking_code ?? 'N/A' }}</td>
-                    <td>{{ $t->booking->customer->name ?? 'N/A' }}</td>
+                    <td>{{ $t->booking->customer->name ?? $t->booking->customer_name ?? 'N/A' }}</td>
                     <td>{{ ucfirst(str_replace('_',' ', $t->payment_method)) }}</td>
                     <td>{{ number_format($t->total, 0, ',', '.') }}</td>
                     <td>{{ ucfirst($t->status) }}</td>
